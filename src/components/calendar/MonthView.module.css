@@ -1,0 +1,92 @@
+.monthContainer {
+  padding: var(--spacing-lg);
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  height: calc(100vh - 150px); /* 占据大部分屏幕高度 */
+  display: flex;
+  flex-direction: column;
+}
+
+
+.monthHeader {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+  font-family: var(--font-elegant);
+  color: var(--color-text-secondary);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  position: relative;
+  padding-bottom: var(--spacing-sm);
+}
+
+/* 月份标题下的装饰线 */
+.monthHeader::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: auto repeat(6, 1fr);
+  gap: var(--border-width);
+  border: var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: var(--color-border);
+  flex: 1;/* 占据剩余所有空间 */
+}
+
+.dayHeader {
+  padding: var(--spacing-sm) var(--spacing-xs);
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.dayCell {
+  padding: var(--spacing-sm);
+  text-align: center;
+  min-height: var(--calendar-cell-min-height);
+  background-color: var(--color-bg-primary);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.dayCell:hover {
+  background-color: var(--color-bg-secondary); /* 悬停效果 */
+  min-height: 80px; /* 增大最小高度 */
+}
+
+.currentMonth {
+  color: var(--color-text-primary);
+}
+
+.otherMonth {
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-secondary);
+}
+
+/* 非本月日期的悬停效果 - 使用 CSS 变量 */
+.otherMonth:hover {
+  background-color: var(--color-bg-hover); /* 使用统一的悬停背景色变量 */
+  color: var(--color-text-primary); /* 悬停时文字变深 */
+}
+
+.today {
+  background-color: var(--color-primary-light);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}

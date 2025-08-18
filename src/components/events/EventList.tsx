@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './EventList.module.css';
 
 interface EventListProps {
   events: any[];
@@ -19,7 +20,7 @@ export const EventList: React.FC<EventListProps> = ({
   // TODO: Quick actions (edit, delete)
   
   return (
-    <div className="event-list">
+    <div className={styles.eventList}>
       {/* Event list placeholder */}
       <ul>
         {/* Events will be rendered here */}

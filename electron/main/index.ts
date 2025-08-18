@@ -72,7 +72,8 @@ function createWindow() {
       y: state.y,
       webPreferences: {
         nodeIntegration: false,
-        contextIsolation: true
+        contextIsolation: true,
+        preload: join(__dirname, '../preload/index.js')
       }
     });
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './Header.module.css';
 
 export const Header: React.FC = () => {
   // TODO: Navigation controls (prev/next month)
@@ -8,9 +9,9 @@ export const Header: React.FC = () => {
   // TODO: Settings button
   
   return (
-    <header className="app-header">
+    <header className={styles.header}>
       {/* Header content placeholder */}
-      <div className="header-controls">
+      <div className={styles.controls}>
         {/* Navigation and controls */}
       </div>
     </header>

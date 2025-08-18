@@ -17,11 +17,12 @@
 import React from 'react';
 import { MonthView } from './components/calendar/MonthView';
 import { WeekView } from './components/calendar/WeekView';
+import styles from './App.module.css';
 
 function App() {
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Little White Goose Calendar</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Goose Calendar</h1>
       <MonthView />
     </div>
   );

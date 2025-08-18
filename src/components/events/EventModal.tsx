@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './EventModal.module.css';
 
 interface EventModalProps {
   isOpen: boolean;
@@ -22,12 +23,24 @@ export const EventModal: React.FC<EventModalProps> = ({
   // TODO: Reminder settings
   // TODO: Color picker
   
+  if (!isOpen) return null;
+  
   return (
-    <div className="event-modal">
-      {/* Event form placeholder */}
-      <form>
-        {/* Event details form */}
-      </form>
-    </div>
+    <>
+      <div className={styles.overlay} onClick={onClose} />
+      <div className={styles.modal}>
+        <div className={styles.header}>
+          <h2 className={styles.title}>Event Details</h2>
+        </div>
+        <div className={styles.content}>
+          <form>
+            {/* Event details form */}
+          </form>
+        </div>
+        <div className={styles.footer}>
+          {/* Action buttons */}
+        </div>
+      </div>
+    </>
   );
 };

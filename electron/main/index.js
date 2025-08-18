@@ -73,7 +73,8 @@ function createWindow() {
             y: state.y,
             webPreferences: {
                 nodeIntegration: false,
-                contextIsolation: true
+                contextIsolation: true,
+                preload: (0, path_1.join)(__dirname, '../preload/index.js')
             }
         });
         mainWindow.on('close', () => {
@@ -111,3 +112,4 @@ electron_1.app.on('before-quit', () => {
         mainWindow.removeAllListeners();
     }
 });
+//# sourceMappingURL=index.js.map

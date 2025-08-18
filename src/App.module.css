@@ -1,0 +1,23 @@
+.container {
+  padding: var(--spacing-lg);
+  min-height: 100vh;
+  max-width: none;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: var(--font-size-3xl);
+  color: var(--color-primary);
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-display);
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px var(--shadow-text);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-gradient));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  padding: var(--spacing-md) 0;
+}

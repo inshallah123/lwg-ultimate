@@ -15,6 +15,7 @@
  *   - 可能使用 utils/ 下的日期工具函数
  */
 import React from 'react';
+import styles from './MonthView.module.css';
 
 export function MonthView() {
   const currentDate = new Date();
@@ -22,7 +23,6 @@ export function MonthView() {
   const currentYear = currentDate.getFullYear();
   
   const firstDay = new Date(currentYear, currentMonth, 1);
-  const lastDay = new Date(currentYear, currentMonth + 1, 0);
   const startDate = new Date(firstDay);
   startDate.setDate(startDate.getDate() - firstDay.getDay());
   
@@ -39,23 +39,26 @@ export function MonthView() {
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
   
+  const today = new Date();
+  const isToday = (date: Date) => {
+    return date.toDateString() === today.toDateString();
+  };
+
   return (
-    <div>
-      <h2>{monthNames[currentMonth]} {currentYear}</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px' }}>
+    <div className={styles.monthContainer}>
+      <h2 className={styles.monthHeader}>{monthNames[currentMonth]} {currentYear}</h2>
+      <div className={styles.calendarGrid}>
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} style={{ padding: '8px', fontWeight: 'bold', textAlign: 'center' }}>
+          <div key={day} className={styles.dayHeader}>
             {day}
           </div>
         ))}
         {days.map((day, index) => (
           <div 
             key={index} 
-            style={{ 
-              padding: '8px', 
-              textAlign: 'center',
-              backgroundColor: day.getMonth() === currentMonth ? '#f0f0f0' : '#e0e0e0'
-            }}
+            className={`${styles.dayCell} ${
+              day.getMonth() === currentMonth ? styles.currentMonth : styles.otherMonth
+            } ${isToday(day) ? styles.today : ''}`}
           >
             {day.getDate()}
           </div>
