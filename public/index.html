@@ -1,0 +1,21 @@
+<!--
+  HTML模板文件
+  作用: Vite开发服务器和生产构建的HTML入口模板
+  信息流: 
+    - 开发环境: Vite自动注入开发服务器脚本
+    - 生产环境: Vite构建时注入打包后的JS/CSS文件
+    - 提供React应用挂载点(#root)
+    - 被electron/main/index.ts通过loadFile或loadURL加载
+-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Little White Goose Calendar</title>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

@@ -18,6 +18,5 @@
     },
     "types": ["vite/client"]
   },
-  "include": ["src", "electron"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src", "electron"]
 }

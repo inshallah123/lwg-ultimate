@@ -1,0 +1,45 @@
+{
+  "//": "Electron打包配置文件",
+  "//": "作用: 配置如何将Electron应用打包为可分发的安装包",
+  "//": "信息流: electron-builder读取此配置 -> 打包dist/目录和electron/目录 -> 生成安装包",
+  "//": "与其他文件关系: 依赖package.json的build脚本, 打包vite构建的dist/目录",
+  
+  "appId": "com.yyh.littlewhitegoose",
+  "productName": "Little White Goose Calendar",
+  "directories": {
+    "output": "release",
+    "app": ".",
+    "electron": "electron"
+  },
+  "files": [
+    "dist/**/*",
+    "electron/main/**/*",
+    "electron/preload/**/*",
+    "package.json"
+  ],
+  "main": "electron/main/index.js",
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ]
+  },
+  "mac": {
+    "target": [
+      {
+        "target": "dmg",
+        "arch": ["x64", "arm64"]
+      }
+    ]
+  },
+  "linux": {
+    "target": [
+      {
+        "target": "AppImage",
+        "arch": ["x64"]
+      }
+    ]
+  }
+}

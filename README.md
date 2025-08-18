@@ -5,16 +5,13 @@ A beautiful and feature-rich desktop calendar application built with Electron, R
 ## Features
 - 📅 Multiple calendar views (Month, Week)
 - 🎨 Beautiful and customizable UI
-- 🌓 Dark/Light theme support
 - 📝 Event management
 - 🔔 Reminders and notifications
-- 🌍 Multi-language support
-- 📱 Cross-platform (Windows, macOS, Linux)
 
 ## Tech Stack
 - **Framework:** Electron
 - **Frontend:** React 18 + TypeScript
-- **UI Library:** Chakra UI / Mantine
+- **UI Library:** Chakra UI
 - **State Management:** Zustand
 - **Date Handling:** Day.js
 - **Database:** SQLite (local storage)
