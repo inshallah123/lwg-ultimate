@@ -1,5 +1,5 @@
 // IPC (Inter-Process Communication) handlers
-import { ipcMain } from 'electron';
+
 
 // Database operations placeholder
 export function setupDatabaseHandlers() {
@@ -28,7 +28,7 @@ export function setupWindowHandlers() {
   // - Toggle fullscreen
 }
 
-// Settings operations placeholder
+// Settings operation placeholder
 export function setupSettingsHandlers() {
   // TODO: Handle settings
   // - Get settings

@@ -1,4 +1,5 @@
 "use strict";
+// IPC (Inter-Process Communication) handlers
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setupDatabaseHandlers = setupDatabaseHandlers;
 exports.setupSystemHandlers = setupSystemHandlers;
@@ -29,7 +30,7 @@ function setupWindowHandlers() {
     // - Close
     // - Toggle fullscreen
 }
-// Settings operations placeholder
+// Settings operation placeholder
 function setupSettingsHandlers() {
     // TODO: Handle settings
     // - Get settings

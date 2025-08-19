@@ -72,7 +72,10 @@ body {
   
   /* 艺术字体 */
   --font-display: 'Georgia', 'Times New Roman', serif;
-  --font-elegant: 'Brush Script MT', 'Lucida Handwriting', cursive;
+  --font-elegant: 'Dancing Script', cursive; /* 默认手写体 */
+  --font-handwriting-caveat: 'Caveat', cursive;
+  --font-handwriting-pacifico: 'Pacifico', cursive;
+  --font-handwriting-dancing: 'Dancing Script', cursive;
   
   /* 字重系统 */
   --font-weight-normal: 400;

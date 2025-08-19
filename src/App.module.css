@@ -11,7 +11,7 @@
   text-align: center;
   margin-bottom: var(--spacing-xl);
   font-weight: var(--font-weight-bold);
-  font-family: var(--font-display);
+  font-family: var(--font-display), sans-serif;
   letter-spacing: 2px;
   text-shadow: 2px 2px 4px var(--shadow-text);
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-gradient));

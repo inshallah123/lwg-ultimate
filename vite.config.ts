@@ -15,6 +15,7 @@
  */
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -30,5 +31,10 @@ export default defineConfig({
     port: 5173,
     strictPort: false,  // 允许自动切换端口
     host: true
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
   }
 })
