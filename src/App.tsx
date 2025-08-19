@@ -14,16 +14,36 @@
  *   - 导入 components/ 下的各种子组件
  *   - 未来扩展: 路由管理、全局状态、主题切换等
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { MonthView } from './components/calendar/MonthView';
 import { WeekView } from './components/calendar/WeekView';
 import styles from './App.module.css';
 
+type ViewMode = 'month' | 'week';
+
 function App() {
+  const [viewMode, setViewMode] = useState<ViewMode>('month');
+
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Goose Calendar</h1>
-      <MonthView />
+      <div className={styles.header}>
+        <h1 className={styles.title}>Goose's Calendar</h1>
+        <div className={styles.viewToggle}>
+          <button 
+            className={`${styles.viewButton} ${viewMode === 'month' ? styles.active : ''}`}
+            onClick={() => setViewMode('month')}
+          >
+            Month
+          </button>
+          <button 
+            className={`${styles.viewButton} ${viewMode === 'week' ? styles.active : ''}`}
+            onClick={() => setViewMode('week')}
+          >
+            Week
+          </button>
+        </div>
+      </div>
+      {viewMode === 'month' ? <MonthView /> : <WeekView />}
     </div>
   );
 }

@@ -72,7 +72,6 @@ export function MonthView() {
     return date.toDateString() === today.toDateString();
   };
 
-
   return (
     <div className={styles.monthContainer}>
       <div className={styles.monthHeaderContainer}>

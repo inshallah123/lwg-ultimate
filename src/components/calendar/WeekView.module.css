@@ -1,0 +1,206 @@
+.weekContainer {
+  padding: var(--spacing-lg);
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  height: calc(100vh - 150px);
+  display: flex;
+  flex-direction: column;
+}
+
+.weekHeaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.weekHeader {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-medium);
+  margin: 0 var(--spacing-lg);
+  font-family: var(--font-elegant), sans-serif;
+  color: var(--color-text-secondary);
+  letter-spacing: 2px;
+  position: relative;
+  padding-bottom: var(--spacing-sm);
+}
+
+.weekHeader::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+}
+
+.weekNavButton {
+  background: none;
+  border: none;
+  font-size: var(--font-size-2xl);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 0 var(--spacing-sm);
+  transition: all var(--transition-base);
+  font-weight: 300;
+  opacity: 0.6;
+}
+
+.weekNavButton:hover {
+  opacity: 1;
+  color: var(--color-primary);
+}
+
+.weekGrid {
+  display: flex;
+  flex: 1;
+  border: var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: auto;
+  background-color: var(--color-bg-primary);
+}
+
+.timeColumn {
+  width: 100px;
+  flex-shrink: 0;
+  background-color: var(--color-bg-secondary);
+}
+
+.cornerCell {
+  height: 60px;
+  border-bottom: 2px solid var(--color-border);
+  border-right: var(--border-default);
+  background-color: var(--color-bg-secondary);
+}
+
+.timeSlot {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  border-bottom: var(--border-default);
+  border-right: var(--border-default);
+  font-weight: var(--font-weight-medium);
+  background-color: var(--color-bg-secondary);
+  padding: var(--spacing-xs);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.timeSlot:last-child {
+  border-bottom: none;
+}
+
+.dayColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-primary);
+  border-right: var(--border-default);
+}
+
+.dayColumn:last-child {
+  border-right: none;
+}
+
+.dayHeader {
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg-secondary);
+  border-bottom: 2px solid var(--color-border);
+  position: relative;
+}
+
+.dayHeader.today {
+  background-color: var(--color-primary-light);
+}
+
+.dayHeader.today::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-primary);
+}
+
+.dayName {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dayDate {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-top: 2px;
+}
+
+.dayHeader.today .dayName {
+  color: var(--color-primary);
+}
+
+.dayHeader.today .dayDate {
+  color: var(--color-primary);
+}
+
+.hourCell {
+  height: 120px;
+  border-bottom: var(--border-default);
+  position: relative;
+  cursor: pointer;
+  transition: background-color var(--transition-base);
+  background-color: var(--color-bg-primary);
+}
+
+.hourCell:last-child {
+  border-bottom: none;
+}
+
+.hourCell:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.hourCell:nth-child(even) {
+  background-color: var(--color-bg-secondary);
+}
+
+.hourCell:nth-child(even):hover {
+  background-color: var(--color-bg-hover);
+}
+
+@media (max-width: 768px) {
+  .weekContainer {
+    padding: var(--spacing-md);
+  }
+
+  .timeColumn {
+    width: 80px;
+  }
+
+  .dayName {
+    font-size: var(--font-size-xs);
+  }
+
+  .dayDate {
+    font-size: var(--font-size-base);
+  }
+
+  .timeSlot {
+    font-size: 10px;
+  }
+}
