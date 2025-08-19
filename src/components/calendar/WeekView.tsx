@@ -66,10 +66,10 @@ export function WeekView() {
   
   const timeSlots = React.useMemo(() => {
     const slots = [];
-    // 每2小时一个时间段，覆盖完整的24小时
-    for (let hour = 0; hour < 24; hour += 2) {
-      const startHour = hour;
-      const endHour = hour + 2;
+    // 从8点开始，每2小时一个时间段，覆盖24小时
+    for (let i = 0; i < 12; i++) {
+      const startHour = (8 + i * 2) % 24;
+      const endHour = (startHour + 2) % 24;
       
       // 使用24小时制格式
       const formatHour = (h: number) => {

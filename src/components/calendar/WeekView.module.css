@@ -69,6 +69,8 @@
   width: 100px;
   flex-shrink: 0;
   background-color: var(--color-bg-secondary);
+  display: flex;
+  flex-direction: column;
 }
 
 .cornerCell {
@@ -76,10 +78,10 @@
   border-bottom: 2px solid var(--color-border);
   border-right: var(--border-default);
   background-color: var(--color-bg-secondary);
+  flex-shrink: 0;
 }
 
 .timeSlot {
-  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,7 +93,8 @@
   background-color: var(--color-bg-secondary);
   padding: var(--spacing-xs);
   text-align: center;
-  line-height: 1.4;
+  white-space: nowrap;
+  flex: 1;
 }
 
 .timeSlot:last-child {
@@ -119,6 +122,7 @@
   background-color: var(--color-bg-secondary);
   border-bottom: 2px solid var(--color-border);
   position: relative;
+  flex-shrink: 0;
 }
 
 .dayHeader.today {
@@ -140,7 +144,7 @@
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
 }
 
 .dayDate {
@@ -159,12 +163,12 @@
 }
 
 .hourCell {
-  height: 120px;
   border-bottom: var(--border-default);
   position: relative;
   cursor: pointer;
   transition: background-color var(--transition-base);
   background-color: var(--color-bg-primary);
+  flex: 1;
 }
 
 .hourCell:last-child {
@@ -172,14 +176,6 @@
 }
 
 .hourCell:hover {
-  background-color: var(--color-bg-hover);
-}
-
-.hourCell:nth-child(even) {
-  background-color: var(--color-bg-secondary);
-}
-
-.hourCell:nth-child(even):hover {
   background-color: var(--color-bg-hover);
 }
 
