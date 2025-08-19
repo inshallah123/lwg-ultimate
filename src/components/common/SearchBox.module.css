@@ -1,0 +1,140 @@
+.searchContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 280px;
+  max-width: 400px;
+  flex: 1;
+  margin: 0 var(--spacing-lg);
+}
+
+.searchForm {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.searchIconWrapper {
+  position: absolute;
+  left: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.searchIcon {
+  color: var(--color-text-tertiary);
+  transition: color var(--transition-base);
+}
+
+.searchInput {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-xl) var(--spacing-sm) calc(var(--spacing-xl) + 20px);
+  background: var(--color-bg-secondary);
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  transition: all var(--transition-base);
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-normal);
+}
+
+.searchInput:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-border-light);
+}
+
+.searchInput:focus {
+  background: var(--color-bg-primary);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+}
+
+.searchContainer.focused .searchIcon {
+  color: var(--color-primary);
+}
+
+.clearButton {
+  position: absolute;
+  right: var(--spacing-md);
+  padding: var(--spacing-xs);
+  background: none;
+  border: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clearButton:hover {
+  color: var(--color-text-secondary);
+  background: var(--color-bg-hover);
+}
+
+.clearButton:active {
+  transform: scale(0.95);
+}
+
+.shortcutHint {
+  position: absolute;
+  right: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.kbd {
+  padding: 2px 6px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xs);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-mono), monospace;
+  color: var(--color-text-secondary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.plus {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .searchContainer {
+    min-width: 200px;
+    margin: 0 var(--spacing-md);
+  }
+  
+  .shortcutHint {
+    display: none;
+  }
+}
+
+/* 动画效果 */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.searchContainer {
+  animation: slideIn 0.3s ease-out;
+}

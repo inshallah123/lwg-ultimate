@@ -51,11 +51,14 @@ export function WeekView() {
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     
     if (start.getMonth() === end.getMonth()) {
-      return `${monthNames[start.getMonth()]} ${start.getDate()} - ${end.getDate()}, ${start.getFullYear()}`;
+      // 同月份：17-23, Aug, 2025
+      return `${start.getDate()}-${end.getDate()}, ${monthNames[start.getMonth()]}, ${start.getFullYear()}`;
     } else if (start.getFullYear() === end.getFullYear()) {
-      return `${monthNames[start.getMonth()]} ${start.getDate()} - ${monthNames[end.getMonth()]} ${end.getDate()}, ${start.getFullYear()}`;
+      // 跨月份同年：28-4, Jul-Aug, 2025
+      return `${start.getDate()}-${end.getDate()}, ${monthNames[start.getMonth()]}-${monthNames[end.getMonth()]}, ${start.getFullYear()}`;
     } else {
-      return `${monthNames[start.getMonth()]} ${start.getDate()}, ${start.getFullYear()} - ${monthNames[end.getMonth()]} ${end.getDate()}, ${end.getFullYear()}`;
+      // 跨年：28-3, Dec-Jan, 2024-2025
+      return `${start.getDate()}-${end.getDate()}, ${monthNames[start.getMonth()]}-${monthNames[end.getMonth()]}, ${start.getFullYear()}-${end.getFullYear()}`;
     }
   };
   

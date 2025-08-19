@@ -10,6 +10,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--spacing-xl);
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
 }
 
 .title {
@@ -26,6 +28,7 @@
   background-clip: text;
   position: relative;
   padding: var(--spacing-md) 0;
+  flex-shrink: 0;
 }
 
 .viewToggle {
@@ -34,6 +37,8 @@
   background-color: var(--color-bg-secondary);
   border-radius: var(--radius-md);
   padding: var(--spacing-xs);
+  flex-shrink: 0;
+  position: relative;
 }
 
 .viewButton {
@@ -45,16 +50,115 @@
   font-weight: var(--font-weight-medium);
   cursor: pointer;
   border-radius: var(--radius-sm);
-  transition: all var(--transition-base);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
 }
 
 .viewButton:hover {
   color: var(--color-text-primary);
   background-color: var(--color-bg-hover);
+  transform: translateY(-1px);
 }
 
 .viewButton.active {
-  background-color: var(--color-bg-primary);
+  background: linear-gradient(135deg, var(--color-bg-primary), var(--color-bg-secondary));
   color: var(--color-primary);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.2);
+  transform: scale(1.02);
+  animation: buttonActivate 0.2s ease-out;
+}
+
+@keyframes buttonActivate {
+  from {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  to {
+    transform: scale(1.02);
+  }
+}
+
+.viewWrapper {
+  perspective: 2000px;
+  perspective-origin: 50% 50%;
+  min-height: 600px;
+  position: relative;
+  overflow: hidden;
+}
+
+.viewContainer {
+  transform-origin: center center;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  position: relative;
+  animation: gentleFlipIn 0.5s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+}
+
+.viewContainer.transitioning {
+  animation: gentleFlipOut 0.25s cubic-bezier(0.6, 0.04, 0.98, 0.335) forwards;
+}
+
+.viewContainer.left {
+  transform-origin: right center;
+}
+
+.viewContainer.right {
+  transform-origin: left center;
+}
+
+@keyframes gentleFlipIn {
+  0% {
+    opacity: 0;
+    transform: rotateY(-20deg) translateX(-25px) translateZ(-50px) scale(0.985);
+  }
+  25% {
+    opacity: 0.3;
+    transform: rotateY(-12deg) translateX(-15px) translateZ(-30px) scale(0.99);
+  }
+  50% {
+    opacity: 0.6;
+    transform: rotateY(-7deg) translateX(-8px) translateZ(-15px) scale(0.995);
+  }
+  75% {
+    opacity: 0.9;
+    transform: rotateY(-3deg) translateX(-3px) translateZ(-5px) scale(0.998);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateY(0deg) translateX(0) translateZ(0) scale(1);
+  }
+}
+
+@keyframes gentleFlipOut {
+  0% {
+    opacity: 1;
+    transform: rotateY(0deg) translateX(0) translateZ(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotateY(20deg) translateX(25px) translateZ(-50px) scale(0.985);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewContainer {
+    animation: simpleFadeIn 0.2s ease-out;
+  }
+  
+  .viewContainer.transitioning {
+    animation: simpleFadeOut 0.1s ease-in;
+  }
+  
+  @keyframes simpleFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes simpleFadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
 }
