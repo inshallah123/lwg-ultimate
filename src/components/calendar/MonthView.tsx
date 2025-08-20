@@ -12,7 +12,12 @@ const WEEKDAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const
 const CALENDAR_WEEKS = 6;
 const DAYS_PER_WEEK = 7;
 
-export function MonthView() {
+interface MonthViewProps {
+  onOpenSideBar?: (date: Date) => void;
+  onOpenEventForm?: (date: Date) => void;
+}
+
+export function MonthView({ onOpenSideBar, onOpenEventForm }: MonthViewProps = {}) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
@@ -63,12 +68,14 @@ export function MonthView() {
           return (
             <div 
               key={dayKey} 
-            className={`${styles.dayCell} ${
-              day.getMonth() === currentMonth ? styles.currentMonth : styles.otherMonth
-            } ${isToday(day) ? styles.today : ''}`}
-          >
-            {day.getDate()}
-          </div>
+              className={`${styles.dayCell} ${
+                day.getMonth() === currentMonth ? styles.currentMonth : styles.otherMonth
+              } ${isToday(day) ? styles.today : ''}`}
+              onClick={() => onOpenSideBar?.(day)}
+              onDoubleClick={() => onOpenEventForm?.(day)}
+            >
+              {day.getDate()}
+            </div>
           );
         })}
       </div>

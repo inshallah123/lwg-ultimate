@@ -1,36 +1,23 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { MonthView } from './components/calendar/MonthView';
 import { WeekView } from './components/calendar/WeekView';
 import { SearchBox } from '@/components/search/SearchBox';
+import { Sidebar } from './components/Sidebar/Sidebar';
+import { useSidebarOpen } from './components/Sidebar/hooks/useSidebarOpen';
+import { useStore } from './store';
 import styles from './App.module.css';
 
-type ViewMode = 'month' | 'week';
-
 function App() {
-  const [viewMode, setViewMode] = useState<ViewMode>('month');
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionDirection, setTransitionDirection] = useState<'left' | 'right'>('right');
+  const viewMode = useStore(state => state.viewMode);
+  const isTransitioning = useStore(state => state.isTransitioning);
+  const transitionDirection = useStore(state => state.transitionDirection);
+  const handleViewChange = useStore(state => state.handleViewChange);
   const viewContainerRef = useRef<HTMLDivElement>(null);
-
+  const handleOpenSideBar = useSidebarOpen();
+  
   const handleSearch = (query: string) => {
     console.log('Searching for:', query);
     // 实现搜索功能
-  };
-
-  const handleViewChange = (newMode: ViewMode) => {
-    if (newMode === viewMode) return;
-    
-    setTransitionDirection(newMode === 'week' ? 'right' : 'left');
-    setIsTransitioning(true);
-    
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        setViewMode(newMode);
-        requestAnimationFrame(() => {
-          setIsTransitioning(false);
-        });
-      }, 250);
-    });
   };
 
   return (
@@ -59,9 +46,13 @@ function App() {
           className={`${styles.viewContainer} ${isTransitioning ? styles.transitioning : ''} ${styles[transitionDirection]}`}
           data-view={viewMode}
         >
-          {viewMode === 'month' ? <MonthView /> : <WeekView />}
+          {viewMode === 'month' ? 
+            <MonthView onOpenSideBar={handleOpenSideBar} /> : 
+            <WeekView onOpenSideBar={handleOpenSideBar} />
+          }
         </div>
       </div>
+      <Sidebar />
     </div>
   );
 }

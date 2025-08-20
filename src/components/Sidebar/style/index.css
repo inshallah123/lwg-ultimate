@@ -1,0 +1,51 @@
+/* Sidebar 子树的局部样式 - 侧边栏相关的特定样式 */
+@import '../../../index.css';
+
+/* Sidebar 特有的样式变量 */
+:root {
+  /* Sidebar 尺寸 */
+  --sidebar-width: 380px;
+  --sidebar-header-height: 72px;
+  --sidebar-footer-height: 80px;
+  --sidebar-padding: 24px;
+  --sidebar-close-button-size: 36px;
+  
+  /* Sidebar 颜色主题 - 红色系 */
+  --sidebar-gradient-start: #d21944;
+  --sidebar-gradient-end: #ff6b9d;
+  --sidebar-bg: linear-gradient(135deg, var(--sidebar-gradient-start) 0%, var(--sidebar-gradient-end) 100%);
+  --sidebar-glass-bg: rgba(255, 255, 255, 0.95);
+  --sidebar-header-bg: rgba(255, 255, 255, 0.98);
+  --sidebar-shadow: 4px 0 24px rgba(210, 25, 68, 0.08);
+  --sidebar-inner-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --sidebar-button-bg: rgba(255, 255, 255, 0.9);
+  --sidebar-button-shadow: 0 4px 12px rgba(210, 25, 68, 0.25);
+  --sidebar-button-hover-shadow: 0 6px 20px rgba(210, 25, 68, 0.35);
+  
+  /* 遮罩层 */
+  --sidebar-overlay-bg: rgba(0, 0, 0, 0.4);
+  --sidebar-overlay-blur: blur(2px);
+  
+  /* 毛玻璃效果 */
+  --sidebar-blur: blur(10px);
+  --sidebar-border: 1px solid rgba(255, 255, 255, 0.18);
+  
+  /* 占位符样式 */
+  --sidebar-placeholder-icon-size: 48px;
+  --sidebar-placeholder-opacity: 0.6;
+  
+  /* 按钮样式 */
+  --sidebar-action-button-padding: 12px 20px;
+  --sidebar-action-button-gap: var(--spacing-sm);
+  
+  /* 渐变装饰 */
+  --sidebar-gradient-decoration-height: 200px;
+  --sidebar-gradient-decoration-opacity: 0.1;
+  
+  /* 动画 */
+  --sidebar-slide-duration: 0.4s;
+  --sidebar-slide-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* 响应式断点 */
+  --sidebar-mobile-width: 100%;
+}

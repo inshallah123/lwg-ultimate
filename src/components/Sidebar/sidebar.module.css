@@ -1,0 +1,202 @@
+@import './style/index.css';
+
+/* 遮罩层 */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--sidebar-overlay-bg);
+  backdrop-filter: var(--sidebar-overlay-blur);
+  z-index: var(--z-index-fixed);
+  animation: fadeIn var(--sidebar-slide-duration) ease;
+}
+
+/* 侧边栏容器 - 左侧 */
+.sidebar {
+  position: fixed;
+  left: 0;  /* 改为左侧 */
+  top: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--sidebar-glass-bg);
+  backdrop-filter: var(--sidebar-blur);
+  box-shadow: var(--sidebar-shadow);
+  display: flex;
+  flex-direction: column;
+  z-index: var(--z-index-modal);
+  animation: slideIn var(--sidebar-slide-duration) var(--sidebar-slide-timing);
+  overflow: hidden;
+}
+
+/* 背景渐变装饰 */
+.backgroundGradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--sidebar-gradient-decoration-height);
+  background: var(--sidebar-bg);
+  opacity: var(--sidebar-gradient-decoration-opacity);
+  pointer-events: none;
+}
+
+/* 头部 */
+.header {
+  padding: var(--sidebar-padding);
+  background: var(--sidebar-header-bg);
+  border-bottom: var(--sidebar-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  min-height: var(--sidebar-header-height);
+  position: relative;
+  z-index: 1;
+}
+
+.dateDisplay {
+  flex: 1;
+}
+
+.dateLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+
+.dateValue {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  background: var(--sidebar-bg);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.timeRange {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  margin-top: 4px;
+  opacity: 0.9;
+}
+
+.closeButton {
+  width: var(--sidebar-close-button-size);
+  height: var(--sidebar-close-button-size);
+  border-radius: var(--radius-md);
+  background: var(--sidebar-button-bg);
+  border: var(--sidebar-border);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+}
+
+.closeButton:hover {
+  background: white;
+  color: var(--color-text-primary);
+  transform: scale(1.05);
+}
+
+/* 内容区 */
+.content {
+  flex: 1;
+  padding: var(--sidebar-padding);
+  overflow-y: auto;
+  position: relative;
+}
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  opacity: var(--sidebar-placeholder-opacity);
+}
+
+.placeholderIcon {
+  font-size: var(--sidebar-placeholder-icon-size);
+  margin-bottom: var(--spacing-md);
+}
+
+.placeholderText {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.placeholderHint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* 底部 */
+.footer {
+  padding: var(--sidebar-padding);
+  border-top: var(--sidebar-border);
+  background: var(--sidebar-header-bg);
+  min-height: var(--sidebar-footer-height);
+}
+
+.actionButton {
+  width: 100%;
+  padding: var(--sidebar-action-button-padding);
+  border-radius: var(--radius-md);
+  background: var(--sidebar-bg);
+  color: white;
+  border: none;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sidebar-action-button-gap);
+  transition: all var(--transition-base);
+  box-shadow: var(--sidebar-button-shadow);
+}
+
+.actionButton:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sidebar-button-hover-shadow);
+}
+
+.actionIcon {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+/* 动画 - 从左侧滑入 */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);  /* 从左侧滑入 */
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .sidebar {
+    width: var(--sidebar-mobile-width);
+  }
+}

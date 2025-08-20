@@ -5,7 +5,12 @@ import styles from './WeekView.module.css';
 const WEEKDAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const;
 
 
-export function WeekView() {
+interface WeekViewProps {
+  onOpenSideBar?: (date: Date, hour: number) => void;
+  onOpenEventForm?: (date: Date, hour: number) => void;
+}
+
+export function WeekView({ onOpenSideBar, onOpenEventForm }: WeekViewProps = {}) {
   const [currentDate, setCurrentDate] = useState(new Date());
   
   const { navigateLeft, navigateRight } = useCalendarNavigation(setCurrentDate, 'week');
@@ -99,6 +104,8 @@ export function WeekView() {
               <div 
                 key={`${dayIndex}-${hourIndex}`} 
                 className={styles.hourCell}
+                onClick={() => onOpenSideBar?.(day, hourIndex)}
+                onDoubleClick={() => onOpenEventForm?.(day, hourIndex)}
               >
               </div>
             ))}
