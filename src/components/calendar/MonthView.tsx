@@ -1,22 +1,5 @@
-/**
- * 月视图组件
- * 作用: 显示月度日历视图，展示整月的日期和事件
- * 
- * 信息流:
- *   1. 接收来自App.tsx的props和状态
- *   2. 计算并渲染月度日历网格(6周x7天)
- *   3. 处理用户的日期选择和事件点击
- *   4. 与事件相关组件通信显示事件详情
- * 
- * 与其他文件关系:
- *   - 被 App.tsx 导入和使用
- *   - 可能调用 events/ 下的事件组件
- *   - 未来可能使用 hooks/ 下的日期处理逻辑
- *   - 可能使用 utils/ 下的日期工具函数
- */
 import React, { useState } from 'react';
-import { useCalendarNavigation } from '@/hooks/useCalendarNavigation';
-import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useCalendarNavigation } from './hooks/useCalendarNavigation';
 import styles from './MonthView.module.css';
 
 const MONTH_NAMES = [
@@ -34,23 +17,9 @@ export function MonthView() {
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
   
-  const { 
-    navigateToPreviousMonth, 
-    navigateToNextMonth,
-    navigateLeft,
-    navigateRight,
-    navigateUp,
-    navigateDown,
-    navigateToToday
-  } = useCalendarNavigation(setCurrentDate, 'month');
+  const { navigateLeft, navigateRight } = useCalendarNavigation(setCurrentDate, 'month');
   
-  useKeyboardShortcuts([
-    { key: 'ArrowLeft', handler: navigateLeft },
-    { key: 'ArrowRight', handler: navigateRight },
-    { key: 'ArrowUp', handler: navigateUp },
-    { key: 'ArrowDown', handler: navigateDown },
-    { key: ' ', handler: navigateToToday }
-  ]);
+  // 键盘快捷键功能已移除，后续可在calendar模块内部实现
   
   const firstDay = new Date(currentYear, currentMonth, 1);
   const startDate = new Date(firstDay);
@@ -75,11 +44,11 @@ export function MonthView() {
   return (
     <div className={styles.monthContainer}>
       <div className={styles.monthHeaderContainer}>
-        <button className={styles.monthNavButton} onClick={navigateToPreviousMonth}>
+        <button className={styles.monthNavButton} onClick={navigateLeft}>
           ‹
         </button>
         <h2 className={styles.monthHeader}>{MONTH_NAMES[currentMonth]} {currentYear}</h2>
-        <button className={styles.monthNavButton} onClick={navigateToNextMonth}>
+        <button className={styles.monthNavButton} onClick={navigateRight}>
           ›
         </button>
       </div>

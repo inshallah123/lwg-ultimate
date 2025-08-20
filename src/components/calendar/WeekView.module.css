@@ -1,6 +1,9 @@
+@import './style/index.css';
+
+/* Container */
 .weekContainer {
   padding: var(--spacing-lg);
-  background-color: var(--color-bg-primary);
+  background: var(--color-bg-primary);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   width: 100%;
@@ -9,6 +12,7 @@
   flex-direction: column;
 }
 
+/* Header */
 .weekHeaderContainer {
   display: flex;
   justify-content: center;
@@ -18,11 +22,9 @@
 }
 
 .weekHeader {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-medium);
-  margin: 0 var(--spacing-lg);
-  font-family: var(--font-elegant), sans-serif;
+  font: var(--font-weight-medium) var(--font-size-2xl) var(--font-elegant), sans-serif;
   color: var(--color-text-secondary);
+  margin: 0 var(--spacing-lg);
   letter-spacing: 2px;
   position: relative;
   padding-bottom: var(--spacing-sm);
@@ -56,61 +58,43 @@
   color: var(--color-primary);
 }
 
+/* Grid Layout */
 .weekGrid {
   display: flex;
   flex: 1;
   border: var(--border-default);
   border-radius: var(--radius-md);
   overflow: auto;
-  background-color: var(--color-bg-primary);
+  background: var(--color-bg-primary);
 }
 
 .timeColumn {
   width: 100px;
   flex-shrink: 0;
-  background-color: var(--color-bg-secondary);
+  background: var(--color-bg-secondary);
   display: flex;
   flex-direction: column;
-}
-
-.cornerCell {
-  height: 60px;
-  border-bottom: 2px solid var(--color-border);
-  border-right: var(--border-default);
-  background-color: var(--color-bg-secondary);
-  flex-shrink: 0;
-}
-
-.timeSlot {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  border-bottom: var(--border-default);
-  border-right: var(--border-default);
-  font-weight: var(--font-weight-medium);
-  background-color: var(--color-bg-secondary);
-  padding: var(--spacing-xs);
-  text-align: center;
-  white-space: nowrap;
-  flex: 1;
-}
-
-.timeSlot:last-child {
-  border-bottom: none;
 }
 
 .dayColumn {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-bg-primary);
+  background: var(--color-bg-primary);
   border-right: var(--border-default);
 }
 
 .dayColumn:last-child {
   border-right: none;
+}
+
+/* Headers & Cells */
+.cornerCell {
+  height: 60px;
+  border-bottom: 2px solid var(--color-border);
+  border-right: var(--border-default);
+  background: var(--color-bg-secondary);
+  flex-shrink: 0;
 }
 
 .dayHeader {
@@ -119,14 +103,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-bg-secondary);
+  background: var(--color-bg-secondary);
   border-bottom: 2px solid var(--color-border);
   position: relative;
   flex-shrink: 0;
 }
 
 .dayHeader.today {
-  background-color: var(--color-primary-light);
+  background: var(--color-primary-light);
 }
 
 .dayHeader.today::after {
@@ -154,12 +138,31 @@
   margin-top: 2px;
 }
 
-.dayHeader.today .dayName {
+.dayHeader.today .dayName,
+.dayHeader.today .dayDate {
   color: var(--color-primary);
 }
 
-.dayHeader.today .dayDate {
-  color: var(--color-primary);
+/* Time & Hour Cells */
+.timeSlot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  border-bottom: var(--border-default);
+  border-right: var(--border-default);
+  font-weight: var(--font-weight-medium);
+  background: var(--color-bg-secondary);
+  padding: var(--spacing-xs);
+  text-align: center;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.timeSlot:last-child,
+.hourCell:last-child {
+  border-bottom: none;
 }
 
 .hourCell {
@@ -167,36 +170,19 @@
   position: relative;
   cursor: pointer;
   transition: background-color var(--transition-base);
-  background-color: var(--color-bg-primary);
+  background: var(--color-bg-primary);
   flex: 1;
 }
 
-.hourCell:last-child {
-  border-bottom: none;
-}
-
 .hourCell:hover {
-  background-color: var(--color-bg-hover);
+  background: var(--color-bg-hover);
 }
 
+/* Mobile */
 @media (max-width: 768px) {
-  .weekContainer {
-    padding: var(--spacing-md);
-  }
-
-  .timeColumn {
-    width: 80px;
-  }
-
-  .dayName {
-    font-size: var(--font-size-xs);
-  }
-
-  .dayDate {
-    font-size: var(--font-size-base);
-  }
-
-  .timeSlot {
-    font-size: 10px;
-  }
+  .weekContainer { padding: var(--spacing-md); }
+  .timeColumn { width: 80px; }
+  .dayName { font-size: var(--font-size-xs); }
+  .dayDate { font-size: var(--font-size-base); }
+  .timeSlot { font-size: 10px; }
 }

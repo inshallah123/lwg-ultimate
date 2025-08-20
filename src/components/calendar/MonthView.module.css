@@ -1,3 +1,5 @@
+@import './style/index.css';
+
 .monthContainer {
   padding: var(--spacing-lg);
   background-color: var(--color-bg-primary);

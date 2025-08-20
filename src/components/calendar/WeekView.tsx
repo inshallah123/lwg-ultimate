@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useCalendarNavigation } from '@/hooks/useCalendarNavigation';
-import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { useCalendarNavigation } from './hooks/useCalendarNavigation';
 import styles from './WeekView.module.css';
 
 const WEEKDAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const;
@@ -9,24 +8,8 @@ const WEEKDAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', '
 export function WeekView() {
   const [currentDate, setCurrentDate] = useState(new Date());
   
-  const { 
-    navigateToPreviousWeek, 
-    navigateToNextWeek,
-    navigateLeft,
-    navigateRight,
-    navigateUp,
-    navigateDown,
-    navigateToToday
-  } = useCalendarNavigation(setCurrentDate, 'week');
-  
-  useKeyboardShortcuts([
-    { key: 'ArrowLeft', handler: navigateLeft },
-    { key: 'ArrowRight', handler: navigateRight },
-    { key: 'ArrowUp', handler: navigateUp },
-    { key: 'ArrowDown', handler: navigateDown },
-    { key: ' ', handler: navigateToToday }
-  ]);
-  
+  const { navigateLeft, navigateRight } = useCalendarNavigation(setCurrentDate, 'week');
+
   const getWeekStart = (date: Date) => {
     const d = new Date(date);
     const day = d.getDay();
@@ -87,11 +70,11 @@ export function WeekView() {
   return (
     <div className={styles.weekContainer}>
       <div className={styles.weekHeaderContainer}>
-        <button className={styles.weekNavButton} onClick={navigateToPreviousWeek}>
+        <button className={styles.weekNavButton} onClick={navigateLeft}>
           ‹
         </button>
         <h2 className={styles.weekHeader}>{formatWeekRange()}</h2>
-        <button className={styles.weekNavButton} onClick={navigateToNextWeek}>
+        <button className={styles.weekNavButton} onClick={navigateRight}>
           ›
         </button>
       </div>
