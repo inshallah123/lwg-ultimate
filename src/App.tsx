@@ -5,14 +5,17 @@ import { SearchBox } from '@/components/search/SearchBox';
 import { Sidebar } from './components/Sidebar/sidebar';
 import { useSidebarOpen } from './components/Sidebar/hooks/useSidebarOpen';
 import { useSidebarStore } from './components/Sidebar/store';
-import { useStore } from './store';
+import { useCalendarStore } from './components/calendar/store';
+import { useCalendarNavigation } from './components/calendar/hooks/useCalendarNavigation';
 import styles from './App.module.css';
 
 function App() {
-  const viewMode = useStore(state => state.viewMode);
-  const isTransitioning = useStore(state => state.isTransitioning);
-  const transitionDirection = useStore(state => state.transitionDirection);
-  const handleViewChange = useStore(state => state.handleViewChange);
+  // 启用键盘导航
+  useCalendarNavigation();
+  const viewMode = useCalendarStore(state => state.viewMode);
+  const isTransitioning = useCalendarStore(state => state.isTransitioning);
+  const transitionDirection = useCalendarStore(state => state.transitionDirection);
+  const handleViewChange = useCalendarStore(state => state.handleViewChange);
   const viewContainerRef = useRef<HTMLDivElement>(null);
   const handleOpenSideBar = useSidebarOpen();
   const openEventForm = useSidebarStore(state => state.openEventForm);

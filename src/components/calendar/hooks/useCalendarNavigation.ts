@@ -1,44 +1,37 @@
-import React, { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useCalendarStore } from '../store';
 
-export function useCalendarNavigation(
-  setDate: React.Dispatch<React.SetStateAction<Date>>,
-  mode: 'month' | 'week' = 'month'
-) {
-  const navigate = useCallback((delta: number, unit: 'year' | 'month' | 'week') => {
-    setDate(d => {
-      const newDate = new Date(d);
-      if (unit === 'year') newDate.setFullYear(newDate.getFullYear() + delta);
-      else if (unit === 'month') newDate.setMonth(newDate.getMonth() + delta);
-      else newDate.setDate(newDate.getDate() + delta * 7);
-      return newDate;
-    });
-  }, [setDate]);
-
-  const handlers = {
-    navigateLeft: () => navigate(-1, mode === 'month' ? 'month' : 'week'),
-    navigateRight: () => navigate(1, mode === 'month' ? 'month' : 'week'),
-    navigateUp: () => navigate(-1, mode === 'month' ? 'year' : 'month'),
-    navigateDown: () => navigate(1, mode === 'month' ? 'year' : 'month'),
-    navigateToToday: () => setDate(new Date())
-  };
+export function useCalendarNavigation() {
+  const viewMode = useCalendarStore(state => state.viewMode);
+  const navigateMonth = useCalendarStore(state => state.navigateMonth);
+  const navigateWeek = useCalendarStore(state => state.navigateWeek);
+  const navigateYear = useCalendarStore(state => state.navigateYear);
+  const goToToday = useCalendarStore(state => state.goToToday);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
+      // 如果用户正在输入，不处理快捷键
+      if (e.target instanceof HTMLInputElement || 
+          e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
       const keyMap: Record<string, () => void> = {
-        'ArrowLeft': handlers.navigateLeft,
-        'ArrowRight': handlers.navigateRight,
-        'ArrowUp': handlers.navigateUp,
-        'ArrowDown': handlers.navigateDown,
-        ' ': handlers.navigateToToday
+        'ArrowLeft': () => viewMode === 'month' ? navigateMonth(-1) : navigateWeek(-1),
+        'ArrowRight': () => viewMode === 'month' ? navigateMonth(1) : navigateWeek(1),
+        'ArrowUp': () => viewMode === 'month' ? navigateYear(-1) : navigateMonth(-1),
+        'ArrowDown': () => viewMode === 'month' ? navigateYear(1) : navigateMonth(1),
+        ' ': goToToday,
+        'Enter': goToToday
       };
+      
       if (keyMap[e.key]) {
         e.preventDefault();
         keyMap[e.key]();
       }
     };
+    
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [mode, setDate]);
-
-  return handlers;
+  }, [viewMode, navigateMonth, navigateWeek, navigateYear, goToToday]);
 }

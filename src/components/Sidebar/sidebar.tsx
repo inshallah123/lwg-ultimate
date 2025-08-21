@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSidebarStore } from './store';
 import { EventForm } from './components/Eventform';
+import { formatDate, formatTimeRange } from '@/utils/dateHelpers';
 import styles from './Sidebar.module.css';
 
 export function Sidebar() {
@@ -14,29 +15,6 @@ export function Sidebar() {
   const closeEventForm = useSidebarStore(state => state.closeEventForm);
   
   
-  const formatDate = (date: Date | null) => {
-    if (!date) return '';
-    const options: Intl.DateTimeFormatOptions = { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    };
-    return date.toLocaleDateString('en-US', options);
-  };
-  
-  const formatTimeRange = (hourIndex: number) => {
-    // hourIndex是时间段索引，每个索引代表2小时，从8点开始
-    const startHour = (8 + hourIndex * 2) % 24;
-    const endHour = (startHour + 2) % 24;
-    
-    // 使用24小时制格式，与周视图保持一致
-    const formatHour = (h: number) => {
-      return `${h.toString().padStart(2, '0')}:00`;
-    };
-    
-    return `${formatHour(startHour)}-${formatHour(endHour)}`;
-  };
   
   return (
     <>
@@ -49,7 +27,7 @@ export function Sidebar() {
         <div className={styles.header}>
           <div className={styles.dateDisplay}>
             <div className={styles.dateLabel}>Selected Date</div>
-            <div className={styles.dateValue}>{formatDate(selectedDate)}</div>
+            <div className={styles.dateValue}>{formatDate(selectedDate, 'long')}</div>
             {selectedHour !== null && (
               <div className={styles.timeRange}>{formatTimeRange(selectedHour)}</div>
             )}

@@ -1,4 +1,14 @@
 import { create } from 'zustand';
+import { isSameDay } from '@/utils/dateHelpers';
+
+export interface Event {
+  id: string;
+  title: string;
+  description: string;
+  date: Date;
+  timeSlot: string;
+  tag: string;
+}
 
 interface SidebarState {
   // Sidebar 状态
@@ -11,6 +21,9 @@ interface SidebarState {
   eventFormDate: Date | null;
   eventFormHour: number | null;
   
+  // Events 状态
+  events: Event[];
+  
   // Sidebar 方法
   open: (date: Date, hour?: number) => void;
   close: () => void;
@@ -18,6 +31,11 @@ interface SidebarState {
   // EventForm 方法
   openEventForm: (date?: Date, hour?: number) => void;
   closeEventForm: () => void;
+  
+  // Events 方法
+  addEvent: (event: Event) => void;
+  removeEvent: (id: string) => void;
+  getEventsForDate: (date: Date) => Event[];
 }
 
 export const useSidebarStore = create<SidebarState>((set, get) => ({
@@ -28,6 +46,7 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
   isEventFormOpen: false,
   eventFormDate: null,
   eventFormHour: null,
+  events: [],
   
   // Sidebar 方法
   open: (date, hour) => set({ 
@@ -56,4 +75,18 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
     eventFormDate: null,
     eventFormHour: null
   }),
+  
+  // Events 方法
+  addEvent: (event) => set(state => ({
+    events: [...state.events, event]
+  })),
+  
+  removeEvent: (id) => set(state => ({
+    events: state.events.filter(e => e.id !== id)
+  })),
+  
+  getEventsForDate: (date) => {
+    const { events } = get();
+    return events.filter(event => isSameDay(event.date, date));
+  },
 }));
