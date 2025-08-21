@@ -12,6 +12,7 @@ interface WeekViewProps {
 
 export function WeekView({ onOpenSideBar, onOpenEventForm }: WeekViewProps = {}) {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const clickTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   
   const { navigateLeft, navigateRight } = useCalendarNavigation(setCurrentDate, 'week');
 
@@ -72,6 +73,21 @@ export function WeekView({ onOpenSideBar, onOpenEventForm }: WeekViewProps = {})
     return slots;
   }, []);
 
+  const handleCellClick = (day: Date, hourIndex: number) => {
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+      clickTimeoutRef.current = null;
+      // 双击：直接打开EventForm
+      onOpenEventForm?.(day, hourIndex);
+    } else {
+      // 单击：延迟执行，等待可能的双击
+      clickTimeoutRef.current = setTimeout(() => {
+        onOpenSideBar?.(day, hourIndex);
+        clickTimeoutRef.current = null;
+      }, 250);
+    }
+  };
+
   return (
     <div className={styles.weekContainer}>
       <div className={styles.weekHeaderContainer}>
@@ -104,8 +120,7 @@ export function WeekView({ onOpenSideBar, onOpenEventForm }: WeekViewProps = {})
               <div 
                 key={`${dayIndex}-${hourIndex}`} 
                 className={styles.hourCell}
-                onClick={() => onOpenSideBar?.(day, hourIndex)}
-                onDoubleClick={() => onOpenEventForm?.(day, hourIndex)}
+                onClick={() => handleCellClick(day, hourIndex)}
               >
               </div>
             ))}

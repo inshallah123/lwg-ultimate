@@ -4,6 +4,7 @@ import { WeekView } from './components/calendar/WeekView';
 import { SearchBox } from '@/components/search/SearchBox';
 import { Sidebar } from './components/Sidebar/Sidebar';
 import { useSidebarOpen } from './components/Sidebar/hooks/useSidebarOpen';
+import { useSidebarStore } from './components/Sidebar/store';
 import { useStore } from './store';
 import styles from './App.module.css';
 
@@ -14,6 +15,7 @@ function App() {
   const handleViewChange = useStore(state => state.handleViewChange);
   const viewContainerRef = useRef<HTMLDivElement>(null);
   const handleOpenSideBar = useSidebarOpen();
+  const openEventForm = useSidebarStore(state => state.openEventForm);
   
   const handleSearch = (query: string) => {
     console.log('Searching for:', query);
@@ -47,8 +49,8 @@ function App() {
           data-view={viewMode}
         >
           {viewMode === 'month' ? 
-            <MonthView onOpenSideBar={handleOpenSideBar} /> : 
-            <WeekView onOpenSideBar={handleOpenSideBar} />
+            <MonthView onOpenSideBar={handleOpenSideBar} onOpenEventForm={openEventForm} /> : 
+            <WeekView onOpenSideBar={handleOpenSideBar} onOpenEventForm={openEventForm} />
           }
         </div>
       </div>

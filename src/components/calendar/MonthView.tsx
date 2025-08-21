@@ -21,6 +21,7 @@ export function MonthView({ onOpenSideBar, onOpenEventForm }: MonthViewProps = {
   const [currentDate, setCurrentDate] = useState(new Date());
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
+  const clickTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   
   const { navigateLeft, navigateRight } = useCalendarNavigation(setCurrentDate, 'month');
   
@@ -44,6 +45,21 @@ export function MonthView({ onOpenSideBar, onOpenEventForm }: MonthViewProps = {
   const today = new Date();
   const isToday = (date: Date) => {
     return date.toDateString() === today.toDateString();
+  };
+
+  const handleCellClick = (day: Date) => {
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+      clickTimeoutRef.current = null;
+      // 双击：直接打开EventForm
+      onOpenEventForm?.(day);
+    } else {
+      // 单击：延迟执行，等待可能的双击
+      clickTimeoutRef.current = setTimeout(() => {
+        onOpenSideBar?.(day);
+        clickTimeoutRef.current = null;
+      }, 250);
+    }
   };
 
   return (
@@ -71,8 +87,7 @@ export function MonthView({ onOpenSideBar, onOpenEventForm }: MonthViewProps = {
               className={`${styles.dayCell} ${
                 day.getMonth() === currentMonth ? styles.currentMonth : styles.otherMonth
               } ${isToday(day) ? styles.today : ''}`}
-              onClick={() => onOpenSideBar?.(day)}
-              onDoubleClick={() => onOpenEventForm?.(day)}
+              onClick={() => handleCellClick(day)}
             >
               {day.getDate()}
             </div>

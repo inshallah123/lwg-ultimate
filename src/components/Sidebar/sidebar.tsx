@@ -1,18 +1,18 @@
 import React from 'react';
 import { useSidebarStore } from './store';
+import { EventForm } from './components/Eventform';
 import styles from './Sidebar.module.css';
 
-interface SidebarProps {
-  onOpenEventForm: () => void;
-}
-
-export function Sidebar({ onOpenEventForm }: SidebarProps) {
+export function Sidebar() {
   const isOpen = useSidebarStore(state => state.isOpen);
   const selectedDate = useSidebarStore(state => state.selectedDate);
   const selectedHour = useSidebarStore(state => state.selectedHour);
   const close = useSidebarStore(state => state.close);
   
-  if (!isOpen) return null;
+  const isEventFormOpen = useSidebarStore(state => state.isEventFormOpen);
+  const openEventForm = useSidebarStore(state => state.openEventForm);
+  const closeEventForm = useSidebarStore(state => state.closeEventForm);
+  
   
   const formatDate = (date: Date | null) => {
     if (!date) return '';
@@ -40,8 +40,10 @@ export function Sidebar({ onOpenEventForm }: SidebarProps) {
   
   return (
     <>
-      <div className={styles.overlay} onClick={close} />
-      <div className={styles.sidebar}>
+      {isOpen && (
+        <>
+          <div className={styles.overlay} onClick={close} />
+          <div className={styles.sidebar}>
         <div className={styles.backgroundGradient} />
         
         <div className={styles.header}>
@@ -68,12 +70,18 @@ export function Sidebar({ onOpenEventForm }: SidebarProps) {
         </div>
         
         <div className={styles.footer}>
-          <button className={styles.actionButton} onClick={onOpenEventForm}>
+          <button className={styles.actionButton} onClick={() => openEventForm()}>
             <span className={styles.actionIcon}>+</span>
             Quick Add Event
           </button>
         </div>
       </div>
+        </>
+      )}
+      <EventForm 
+        isOpen={isEventFormOpen} 
+        onClose={closeEventForm}
+      />
     </>
   );
 }
