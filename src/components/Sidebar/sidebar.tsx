@@ -2,7 +2,11 @@ import React from 'react';
 import { useSidebarStore } from './store';
 import styles from './Sidebar.module.css';
 
-export function Sidebar() {
+interface SidebarProps {
+  onOpenEventForm: () => void;
+}
+
+export function Sidebar({ onOpenEventForm }: SidebarProps) {
   const isOpen = useSidebarStore(state => state.isOpen);
   const selectedDate = useSidebarStore(state => state.selectedDate);
   const selectedHour = useSidebarStore(state => state.selectedHour);
@@ -64,7 +68,7 @@ export function Sidebar() {
         </div>
         
         <div className={styles.footer}>
-          <button className={styles.actionButton}>
+          <button className={styles.actionButton} onClick={onOpenEventForm}>
             <span className={styles.actionIcon}>+</span>
             Quick Add Event
           </button>

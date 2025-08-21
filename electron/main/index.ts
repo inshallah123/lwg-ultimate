@@ -85,6 +85,14 @@ function createWindow() {
       mainWindow = null;
     });
 
+    // 注册 F12 快捷键来打开开发者工具
+    mainWindow.webContents.on('before-input-event', (event, input) => {
+      if (input.key === 'F12') {
+        mainWindow?.webContents.toggleDevTools();
+        event.preventDefault();
+      }
+    });
+
     const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
     const devPort = process.env.DEV_PORT || '5173'; // 开发端口
     
