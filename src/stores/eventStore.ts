@@ -9,39 +9,18 @@ interface EventStore {
   addEvent: (input: CreateEventInput) => void;
   updateEvent: (id: string, updates: UpdateEventInput) => void;
   deleteEvent: (id: string) => void;
-  getEvent: (id: string) => Event | undefined;
-  
-  // 查询方法
-  getEventsByDate: (date: Date) => Event[];
-  getEventsByDateRange: (startDate: Date, endDate: Date) => Event[];
-  getEventsByTag: (tag: string) => Event[];
-  
-  // 批量操作
-  clearEvents: () => void;
-  importEvents: (events: Event[]) => void;
 }
 
-// 辅助函数：判断是否同一天
-const isSameDay = (date1: Date, date2: Date): boolean => {
-  return date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate();
-};
-
-// 辅助函数：判断日期是否在范围内
-const isDateInRange = (date: Date, start: Date, end: Date): boolean => {
-  return date >= start && date <= end;
-};
 
 export const useEventStore = create<EventStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       events: [],
       
       addEvent: (input) => {
         const newEvent: Event = {
           ...input,
-          id: `event_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
           createdAt: new Date(),
           updatedAt: new Date()
         };
@@ -65,34 +44,6 @@ export const useEventStore = create<EventStore>()(
         set(state => ({
           events: state.events.filter(event => event.id !== id)
         }));
-      },
-      
-      getEvent: (id) => {
-        return get().events.find(event => event.id === id);
-      },
-      
-      getEventsByDate: (date) => {
-        return get().events.filter(event => isSameDay(event.date, date));
-      },
-      
-      getEventsByDateRange: (startDate, endDate) => {
-        return get().events.filter(event => 
-          isDateInRange(event.date, startDate, endDate)
-        );
-      },
-      
-      getEventsByTag: (tag) => {
-        return get().events.filter(event => 
-          event.tag === tag || event.customTag === tag
-        );
-      },
-      
-      clearEvents: () => {
-        set({ events: [] });
-      },
-      
-      importEvents: (events) => {
-        set({ events });
       }
     }),
     {
