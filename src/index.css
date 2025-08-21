@@ -7,31 +7,54 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
   line-height: 1.6;
   color: var(--color-text-primary);
-  background-color: var(--color-bg-primary);
+  background: linear-gradient(180deg, 
+    var(--color-bg-primary) 0%, 
+    var(--color-bg-secondary) 100%
+  );
   font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
 }
 
 :root {
-  /* 核心颜色 */
-  --color-primary: #d21944;
-  --color-primary-light: #e3f2fd;
-  --color-primary-rgb: 210, 25, 68;
+  /* 核心颜色 - 优化版 */
+  --color-primary: #dc2626;
+  --color-primary-light: rgba(220, 38, 38, 0.08);
+  --color-primary-rgb: 220, 38, 38;
+  --color-primary-gradient: linear-gradient(135deg, #dc2626, #ef4444);
   
-  /* 文本颜色 */
-  --color-text-primary: #212529;
-  --color-text-secondary: #6c757d;
-  --color-text-muted: #868e96;
+  /* 文本颜色 - 增强对比度 */
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #9ca3af;
+  --color-text-inverse: #ffffff;
   
-  /* 背景颜色 */
+  /* 背景颜色 - 更柔和的层次 */
   --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f8f9fa;
-  --color-bg-hover: #e9ecef;
+  --color-bg-secondary: #f9fafb;
+  --color-bg-tertiary: #f3f4f6;
+  --color-bg-hover: rgba(0, 0, 0, 0.02);
+  --color-bg-active: rgba(0, 0, 0, 0.03);
   
-  /* 边框 */
-  --color-border: #dee2e6;
+  /* 玻璃态背景 */
+  --glass-bg: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95),
+    rgba(250, 250, 250, 0.9)
+  );
+  --glass-bg-dark: linear-gradient(135deg, 
+    rgba(30, 41, 59, 0.6),
+    rgba(30, 41, 59, 0.4)
+  );
+  
+  /* 边框 - 更细腻 */
+  --color-border: rgba(0, 0, 0, 0.06);
+  --color-border-light: rgba(0, 0, 0, 0.04);
+  --color-border-dark: rgba(0, 0, 0, 0.08);
   --border-width: 1px;
   --border-style: solid;
   --border-default: var(--border-width) var(--border-style) var(--color-border);
@@ -42,39 +65,116 @@ body {
   --spacing-md: 16px;
   --spacing-lg: 24px;
   --spacing-xl: 32px;
+  --spacing-2xl: 48px;
   
-  /* 核心字号 */
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
+  /* 核心字号 - 优化层级 */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 2rem;      /* 32px */
   
   /* 字重 */
+  --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
   
-  /* 圆角 */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  /* 圆角 - 更现代 */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
   
-  /* 阴影 */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  /* 阴影 - 多层次系统 */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 2px 4px rgba(0, 0, 0, 0.03);
+  --shadow-md: 
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 4px 8px rgba(0, 0, 0, 0.03),
+    0 8px 16px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 10px 15px rgba(0, 0, 0, 0.04),
+    0 20px 25px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 
+    0 10px 20px rgba(0, 0, 0, 0.06),
+    0 20px 40px rgba(0, 0, 0, 0.05),
+    0 40px 80px rgba(0, 0, 0, 0.04);
   
-  /* 过渡 */
-  --transition-fast: 0.05s ease;
-  --transition-base: 0.2s ease;
-  --transition-slow: 0.3s ease;
+  /* 内阴影 */
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  
+  /* 过渡 - 更流畅 */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* 模糊效果 */
+  --blur-sm: blur(4px);
+  --blur-md: blur(8px);
+  --blur-lg: blur(12px);
+  --blur-xl: blur(20px);
   
   /* z-index层级 */
   --z-index-dropdown: 100;
   --z-index-sticky: 200;
   --z-index-fixed: 300;
   --z-index-modal: 1000;
+  --z-index-popover: 1100;
+  --z-index-tooltip: 1200;
+}
+
+/* 深色模式 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #ef4444;
+    --color-primary-light: rgba(239, 68, 68, 0.1);
+    --color-primary-gradient: linear-gradient(135deg, #ef4444, #f87171);
+    
+    --color-text-primary: #f1f5f9;
+    --color-text-secondary: #cbd5e1;
+    --color-text-muted: #94a3b8;
+    --color-text-inverse: #111827;
+    
+    --color-bg-primary: #0f172a;
+    --color-bg-secondary: #1e293b;
+    --color-bg-tertiary: #334155;
+    --color-bg-hover: rgba(255, 255, 255, 0.02);
+    --color-bg-active: rgba(255, 255, 255, 0.03);
+    
+    --glass-bg: linear-gradient(135deg, 
+      rgba(30, 41, 59, 0.8),
+      rgba(30, 41, 59, 0.6)
+    );
+    
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-border-light: rgba(255, 255, 255, 0.06);
+    --color-border-dark: rgba(255, 255, 255, 0.1);
+    
+    --shadow-sm: 
+      0 1px 2px rgba(0, 0, 0, 0.2),
+      0 2px 4px rgba(0, 0, 0, 0.15);
+    --shadow-md: 
+      0 2px 4px rgba(0, 0, 0, 0.25),
+      0 4px 8px rgba(0, 0, 0, 0.2),
+      0 8px 16px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 
+      0 4px 6px rgba(0, 0, 0, 0.3),
+      0 10px 15px rgba(0, 0, 0, 0.25),
+      0 20px 25px rgba(0, 0, 0, 0.2);
+  }
+  
+  body {
+    background: linear-gradient(180deg, 
+      var(--color-bg-primary) 0%, 
+      #1a202c 100%
+    );
+  }
 }

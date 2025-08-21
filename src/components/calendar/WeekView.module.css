@@ -2,14 +2,33 @@
 
 /* Container */
 .weekContainer {
-  padding: var(--spacing-lg);
-  background: var(--color-bg-primary);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  padding: var(--spacing-xl);
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-md);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
   width: 100%;
   height: calc(100vh - 150px);
   display: flex;
   flex-direction: column;
+  border: 1px solid var(--color-border-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.weekContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(180deg, 
+    var(--color-primary-light) 0%, 
+    transparent 100%
+  );
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 /* Header */
@@ -17,63 +36,86 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  position: relative;
+  z-index: 1;
 }
 
 .weekHeader {
-  font: var(--font-weight-medium) var(--font-size-2xl) var(--font-elegant), sans-serif;
-  color: var(--color-text-secondary);
-  margin: 0 var(--spacing-lg);
-  letter-spacing: 2px;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-light);
+  color: var(--color-text-primary);
+  margin: 0 var(--spacing-xl);
+  letter-spacing: -0.02em;
   position: relative;
-  padding-bottom: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
 }
 
+.weekHeader::before,
 .weekHeader::after {
   content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent,
+    var(--color-primary-light), 
+    transparent
+  );
 }
 
 .weekNavButton {
-  background: none;
-  border: none;
-  font-size: var(--font-size-2xl);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--color-border-light);
   color: var(--color-text-secondary);
   cursor: pointer;
-  padding: 0 var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all var(--transition-base);
-  font-weight: 300;
-  opacity: 0.6;
+  font-size: var(--font-size-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .weekNavButton:hover {
-  opacity: 1;
-  color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.weekNavButton:active {
+  transform: translateY(0);
 }
 
 /* Grid Layout */
 .weekGrid {
   display: flex;
   flex: 1;
-  border: var(--border-default);
-  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-sm);
+  border-radius: var(--radius-lg);
   overflow: auto;
-  background: var(--color-bg-primary);
+  box-shadow: var(--shadow-inner);
+  border: 1px solid var(--color-border-light);
 }
 
 .timeColumn {
   width: 100px;
   flex-shrink: 0;
-  background: var(--color-bg-secondary);
+  background: linear-gradient(180deg,
+    var(--color-bg-secondary),
+    var(--color-bg-tertiary)
+  );
   display: flex;
   flex-direction: column;
+  border-right: 1px solid var(--color-border);
 }
 
 .dayColumn {
@@ -81,7 +123,12 @@
   display: flex;
   flex-direction: column;
   background: var(--color-bg-primary);
-  border-right: var(--border-default);
+  border-right: 1px solid var(--color-border-light);
+  transition: all var(--transition-fast);
+}
+
+.dayColumn:hover {
+  background: var(--color-bg-hover);
 }
 
 .dayColumn:last-child {
@@ -92,8 +139,11 @@
 .cornerCell {
   height: 60px;
   border-bottom: 2px solid var(--color-border);
-  border-right: var(--border-default);
-  background: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border);
+  background: linear-gradient(135deg,
+    var(--color-bg-secondary),
+    var(--color-bg-tertiary)
+  );
   flex-shrink: 0;
 }
 
@@ -103,14 +153,25 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--color-bg-secondary);
+  background: linear-gradient(180deg,
+    var(--color-bg-secondary),
+    var(--color-bg-tertiary)
+  );
   border-bottom: 2px solid var(--color-border);
   position: relative;
   flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.dayHeader:hover {
+  background: var(--color-bg-tertiary);
 }
 
 .dayHeader.today {
-  background: var(--color-primary-light);
+  background: linear-gradient(135deg,
+    var(--color-primary-light),
+    rgba(220, 38, 38, 0.05)
+  );
 }
 
 .dayHeader.today::after {
@@ -120,20 +181,21 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: var(--color-primary);
+  background: var(--color-primary-gradient);
+  box-shadow: 0 -2px 8px var(--color-primary-light);
 }
 
 .dayName {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
 }
 
 .dayDate {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   margin-top: 2px;
 }
@@ -150,11 +212,14 @@
   justify-content: center;
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
-  border-bottom: var(--border-default);
-  border-right: var(--border-default);
+  border-bottom: 1px solid var(--color-border-light);
+  border-right: 1px solid var(--color-border);
   font-weight: var(--font-weight-medium);
-  background: var(--color-bg-secondary);
-  padding: var(--spacing-xs);
+  background: linear-gradient(90deg,
+    var(--color-bg-secondary),
+    var(--color-bg-tertiary)
+  );
+  padding: var(--spacing-sm);
   text-align: center;
   white-space: nowrap;
   flex: 1;
@@ -166,16 +231,17 @@
 }
 
 .hourCell {
-  border-bottom: var(--border-default);
+  border-bottom: 1px solid var(--color-border-light);
   position: relative;
   cursor: pointer;
-  transition: background-color var(--transition-base);
+  transition: all var(--transition-fast);
   background: var(--color-bg-primary);
   flex: 1;
 }
 
 .hourCell:hover {
   background: var(--color-bg-hover);
+  box-shadow: var(--shadow-xs);
 }
 
 /* Mobile */

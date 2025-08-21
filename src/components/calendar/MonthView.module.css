@@ -1,79 +1,114 @@
 @import './style/index.css';
 
 .monthContainer {
-  padding: var(--spacing-lg);
-  background-color: var(--color-bg-primary);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  padding: var(--spacing-xl);
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-md);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
   width: 100%;
-  height: calc(100vh - 150px); /* 占据大部分屏幕高度 */
+  height: calc(100vh - 150px);
   display: flex;
   flex-direction: column;
+  border: 1px solid var(--color-border-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.monthContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(180deg, 
+    var(--color-primary-light) 0%, 
+    transparent 100%
+  );
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .monthHeaderContainer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  position: relative;
+  z-index: 1;
 }
 
 .monthHeader {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-medium);
-  margin-bottom: 0;
-  text-align: right;
-  font-family: var(--font-elegant), sans-serif;
-  color: var(--color-text-secondary);
-  letter-spacing: 3px;
-  text-transform: uppercase;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-light);
+  margin: 0;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
   position: relative;
-  padding-bottom: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
 }
 
-/* 月份标题下的装饰线 */
 .monthHeader::after {
   content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 60px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    var(--color-primary-light), 
+    transparent
+  );
+  margin-left: var(--spacing-lg);
 }
 
 .calendarGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: auto repeat(6, 1fr);
-  gap: var(--border-width);
-  border: var(--border-default);
-  border-radius: var(--radius-md);
+  gap: 2px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-sm);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  background-color: var(--color-border);
-  flex: 1;/* 占据剩余所有空间 */
+  flex: 1;
+  box-shadow: var(--shadow-inner);
+  border: 1px solid var(--color-border-light);
 }
 
 .dayHeader {
-  padding: var(--spacing-sm) var(--spacing-xs);
-  font-weight: var(--font-weight-bold);
+  padding: var(--spacing-md);
+  font-weight: var(--font-weight-semibold);
   text-align: center;
-  background-color: var(--color-bg-secondary);
+  background: linear-gradient(180deg, 
+    var(--color-bg-secondary), 
+    var(--color-bg-tertiary)
+  );
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .dayCell {
-  padding: var(--spacing-sm);
-  text-align: center;
-  min-height: var(--calendar-cell-min-height);
-  background-color: var(--color-bg-primary);
+  padding: var(--spacing-md);
+  min-height: 80px;
+  background: var(--color-bg-primary);
   cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: var(--font-weight-medium);
 }
 
 .dayCell:hover {
-  background-color: var(--color-bg-secondary);
+  background: var(--color-bg-hover);
+  transform: scale(1.02);
+  z-index: 1;
+  box-shadow: var(--shadow-sm);
 }
 
 .currentMonth {
@@ -81,34 +116,81 @@
 }
 
 .otherMonth {
-  color: var(--color-text-secondary);
-  background-color: var(--color-bg-secondary);
-}
-
-.otherMonth:hover {
-  background-color: var(--color-bg-hover);
-}
-
-.today {
-  background-color: var(--color-primary-light);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-}
-
-/* 月份切换按钮 */
-.monthNavButton {
-  background: none;
-  border: none;
-  font-size: var(--font-size-2xl);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  padding: 0 var(--spacing-sm);
-  transition: all var(--transition-base);
-  font-weight: 300;
+  color: var(--color-text-muted);
+  background: linear-gradient(135deg,
+    var(--color-bg-secondary),
+    var(--color-bg-tertiary)
+  );
   opacity: 0.6;
 }
 
-.monthNavButton:hover {
-  opacity: 1;
+.otherMonth:hover {
+  opacity: 0.8;
+  background: var(--color-bg-tertiary);
+}
+
+.today {
+  background: linear-gradient(135deg,
+    var(--color-primary-light),
+    rgba(220, 38, 38, 0.05)
+  );
+  font-weight: var(--font-weight-bold);
   color: var(--color-primary);
+  position: relative;
+}
+
+.today::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 0 2px var(--color-primary-light);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* 导航控制 */
+.navigationControls {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.monthNavButton {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--color-border-light);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+  font-size: var(--font-size-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.monthNavButton:hover {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.monthNavButton:active {
+  transform: translateY(0);
 }

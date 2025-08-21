@@ -17,10 +17,34 @@ export function useCalendarNavigation() {
       }
 
       const keyMap: Record<string, () => void> = {
-        'ArrowLeft': () => viewMode === 'month' ? navigateMonth(-1) : navigateWeek(-1),
-        'ArrowRight': () => viewMode === 'month' ? navigateMonth(1) : navigateWeek(1),
-        'ArrowUp': () => viewMode === 'month' ? navigateYear(-1) : navigateMonth(-1),
-        'ArrowDown': () => viewMode === 'month' ? navigateYear(1) : navigateMonth(1),
+        'ArrowLeft': () => {
+          if (viewMode === 'month') {
+            navigateMonth(-1);
+          } else if (viewMode === 'week') {
+            navigateWeek(-1);
+          }
+        },
+        'ArrowRight': () => {
+          if (viewMode === 'month') {
+            navigateMonth(1);
+          } else if (viewMode === 'week') {
+            navigateWeek(1);
+          }
+        },
+        'ArrowUp': () => {
+          if (viewMode === 'month') {
+            navigateYear(-1);
+          } else if (viewMode === 'week') {
+            navigateMonth(-1);
+          }
+        },
+        'ArrowDown': () => {
+          if (viewMode === 'month') {
+            navigateYear(1);
+          } else if (viewMode === 'week') {
+            navigateMonth(1);
+          }
+        },
         ' ': goToToday,
         'Enter': goToToday
       };
