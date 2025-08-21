@@ -11,7 +11,9 @@ interface WeekViewProps {
 }
 
 export function WeekView({ onOpenSideBar }: WeekViewProps = {}) {
-  const currentDate = useCalendarStore(state => state.currentDate);
+  // 订阅 currentDate 以确保日期变化时重新渲染
+  useCalendarStore(state => state.currentDate);
+  
   const navigateWeek = useCalendarStore(state => state.navigateWeek);
   const getWeekDays = useCalendarStore(state => state.getWeekDays);
   const getWeekHeader = useCalendarStore(state => state.getWeekHeader);
