@@ -1,13 +1,21 @@
 /* Calendar 子树的局部样式 - 日历相关的特定样式 */
 @import '../../../index.css';
 
-/* Calendar 特有的颜色扩展 */
+/* Calendar 特有的颜色扩展 - 莫兰迪淡蓝淡粉色系 */
 :root {
-  --color-primary-gradient: #ff6b9d;
-  --color-shadow-text: rgba(0, 0, 0, 0.1);
-  --color-text-tertiary: #adb5bd;
-  --color-bg-tertiary: #e9ecef;
-  --color-border-light: #f1f3f5;
+  --color-primary-gradient: linear-gradient(135deg, #a8c4d4 0%, #c4b8c8 50%, #e0c5d2 100%);
+  --color-shadow-text: rgba(168, 196, 212, 0.15);
+  --color-text-tertiary: #b5b5b7;
+  --color-bg-tertiary: #f3f4f7;
+  --color-border-light: #f0f1f4;
+  
+  /* 莫兰迪淡粉补充色 */
+  --color-secondary: #e0c5d2;
+  --color-accent: #d4a8bc;
+  --color-today-bg: #e8f2fa;
+  --color-today-border: #a8c4d4;
+  --color-weekend: #d4a8bc;
+  --color-weekend-bg: rgba(224, 197, 210, 0.08);
   
   /* Calendar 特有的字体 */
   --font-display: 'Georgia', 'Times New Roman', serif;

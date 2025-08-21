@@ -11,8 +11,8 @@ body {
   line-height: 1.6;
   color: var(--color-text-primary);
   background: linear-gradient(180deg, 
-    var(--color-bg-primary) 0%, 
-    var(--color-bg-secondary) 100%
+    #fefeff 0%, 
+    #f8f9fb 100%
   );
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-normal);
@@ -22,39 +22,39 @@ body {
 }
 
 :root {
-  /* 核心颜色 - 优化版 */
-  --color-primary: #dc2626;
-  --color-primary-light: rgba(220, 38, 38, 0.08);
-  --color-primary-rgb: 220, 38, 38;
-  --color-primary-gradient: linear-gradient(135deg, #dc2626, #ef4444);
+  /* 核心颜色 - 莫兰迪淡蓝淡粉色系 */
+  --color-primary: #a8c4d4;
+  --color-primary-light: rgba(168, 196, 212, 0.12);
+  --color-primary-rgb: 168, 196, 212;
+  --color-primary-gradient: linear-gradient(135deg, #a8c4d4 0%, #c4b8c8 50%, #e0c5d2 100%);
   
-  /* 文本颜色 - 增强对比度 */
-  --color-text-primary: #111827;
-  --color-text-secondary: #4b5563;
-  --color-text-muted: #9ca3af;
-  --color-text-inverse: #ffffff;
+  /* 文本颜色 - 柔和灰色系 */
+  --color-text-primary: #5a5a5c;
+  --color-text-secondary: #7a7a7c;
+  --color-text-muted: #9a9a9c;
+  --color-text-inverse: #fefefe;
   
-  /* 背景颜色 - 更柔和的层次 */
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f9fafb;
-  --color-bg-tertiary: #f3f4f6;
-  --color-bg-hover: rgba(0, 0, 0, 0.02);
-  --color-bg-active: rgba(0, 0, 0, 0.03);
+  /* 背景颜色 - 淡粉蓝基调 */
+  --color-bg-primary: #fefeff;
+  --color-bg-secondary: #f8f9fb;
+  --color-bg-tertiary: #f3f4f7;
+  --color-bg-hover: #edeef2;
+  --color-bg-active: #e7e8ed;
   
-  /* 玻璃态背景 */
+  /* 玻璃态背景 - 淡蓝粉色调 */
   --glass-bg: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.95),
-    rgba(250, 250, 250, 0.9)
+    rgba(254, 254, 255, 0.95),
+    rgba(248, 249, 251, 0.9)
   );
   --glass-bg-dark: linear-gradient(135deg, 
-    rgba(30, 41, 59, 0.6),
-    rgba(30, 41, 59, 0.4)
+    rgba(90, 90, 92, 0.6),
+    rgba(90, 90, 92, 0.4)
   );
   
-  /* 边框 - 更细腻 */
-  --color-border: rgba(0, 0, 0, 0.06);
-  --color-border-light: rgba(0, 0, 0, 0.04);
-  --color-border-dark: rgba(0, 0, 0, 0.08);
+  /* 边框 - 淡雅色系 */
+  --color-border: #e8e9ed;
+  --color-border-light: #f0f1f4;
+  --color-border-dark: #dcdde2;
   --border-width: 1px;
   --border-style: solid;
   --border-default: var(--border-width) var(--border-style) var(--color-border);
@@ -90,14 +90,14 @@ body {
   --radius-xl: 20px;
   --radius-full: 9999px;
   
-  /* 阴影 - 多层次系统 */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  /* 阴影 - 淡蓝粉柔和阴影 */
+  --shadow-xs: 0 1px 2px rgba(168, 196, 212, 0.08);
   --shadow-sm: 
-    0 1px 2px rgba(0, 0, 0, 0.04),
-    0 2px 4px rgba(0, 0, 0, 0.03);
+    0 1px 2px rgba(168, 196, 212, 0.1),
+    0 2px 4px rgba(196, 184, 200, 0.06);
   --shadow-md: 
-    0 2px 4px rgba(0, 0, 0, 0.04),
-    0 4px 8px rgba(0, 0, 0, 0.03),
+    0 4px 6px rgba(168, 196, 212, 0.12),
+    0 2px 4px rgba(196, 184, 200, 0.08),
     0 8px 16px rgba(0, 0, 0, 0.02);
   --shadow-lg: 
     0 4px 6px rgba(0, 0, 0, 0.05),
