@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSidebarStore } from './store';
 import { EventForm } from './components/Eventform';
+import { EventList } from './components/EventList';
 import { formatDate, formatTimeRange } from '@/utils/dateHelpers';
 import styles from './Sidebar.module.css';
 
@@ -40,11 +41,7 @@ export function Sidebar() {
         </div>
         
         <div className={styles.content}>
-          <div className={styles.placeholder}>
-            <div className={styles.placeholderIcon}>📅</div>
-            <div className={styles.placeholderText}>No events for this date</div>
-            <div className={styles.placeholderHint}>Double-click to add an event</div>
-          </div>
+          <EventList />
         </div>
         
         <div className={styles.footer}>
