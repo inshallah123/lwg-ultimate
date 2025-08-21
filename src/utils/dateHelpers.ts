@@ -60,22 +60,13 @@ export const formatTimeRange = (hourIndex: number): string => {
   return TIME_SLOTS[hourIndex];
 };
 
-export const formatHour = (hour: number): string => {
-  return `${hour.toString().padStart(2, '0')}:00`;
-};
+
 
 export const getWeekStart = (date: Date): Date => {
   const d = new Date(date);
   const day = d.getDay();
   const diff = d.getDate() - day;
   return new Date(d.setDate(diff));
-};
-
-export const getWeekEnd = (date: Date): Date => {
-  const start = getWeekStart(date);
-  const end = new Date(start);
-  end.setDate(end.getDate() + 6);
-  return end;
 };
 
 export const getWeekDays = (startDate: Date): Date[] => {

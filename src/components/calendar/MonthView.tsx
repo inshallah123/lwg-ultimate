@@ -1,26 +1,26 @@
 import React from 'react';
 import { useCalendarStore } from './store';
+import { useSidebarStore } from '../Sidebar/store';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { isToday, WEEKDAY_NAMES_SHORT } from '@/utils/dateHelpers';
 import styles from './MonthView.module.css';
 
 interface MonthViewProps {
   onOpenSideBar?: (date: Date) => void;
-  onOpenEventForm?: (date: Date) => void;
 }
 
-export function MonthView({ onOpenSideBar, onOpenEventForm }: MonthViewProps = {}) {
+export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
   const currentDate = useCalendarStore(state => state.currentDate);
   const navigateMonth = useCalendarStore(state => state.navigateMonth);
   const getMonthDays = useCalendarStore(state => state.getMonthDays);
   const getMonthHeader = useCalendarStore(state => state.getMonthHeader);
-  
+  const openEventForm = useSidebarStore(state => state.openEventForm);
   const days = getMonthDays();
   const currentMonth = currentDate.getMonth();
   
   const handleCellClick = useDoubleClick(
     (day: Date) => onOpenSideBar?.(day),
-    (day: Date) => onOpenEventForm?.(day)
+    (day: Date) => openEventForm(day)
   );
 
   return (

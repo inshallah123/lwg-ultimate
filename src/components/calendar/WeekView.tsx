@@ -1,5 +1,6 @@
 import React from 'react';
 import { useCalendarStore } from './store';
+import { useSidebarStore } from '../Sidebar/store';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { isToday, WEEKDAY_NAMES, TIME_SLOTS } from '@/utils/dateHelpers';
 import styles from './WeekView.module.css';
@@ -7,19 +8,19 @@ import styles from './WeekView.module.css';
 
 interface WeekViewProps {
   onOpenSideBar?: (date: Date, hour: number) => void;
-  onOpenEventForm?: (date: Date, hour: number) => void;
 }
 
-export function WeekView({ onOpenSideBar, onOpenEventForm }: WeekViewProps = {}) {
+export function WeekView({ onOpenSideBar }: WeekViewProps = {}) {
   const navigateWeek = useCalendarStore(state => state.navigateWeek);
   const getWeekDays = useCalendarStore(state => state.getWeekDays);
   const getWeekHeader = useCalendarStore(state => state.getWeekHeader);
+  const openEventForm = useSidebarStore(state => state.openEventForm);
   
   const weekDays = getWeekDays();
   
   const handleCellClick = useDoubleClick(
     (day: Date, hourIndex: number) => onOpenSideBar?.(day, hourIndex),
-    (day: Date, hourIndex: number) => onOpenEventForm?.(day, hourIndex)
+    (day: Date, hourIndex: number) => openEventForm(day, hourIndex)
   );
 
   return (
