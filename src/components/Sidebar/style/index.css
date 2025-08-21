@@ -43,7 +43,7 @@
   --sidebar-gradient-decoration-opacity: 0.1;
   
   /* 动画 */
-  --sidebar-slide-duration: 0.1s;
+  --sidebar-slide-duration: 0.2s;
   --sidebar-slide-timing: cubic-bezier(0.4, 0, 0.2, 1);
   
   /* 响应式断点 */

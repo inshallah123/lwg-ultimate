@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Event } from '@/types/event';
 import { useEventStore } from '@/stores/eventStore';
+import { DeleteConfirmModal } from './DeleteConfirmModal';
 import styles from './EventCard.module.css';
 
 interface EventCardProps {
@@ -44,12 +45,20 @@ const truncateText = (text: string, maxLength: number = 60): string => {
 
 export function EventCard({ event, onEdit }: EventCardProps) {
   const deleteEvent = useEventStore(state => state.deleteEvent);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (window.confirm(`Delete event "${event.title}"?`)) {
-      deleteEvent(event.id);
-    }
+    setShowDeleteModal(true);
+  };
+  
+  const confirmDelete = () => {
+    deleteEvent(event.id);
+    setShowDeleteModal(false);
+  };
+  
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
   };
   
   const handleEdit = (e: React.MouseEvent) => {
@@ -62,7 +71,8 @@ export function EventCard({ event, onEdit }: EventCardProps) {
   const displayTag = event.tag === 'custom' && event.customTag ? event.customTag : event.tag;
   
   return (
-    <div className={styles.card}>
+    <>
+      <div className={styles.card}>
       <div className={styles.header}>
         <h3 className={styles.title}>{event.title}</h3>
         <div className={styles.actions}>
@@ -144,6 +154,15 @@ export function EventCard({ event, onEdit }: EventCardProps) {
           )}
         </div>
       </div>
-    </div>
+      </div>
+      
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        title="Delete Event"
+        message={`Are you sure you want to delete "${event.title}"? This action cannot be undone.`}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
+    </>
   );
 }

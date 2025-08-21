@@ -23,7 +23,6 @@ export function Sidebar() {
         <>
           <div className={styles.overlay} onClick={close} />
           <div className={styles.sidebar}>
-        <div className={styles.backgroundGradient} />
         
         <div className={styles.header}>
           <div className={styles.dateDisplay}>
