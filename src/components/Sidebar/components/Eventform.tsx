@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSidebarStore } from '../store';
+import { useEventStore } from '@/stores/eventStore';
 import styles from './Eventform.module.css';
 
 interface EventFormProps {
@@ -33,13 +34,13 @@ const RECURRENCE_OPTIONS = [
 export function EventForm({ isOpen, onClose }: EventFormProps) {
   const eventFormDate = useSidebarStore(state => state.eventFormDate);
   const eventFormHour = useSidebarStore(state => state.eventFormHour);
-  
+  const addEvent = useEventStore(state => state.addEvent);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [tag, setTag] = useState('private');
+  const [tag, setTag] = useState<'private' | 'work' | 'balance' | 'custom'>('private');
   const [customTag, setCustomTag] = useState('');
   const [timeSlot, setTimeSlot] = useState('08:00-10:00');
-  const [recurrence, setRecurrence] = useState('none');
+  const [recurrence, setRecurrence] = useState<'none' | 'weekly' | 'monthly' | 'quarterly' | 'yearly' | 'custom'>('none');
   const [customRecurrence, setCustomRecurrence] = useState('');
   const [errors, setErrors] = useState<{ title?: string }>({});
 
@@ -79,6 +80,22 @@ export function EventForm({ isOpen, onClose }: EventFormProps) {
       return;
     }
 
+    // 创建新事件
+    if (!eventFormDate) {
+      console.error('No date selected for event');
+      return;
+    }
+
+    addEvent({
+      title: title.trim(),
+      description: description.trim(),
+      date: eventFormDate,
+      timeSlot,
+      tag,
+      customTag: tag === 'custom' ? customTag.trim() : undefined,
+      recurrence,
+      customRecurrence: recurrence === 'custom' && customRecurrence ? parseInt(customRecurrence) : undefined
+    });
     
     // 关闭表单并重置
     onClose();
@@ -166,7 +183,7 @@ export function EventForm({ isOpen, onClose }: EventFormProps) {
                   key={option.value}
                   type="button"
                   className={`${styles.tagButton} ${tag === option.value ? styles.tagActive : ''}`}
-                  onClick={() => setTag(option.value)}
+                  onClick={() => setTag(option.value as 'private' | 'work' | 'balance' | 'custom')}
                   style={{ '--tag-color': option.color } as React.CSSProperties}
                 >
                   <span className={styles.tagDot} />
@@ -209,7 +226,7 @@ export function EventForm({ isOpen, onClose }: EventFormProps) {
               <select
                 className={styles.select}
                 value={recurrence}
-                onChange={(e) => setRecurrence(e.target.value)}
+                onChange={(e) => setRecurrence(e.target.value as 'none' | 'weekly' | 'monthly' | 'quarterly' | 'yearly' | 'custom')}
               >
                 {RECURRENCE_OPTIONS.map(option => (
                   <option key={option.value} value={option.value}>

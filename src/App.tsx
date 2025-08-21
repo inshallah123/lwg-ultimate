@@ -17,7 +17,6 @@ function App() {
   const handleViewChange = useCalendarStore(state => state.handleViewChange);
   const viewContainerRef = useRef<HTMLDivElement>(null);
   const openSidebar = useSidebarStore(state => state.open);
-  
   const handleSearch = (query: string) => {
     console.log('Searching for:', query);
     // 实现搜索功能
