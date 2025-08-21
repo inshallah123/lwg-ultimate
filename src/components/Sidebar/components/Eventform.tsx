@@ -45,10 +45,14 @@ export function EventForm({ isOpen, onClose }: EventFormProps) {
 
   // 根据传入的hourIndex设置默认时间段
   useEffect(() => {
-    if (eventFormHour !== null && eventFormHour >= 0 && eventFormHour < TIME_SLOTS.length) {
-      setTimeSlot(TIME_SLOTS[eventFormHour]);
+    if (isOpen) {
+      if (eventFormHour !== null && eventFormHour >= 0 && eventFormHour < TIME_SLOTS.length) {
+        setTimeSlot(TIME_SLOTS[eventFormHour]);
+      } else {
+        setTimeSlot('08:00-10:00');
+      }
     }
-  }, [eventFormHour]);
+  }, [isOpen, eventFormHour]);
 
   // 重置表单
   const resetForm = () => {
@@ -56,7 +60,7 @@ export function EventForm({ isOpen, onClose }: EventFormProps) {
     setDescription('');
     setTag('private');
     setCustomTag('');
-    setTimeSlot(eventFormHour !== null ? TIME_SLOTS[eventFormHour] : '08:00-10:00');
+    setTimeSlot('08:00-10:00');
     setRecurrence('none');
     setCustomRecurrence('');
     setErrors({});

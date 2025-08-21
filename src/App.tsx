@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { MonthView } from './components/calendar/MonthView';
 import { WeekView } from './components/calendar/WeekView';
 import { SearchBox } from '@/components/search/SearchBox';
-import { Sidebar } from './components/Sidebar/Sidebar';
+import { Sidebar } from './components/Sidebar/sidebar';
 import { useSidebarOpen } from './components/Sidebar/hooks/useSidebarOpen';
 import { useSidebarStore } from './components/Sidebar/store';
 import { useStore } from './store';
