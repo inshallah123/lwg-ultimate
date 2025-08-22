@@ -1,6 +1,7 @@
 import { Event, UpdateEventInput } from '@/types/event';
 import { StoreSet } from './types';
 
+// noinspection JSUnusedGlobalSymbols
 export const createEditActions = (set: StoreSet) => ({
   editSingleInstance: (event: Event, updates: UpdateEventInput) => {
     set(state => {

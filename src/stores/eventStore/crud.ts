@@ -1,6 +1,7 @@
 import { Event, CreateEventInput, UpdateEventInput } from '@/types/event';
 import { StoreSet, StoreGet } from './types';
 
+// noinspection JSUnusedGlobalSymbols
 export const createCrudActions = (set: StoreSet, get: StoreGet) => ({
   addEvent: (input: CreateEventInput) => {
     const newEvent: Event = {

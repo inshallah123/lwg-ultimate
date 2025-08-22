@@ -101,10 +101,12 @@ body {
   /* 内阴影 */
   --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
   
-  /* 过渡 - 更流畅 */
-  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  /* 过渡 - 优化为更快响应 */
+  --transition-instant: 0.08s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   
   /* 模糊效果 - 进一步降低模糊半径以提升性能 */
   --blur-sm: blur(1px);

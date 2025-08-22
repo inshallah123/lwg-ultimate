@@ -2,6 +2,7 @@ import { Event } from '@/types/event';
 import { StoreSet, StoreGet } from './types';
 import { generateRecurrenceInstances, isSameDay } from '@/utils/dateHelpers';
 
+// noinspection JSUnusedGlobalSymbols
 export const createRecurrenceActions = (set: StoreSet, get: StoreGet) => ({
   deleteRecurrenceInstance: (parentId: string, instanceDate: Date) => {
     set(state => ({
