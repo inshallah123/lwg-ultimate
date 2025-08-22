@@ -28,7 +28,7 @@ export function EditRecurringModal({
         <h2 className={styles.title}>Edit Recurring Event</h2>
         <p className={styles.message}>
           {isChangingRecurrence 
-            ? `Changing the recurrence pattern will create a new series. How would you like to proceed?`
+            ? `Changing the recurrence pattern will create a new series and replace the existing one.`
             : `How would you like to edit "${eventTitle}"?`
           }
         </p>
@@ -84,11 +84,11 @@ export function EditRecurringModal({
             </div>
             <div className={styles.optionContent}>
               <div className={styles.optionTitle}>
-                {isChangingRecurrence ? 'Create new series' : 'All events in series'}
+                {isChangingRecurrence ? 'I understand' : 'All events in series'}
               </div>
               <div className={styles.optionDesc}>
                 {isChangingRecurrence 
-                  ? 'Replace the existing series with a new one'
+                  ? 'Continue with creating a new recurring series'
                   : 'Edit all occurrences of this recurring event'
                 }
               </div>
