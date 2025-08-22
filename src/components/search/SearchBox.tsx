@@ -35,16 +35,8 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
     oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
     
     const allEventsInRange = getEventsInRange(today, oneYearLater);
-    console.log('🔍 SearchBox Debug:', {
-      searchQuery,
-      todayDate: today.toISOString(),
-      endDate: oneYearLater.toISOString(),
-      eventsCount: allEventsInRange.length,
-      events: allEventsInRange
-    });
     
     const results = searchEvents(searchQuery, allEventsInRange, today);
-    console.log('🎯 Search Results:', results);
     return results;
   }, [searchQuery, getEventsInRange]);
   

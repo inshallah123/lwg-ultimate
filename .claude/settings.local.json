@@ -8,7 +8,8 @@
       "Bash(npx tsc:*)",
       "Bash(npx electron:*)",
       "Bash(taskkill:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(npx tsx:*)"
     ],
     "deny": [],
     "ask": []

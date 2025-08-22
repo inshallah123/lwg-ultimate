@@ -64,17 +64,6 @@ export function EventCard({ event, onEdit }: EventCardProps) {
   const isVirtualInstance = event.parentId && event.id.includes('_') && event.id.startsWith(event.parentId);
   const isModifiedInstance = !!event.parentId && event.recurrence === 'none' && !isVirtualInstance;
   
-  console.log('🔍 EventCard Debug:', {
-    title: event.title,
-    id: event.id,
-    parentId: event.parentId,
-    recurrence: event.recurrence,
-    instanceDate: event.instanceDate,
-    isRecurringEvent,
-    isVirtualInstance,
-    isModifiedInstance
-  });
-  
   // 删除整个重复系列
   const confirmDelete = () => {
     if (event.parentId) {

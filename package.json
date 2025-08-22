@@ -13,7 +13,10 @@
     "build": "npm run build:electron && vite build",
     "start": "electron .",
     "lint": "eslint . --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "npx tsx src/tests/fullTestSuite.ts",
+    "test:quick": "npx tsx src/tests/runTests.ts",
+    "test:full": "npx tsx src/tests/fullTestSuite.ts"
   },
   "keywords": [
     "calendar",

@@ -31,11 +31,6 @@ export const searchEvents = (
   const results: SearchResult[] = [];
   const addedParentIds = new Set<string>();
   
-  console.log('🔎 searchEvents called with:', {
-    query,
-    eventsCount: allEventsInRange.length,
-    today: today.toISOString()
-  });
   
   allEventsInRange.forEach(event => {
     // 搜索匹配逻辑
@@ -45,15 +40,6 @@ export const searchEvents = (
     const timeMatch = event.timeSlot.toLowerCase().includes(searchQuery);
     const dateMatch = formatDate(event.date, 'short').toLowerCase().includes(searchQuery);
     
-    console.log('🔍 Checking event:', {
-      title: event.title,
-      titleMatch,
-      descMatch,
-      tagMatch,
-      timeMatch,
-      dateMatch,
-      eventDate: event.date
-    });
     
     if (titleMatch || descMatch || tagMatch || timeMatch || dateMatch) {
       // 如果是重复事件的实例

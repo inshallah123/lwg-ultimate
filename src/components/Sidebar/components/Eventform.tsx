@@ -152,7 +152,6 @@ export function EventForm({ isOpen, onClose, editingEvent }: EventFormProps) {
     } else {
       // 创建新事件
       if (!eventFormDate) {
-        console.error('No date selected for event');
         return;
       }
       addEvent(formData);
