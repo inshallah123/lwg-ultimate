@@ -99,7 +99,7 @@
   height: 8px;
   background: var(--color-primary);
   border-radius: var(--radius-full);
-  animation: pulse 2s infinite;
+  /* animation: pulse 2s infinite; 移除无限循环动画以减少GPU占用 */
 }
 
 .closeButton {

@@ -135,13 +135,14 @@
 .viewContainer {
   transform-origin: center center;
   backface-visibility: hidden;
-  transform: translateZ(0);
+  /* transform: translateZ(0); 移除3D加速以减少GPU占用 */
   position: relative;
-  animation: fadeScaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  /* animation: fadeScaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; */
 }
 
 .viewContainer.transitioning {
-  animation: fadeScaleOut 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  /* animation: fadeScaleOut 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards; */
+  opacity: 0;
 }
 
 .viewContainer.left {

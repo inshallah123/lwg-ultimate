@@ -92,11 +92,11 @@ body {
   --radius-full: 9999px;
   
   /* 阴影 - 优化为单层，减少GPU计算 */
-  --shadow-xs: 0 1px 3px rgba(168, 196, 212, 0.12);
-  --shadow-sm: 0 2px 6px rgba(168, 196, 212, 0.15);
-  --shadow-md: 0 4px 12px rgba(168, 196, 212, 0.18);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.15);
+  --shadow-xs: 0 1px 2px rgba(168, 196, 212, 0.08);
+  --shadow-sm: 0 2px 4px rgba(168, 196, 212, 0.1);
+  --shadow-md: 0 3px 8px rgba(168, 196, 212, 0.12);
+  --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.1);
   
   /* 内阴影 */
   --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
@@ -106,11 +106,11 @@ body {
   --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   
-  /* 模糊效果 - 降低模糊半径以提升性能 */
-  --blur-sm: blur(2px);
-  --blur-md: blur(4px);
-  --blur-lg: blur(6px);
-  --blur-xl: blur(8px);
+  /* 模糊效果 - 进一步降低模糊半径以提升性能 */
+  --blur-sm: blur(1px);
+  --blur-md: blur(2px);
+  --blur-lg: blur(3px);
+  --blur-xl: blur(4px);
   
   /* z-index层级 */
   --z-index-dropdown: 100;
@@ -148,17 +148,9 @@ body {
     --color-border-light: rgba(255, 255, 255, 0.06);
     --color-border-dark: rgba(255, 255, 255, 0.1);
     
-    --shadow-sm: 
-      0 1px 2px rgba(0, 0, 0, 0.2),
-      0 2px 4px rgba(0, 0, 0, 0.15);
-    --shadow-md: 
-      0 2px 4px rgba(0, 0, 0, 0.25),
-      0 4px 8px rgba(0, 0, 0, 0.2),
-      0 8px 16px rgba(0, 0, 0, 0.15);
-    --shadow-lg: 
-      0 4px 6px rgba(0, 0, 0, 0.3),
-      0 10px 15px rgba(0, 0, 0, 0.25),
-      0 20px 25px rgba(0, 0, 0, 0.2);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 3px 6px rgba(0, 0, 0, 0.25);
+    --shadow-lg: 0 6px 12px rgba(0, 0, 0, 0.3);
   }
   
   body {

@@ -151,7 +151,7 @@
   background: var(--color-primary);
   border-radius: var(--radius-full);
   /* 简化阴影 */
-  animation: pulse 3s ease-in-out infinite; /* 放慢动画 */
+  /* animation: pulse 3s ease-in-out infinite; 移除无限循环动画以减少GPU占用 */
 }
 
 @keyframes pulse {
