@@ -110,3 +110,70 @@ export const getMonthDays = (year: number, month: number): Date[] => {
   
   return days;
 };
+
+export const getNextRecurrenceDate = (
+  date: Date, 
+  recurrence: 'weekly' | 'monthly' | 'quarterly' | 'yearly' | 'custom',
+  customDays?: number
+): Date => {
+  const next = new Date(date);
+  
+  switch (recurrence) {
+    case 'weekly':
+      next.setDate(next.getDate() + 7);
+      break;
+    case 'monthly':
+      next.setMonth(next.getMonth() + 1);
+      break;
+    case 'quarterly':
+      next.setMonth(next.getMonth() + 3);
+      break;
+    case 'yearly':
+      next.setFullYear(next.getFullYear() + 1);
+      break;
+    case 'custom':
+      if (customDays) {
+        next.setDate(next.getDate() + customDays);
+      }
+      break;
+  }
+  
+  return next;
+};
+
+export const generateRecurrenceInstances = (
+  baseDate: Date,
+  recurrence: 'weekly' | 'monthly' | 'quarterly' | 'yearly' | 'custom',
+  startRange: Date,
+  endRange: Date,
+  customDays?: number,
+  excludedDates?: Date[],
+  recurrenceEndDate?: Date
+): Date[] => {
+  const instances: Date[] = [];
+  let currentDate = new Date(baseDate);
+  
+  // 如果有设置重复结束日期，使用较小的那个
+  const effectiveEndDate = recurrenceEndDate && recurrenceEndDate < endRange 
+    ? recurrenceEndDate 
+    : endRange;
+  
+  while (currentDate <= effectiveEndDate) {
+    if (currentDate >= startRange) {
+      const isExcluded = excludedDates?.some(excluded => 
+        isSameDay(excluded, currentDate)
+      );
+      
+      if (!isExcluded) {
+        instances.push(new Date(currentDate));
+      }
+    }
+    
+    currentDate = getNextRecurrenceDate(currentDate, recurrence, customDays);
+    
+    // 防止无限循环
+    if (instances.length > 365) break;
+  }
+  
+  return instances;
+};

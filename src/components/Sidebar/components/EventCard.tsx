@@ -45,6 +45,8 @@ const truncateText = (text: string, maxLength: number = 60): string => {
 
 export function EventCard({ event, onEdit }: EventCardProps) {
   const deleteEvent = useEventStore(state => state.deleteEvent);
+  const deleteRecurrenceInstance = useEventStore(state => state.deleteRecurrenceInstance);
+  const deleteRecurrenceFromDate = useEventStore(state => state.deleteRecurrenceFromDate);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   
   const handleDelete = (e: React.MouseEvent) => {
@@ -52,8 +54,33 @@ export function EventCard({ event, onEdit }: EventCardProps) {
     setShowDeleteModal(true);
   };
   
+  // 判断是否为重复事件（母事件或实例）
+  const isRecurringEvent = event.recurrence !== 'none' || !!event.parentId;
+  
+  // 删除整个重复系列
   const confirmDelete = () => {
-    deleteEvent(event.id);
+    if (event.parentId) {
+      // 如果是实例，删除母事件
+      deleteEvent(event.parentId);
+    } else {
+      deleteEvent(event.id);
+    }
+    setShowDeleteModal(false);
+  };
+  
+  // 删除单个实例
+  const deleteSingle = () => {
+    const parentId = event.parentId || event.id;
+    const instanceDate = event.instanceDate || event.date;
+    deleteRecurrenceInstance(parentId, instanceDate);
+    setShowDeleteModal(false);
+  };
+  
+  // 删除该日期及之后的所有实例
+  const deleteFuture = () => {
+    const parentId = event.parentId || event.id;
+    const instanceDate = event.instanceDate || event.date;
+    deleteRecurrenceFromDate(parentId, instanceDate);
     setShowDeleteModal(false);
   };
   
@@ -69,6 +96,7 @@ export function EventCard({ event, onEdit }: EventCardProps) {
   const recurrenceText = formatRecurrence(event.recurrence, event.customRecurrence);
   const tagColor = TAG_COLORS[event.tag] || TAG_COLORS.custom;
   const displayTag = event.tag === 'custom' && event.customTag ? event.customTag : event.tag;
+  const isRecurringInstance = !!event.parentId;
   
   return (
     <>
@@ -133,7 +161,7 @@ export function EventCard({ event, onEdit }: EventCardProps) {
             {displayTag}
           </span>
           
-          {recurrenceText && (
+          {(recurrenceText || isRecurringInstance) && (
             <span className={styles.recurrence}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path 
@@ -149,7 +177,7 @@ export function EventCard({ event, onEdit }: EventCardProps) {
                   strokeLinejoin="round"
                 />
               </svg>
-              {recurrenceText}
+              {recurrenceText || 'Recurring'}
             </span>
           )}
         </div>
@@ -158,10 +186,15 @@ export function EventCard({ event, onEdit }: EventCardProps) {
       
       <DeleteConfirmModal
         isOpen={showDeleteModal}
-        title="Delete Event"
-        message={`Are you sure you want to delete "${event.title}"? This action cannot be undone.`}
+        title={isRecurringEvent ? "Delete Recurring Event" : "Delete Event"}
+        message={isRecurringEvent 
+          ? `How would you like to delete "${event.title}"?`
+          : `Are you sure you want to delete "${event.title}"? This action cannot be undone.`}
         onConfirm={confirmDelete}
         onCancel={cancelDelete}
+        isRecurring={isRecurringEvent}
+        onDeleteSingle={deleteSingle}
+        onDeleteFuture={deleteFuture}
       />
     </>
   );

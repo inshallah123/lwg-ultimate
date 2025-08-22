@@ -14,29 +14,30 @@ const TIME_SLOTS = [
 export function EventList() {
   const selectedDate = useSidebarStore(state => state.selectedDate);
   const selectedHour = useSidebarStore(state => state.selectedHour);
-  // 直接订阅 events 数组，然后在组件内过滤
+  // 订阅 events 数组以触发重新渲染
   const allEvents = useEventStore(state => state.events);
+  const getEventsInRange = useEventStore(state => state.getEventsInRange);
   
-  // 在组件内进行过滤，避免无限循环
+  // 使用 getEventsInRange 获取包含重复事件的所有实例
   const events = React.useMemo(() => {
     if (!selectedDate) return [];
     
-    // 先按日期过滤
-    let filteredEvents = allEvents.filter(event => {
-      const eventDate = new Date(event.date);
-      return eventDate.getFullYear() === selectedDate.getFullYear() &&
-             eventDate.getMonth() === selectedDate.getMonth() &&
-             eventDate.getDate() === selectedDate.getDate();
-    });
+    // 获取选中日期当天的所有事件（包括重复事件实例）
+    const startOfDay = new Date(selectedDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(selectedDate);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    let dayEvents = getEventsInRange(startOfDay, endOfDay);
     
     // 如果有 selectedHour（从周视图点击），进一步按时间段过滤
     if (selectedHour !== null && selectedHour >= 0 && selectedHour < TIME_SLOTS.length) {
       const targetTimeSlot = TIME_SLOTS[selectedHour];
-      filteredEvents = filteredEvents.filter(event => event.timeSlot === targetTimeSlot);
+      dayEvents = dayEvents.filter(event => event.timeSlot === targetTimeSlot);
     }
     
-    return filteredEvents;
-  }, [allEvents, selectedDate, selectedHour]);
+    return dayEvents;
+  }, [allEvents, getEventsInRange, selectedDate, selectedHour]);
   
   const handleEditEvent = (event: any) => {
     // TODO: 实现编辑功能

@@ -202,3 +202,86 @@
     );
   }
 }
+
+/* 重复事件删除选项 */
+.recurringOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.recurringOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.recurringOption:hover {
+  background: linear-gradient(135deg,
+    rgba(249, 250, 251, 1),
+    rgba(243, 244, 246, 0.9)
+  );
+  border-color: #3b82f6;
+  transform: translateX(2px);
+}
+
+.optionIcon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+}
+
+.recurringOption:hover .optionIcon {
+  color: #3b82f6;
+}
+
+.optionContent {
+  flex: 1;
+}
+
+.optionTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.optionDesc {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  .recurringOption {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .recurringOption:hover {
+    background: linear-gradient(135deg,
+      rgba(55, 65, 81, 0.5),
+      rgba(75, 85, 99, 0.3)
+    );
+    border-color: #60a5fa;
+  }
+  
+  .optionTitle {
+    color: #f3f4f6;
+  }
+  
+  .optionDesc {
+    color: #9ca3af;
+  }
+}
