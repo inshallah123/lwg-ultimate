@@ -167,8 +167,11 @@ export const useEventStore = create<EventStore>()(
       
       editSingleInstance: (event, updates) => {
         set(state => {
-          if (event.parentId) {
-            // 已经是修改实例，直接更新
+          // 检查是否是虚拟实例（ID格式: parentId_timestamp）
+          const isVirtualInstance = event.parentId && event.id.includes('_') && event.id.startsWith(event.parentId);
+          
+          if (event.parentId && !isVirtualInstance) {
+            // 已经是真实的修改实例，直接更新
             return {
               events: state.events.map(e =>
                 e.id === event.id
@@ -176,8 +179,36 @@ export const useEventStore = create<EventStore>()(
                   : e
               )
             };
-          } else if (event.recurrence !== 'none') {
-            // 是母事件的虚拟实例，需要创建新的修改实例
+          } else if (event.parentId && isVirtualInstance) {
+            // 是虚拟实例，需要创建新的修改实例
+            const modifiedInstance: Event = {
+              ...event,
+              ...updates,
+              id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+              parentId: event.parentId,  // 使用虚拟实例的parentId（即母事件ID）
+              instanceDate: event.instanceDate || event.date,  // 保留实例日期
+              createdAt: new Date(),
+              updatedAt: new Date()
+            };
+            
+            // 将原始日期加入母事件的排除列表
+            const updatedEvents = state.events.map(e => {
+              if (e.id === event.parentId) {  // 找到母事件（不是虚拟实例的ID）
+                const excludedDates = e.excludedDates || [];
+                return {
+                  ...e,
+                  excludedDates: [...excludedDates, event.instanceDate || event.date],
+                  updatedAt: new Date()
+                };
+              }
+              return e;
+            });
+            
+            return {
+              events: [...updatedEvents, modifiedInstance]
+            };
+          } else if (!event.parentId && event.recurrence !== 'none') {
+            // 是母事件本身（第一个实例），创建修改实例并排除原日期
             const modifiedInstance: Event = {
               ...event,
               ...updates,

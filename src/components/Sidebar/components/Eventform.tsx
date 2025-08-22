@@ -45,6 +45,7 @@ export function EventForm({ isOpen, onClose, editingEvent }: EventFormProps) {
   const convertToRecurring = useEventStore(state => state.convertToRecurring);
   const convertToSimple = useEventStore(state => state.convertToSimple);
   const changeRecurrence = useEventStore(state => state.changeRecurrence);
+  const getParentEvent = useEventStore(state => state.getParentEvent);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [tag, setTag] = useState<'private' | 'work' | 'balance' | 'custom'>('private');
@@ -170,7 +171,7 @@ export function EventForm({ isOpen, onClose, editingEvent }: EventFormProps) {
       // 修改重复周期，创建新系列
       changeRecurrence(editingEvent, recurrence, pendingUpdates.customRecurrence);
       const parentId = editingEvent.parentId || editingEvent.id;
-      const parentEvent = useEventStore.getState().getParentEvent(parentId);
+      const parentEvent = getParentEvent(parentId);
       if (parentEvent) {
         updateEvent(parentEvent.id, pendingUpdates);
       }
