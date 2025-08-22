@@ -3,6 +3,7 @@ import { useCalendarStore } from './store';
 import { useSidebarStore } from '../Sidebar/store';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { isToday, WEEKDAY_NAMES_SHORT } from '@/utils/dateHelpers';
+import { EventIndicator } from './EventIndicator';
 import styles from './MonthView.module.css';
 
 interface MonthViewProps {
@@ -50,7 +51,12 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
               } ${isToday(day) ? styles.today : ''}`}
               onClick={() => handleCellClick(day)}
             >
-              {day.getDate()}
+              <span className={styles.dayNumber}>{day.getDate()}</span>
+              <EventIndicator 
+                date={day} 
+                view="month"
+                maxDisplay={3}
+              />
             </div>
           );
         })}

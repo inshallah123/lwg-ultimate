@@ -3,6 +3,7 @@ import { useCalendarStore } from './store';
 import { useSidebarStore } from '../Sidebar/store';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { isToday, WEEKDAY_NAMES, TIME_SLOTS } from '@/utils/dateHelpers';
+import { EventIndicator } from './EventIndicator';
 import styles from './WeekView.module.css';
 
 
@@ -60,6 +61,12 @@ export function WeekView({ onOpenSideBar }: WeekViewProps = {}) {
                 className={styles.hourCell}
                 onClick={() => handleCellClick(day, hourIndex)}
               >
+                <EventIndicator 
+                  date={day} 
+                  hourIndex={hourIndex}
+                  view="week"
+                  maxDisplay={2}
+                />
               </div>
             ))}
           </div>

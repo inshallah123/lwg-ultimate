@@ -241,6 +241,8 @@
   transition: all var(--transition-fast);
   background: var(--color-bg-primary);
   flex: 1;
+  min-height: 40px;
+  padding: 2px;
 }
 
 .hourCell:hover {
