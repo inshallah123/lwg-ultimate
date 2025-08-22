@@ -28,7 +28,13 @@ export const createCrudActions = (set: StoreSet, get: StoreGet) => ({
   
   deleteEvent: (id: string) => {
     set(state => ({
-      events: state.events.filter(event => event.id !== id)
+      events: state.events.filter(event => {
+        // 删除目标事件
+        if (event.id === id) return false;
+        // 如果删除的是母事件，同时删除所有修改过的实例
+        if (event.parentId === id) return false;
+        return true;
+      })
     }));
   },
   

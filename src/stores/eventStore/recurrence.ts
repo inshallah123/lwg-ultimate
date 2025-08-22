@@ -5,20 +5,36 @@ import { generateRecurrenceInstances, isSameDay } from '@/utils/dateHelpers';
 // noinspection JSUnusedGlobalSymbols
 export const createRecurrenceActions = (set: StoreSet, get: StoreGet) => ({
   deleteRecurrenceInstance: (parentId: string, instanceDate: Date) => {
-    set(state => ({
-      events: state.events.map(event => {
-        if (event.id === parentId) {
-          // 将日期添加到排除列表
-          const excludedDates = event.excludedDates || [];
-          return {
-            ...event,
-            excludedDates: [...excludedDates, instanceDate],
-            updatedAt: new Date()
-          };
-        }
-        return event;
-      })
-    }));
+    set(state => {
+      // 首先检查是否有已存在的修改实例
+      const modifiedInstance = state.events.find(e => 
+        e.parentId === parentId && 
+        e.instanceDate && 
+        isSameDay(e.instanceDate, instanceDate)
+      );
+      
+      if (modifiedInstance) {
+        // 如果有修改实例，直接删除它
+        return {
+          events: state.events.filter(e => e.id !== modifiedInstance.id)
+        };
+      }
+      
+      // 否则，将日期添加到母事件的排除列表
+      return {
+        events: state.events.map(event => {
+          if (event.id === parentId) {
+            const excludedDates = event.excludedDates || [];
+            return {
+              ...event,
+              excludedDates: [...excludedDates, instanceDate],
+              updatedAt: new Date()
+            };
+          }
+          return event;
+        })
+      };
+    });
   },
   
   deleteRecurrenceFromDate: (parentId: string, fromDate: Date) => {

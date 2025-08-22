@@ -54,8 +54,26 @@ export function EventCard({ event, onEdit }: EventCardProps) {
     setShowDeleteModal(true);
   };
   
-  // 判断是否为重复事件（母事件或实例）
+  // 判断是否为重复事件
+  // 修改实例（有parentId且recurrence='none'）应该被当作重复事件处理
+  // 母事件（recurrence!='none'）也是重复事件
   const isRecurringEvent = event.recurrence !== 'none' || !!event.parentId;
+  
+  // 判断是否是被修改过的实例（不是虚拟实例）
+  // 虚拟实例的ID格式: parentId_timestamp
+  const isVirtualInstance = event.parentId && event.id.includes('_') && event.id.startsWith(event.parentId);
+  const isModifiedInstance = !!event.parentId && event.recurrence === 'none' && !isVirtualInstance;
+  
+  console.log('🔍 EventCard Debug:', {
+    title: event.title,
+    id: event.id,
+    parentId: event.parentId,
+    recurrence: event.recurrence,
+    instanceDate: event.instanceDate,
+    isRecurringEvent,
+    isVirtualInstance,
+    isModifiedInstance
+  });
   
   // 删除整个重复系列
   const confirmDelete = () => {
@@ -70,9 +88,15 @@ export function EventCard({ event, onEdit }: EventCardProps) {
   
   // 删除单个实例
   const deleteSingle = () => {
-    const parentId = event.parentId || event.id;
-    const instanceDate = event.instanceDate || event.date;
-    deleteRecurrenceInstance(parentId, instanceDate);
+    if (isModifiedInstance) {
+      // 修改过的实例：直接删除该事件
+      deleteEvent(event.id);
+    } else {
+      // 虚拟实例或母事件：将日期加入排除列表
+      const parentId = event.parentId || event.id;
+      const instanceDate = event.instanceDate || event.date;
+      deleteRecurrenceInstance(parentId, instanceDate);
+    }
     setShowDeleteModal(false);
   };
   
