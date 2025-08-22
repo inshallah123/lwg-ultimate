@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { Event } from '@/types/event';
 
 interface SidebarState {
   // Sidebar 状态
@@ -11,6 +12,9 @@ interface SidebarState {
   eventFormDate: Date | null;
   eventFormHour: number | null;
   
+  // 编辑状态
+  editingEvent: Event | null;
+  
   // Sidebar 方法
   open: (date: Date, hour?: number) => void;
   close: () => void;
@@ -18,6 +22,10 @@ interface SidebarState {
   // EventForm 方法
   openEventForm: (date?: Date, hour?: number) => void;
   closeEventForm: () => void;
+  
+  // 编辑方法
+  openEditForm: (event: Event) => void;
+  closeEditForm: () => void;
 }
 
 export const useSidebarStore = create<SidebarState>((set, get) => ({
@@ -28,6 +36,7 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
   isEventFormOpen: false,
   eventFormDate: null,
   eventFormHour: null,
+  editingEvent: null,
   
   // Sidebar 方法
   open: (date, hour) => set({ 
@@ -48,11 +57,27 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
     set({
       isEventFormOpen: true,
       eventFormDate: date ?? state.selectedDate ?? new Date(),
-      eventFormHour: hour ?? state.selectedHour ?? null
+      eventFormHour: hour ?? state.selectedHour ?? null,
+      editingEvent: null  // 新增模式，清空编辑事件
     });
   },
   closeEventForm: () => set({
     isEventFormOpen: false,
+    eventFormDate: null,
+    eventFormHour: null,
+    editingEvent: null
+  }),
+  
+  // 编辑方法
+  openEditForm: (event) => set({
+    isEventFormOpen: true,
+    editingEvent: event,
+    eventFormDate: event.date,
+    eventFormHour: null
+  }),
+  closeEditForm: () => set({
+    isEventFormOpen: false,
+    editingEvent: null,
     eventFormDate: null,
     eventFormHour: null
   }),

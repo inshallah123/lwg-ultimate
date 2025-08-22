@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSidebarStore } from '../store';
 import { useEventStore } from '@/stores/eventStore';
+import { Event } from '@/types/event';
+import { EditRecurringModal } from './EditRecurringModal';
 import styles from './Eventform.module.css';
 
 interface EventFormProps {
   isOpen: boolean;
   onClose: () => void;
+  editingEvent?: Event | null;
 }
 
 // 时间段选项 - 与WeekView完全对应
@@ -31,10 +34,17 @@ const RECURRENCE_OPTIONS = [
   { value: 'custom', label: 'Custom' }
 ];
 
-export function EventForm({ isOpen, onClose }: EventFormProps) {
+export function EventForm({ isOpen, onClose, editingEvent }: EventFormProps) {
   const eventFormDate = useSidebarStore(state => state.eventFormDate);
   const eventFormHour = useSidebarStore(state => state.eventFormHour);
   const addEvent = useEventStore(state => state.addEvent);
+  const updateEvent = useEventStore(state => state.updateEvent);
+  const editSingleInstance = useEventStore(state => state.editSingleInstance);
+  const editThisAndFuture = useEventStore(state => state.editThisAndFuture);
+  const editAllInstances = useEventStore(state => state.editAllInstances);
+  const convertToRecurring = useEventStore(state => state.convertToRecurring);
+  const convertToSimple = useEventStore(state => state.convertToSimple);
+  const changeRecurrence = useEventStore(state => state.changeRecurrence);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [tag, setTag] = useState<'private' | 'work' | 'balance' | 'custom'>('private');
@@ -43,17 +53,33 @@ export function EventForm({ isOpen, onClose }: EventFormProps) {
   const [recurrence, setRecurrence] = useState<'none' | 'weekly' | 'monthly' | 'quarterly' | 'yearly' | 'custom'>('none');
   const [customRecurrence, setCustomRecurrence] = useState('');
   const [errors, setErrors] = useState<{ title?: string }>({});
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [pendingUpdates, setPendingUpdates] = useState<any>(null);
+  const [originalRecurrence, setOriginalRecurrence] = useState<Event['recurrence']>('none');
 
-  // 根据传入的hourIndex设置默认时间段
+  // 根据传入的hourIndex设置默认时间段或加载编辑数据
   useEffect(() => {
     if (isOpen) {
-      if (eventFormHour !== null && eventFormHour >= 0 && eventFormHour < TIME_SLOTS.length) {
-        setTimeSlot(TIME_SLOTS[eventFormHour]);
+      if (editingEvent) {
+        // 编辑模式：加载事件数据
+        setTitle(editingEvent.title);
+        setDescription(editingEvent.description || '');
+        setTag(editingEvent.tag);
+        setCustomTag(editingEvent.customTag || '');
+        setTimeSlot(editingEvent.timeSlot);
+        setRecurrence(editingEvent.recurrence);
+        setCustomRecurrence(editingEvent.customRecurrence?.toString() || '');
+        setOriginalRecurrence(editingEvent.recurrence);
       } else {
-        setTimeSlot('08:00-10:00');
+        // 新建模式：设置默认值
+        if (eventFormHour !== null && eventFormHour >= 0 && eventFormHour < TIME_SLOTS.length) {
+          setTimeSlot(TIME_SLOTS[eventFormHour]);
+        } else {
+          setTimeSlot('08:00-10:00');
+        }
       }
     }
-  }, [isOpen, eventFormHour]);
+  }, [isOpen, eventFormHour, editingEvent]);
 
   // 重置表单
   const resetForm = () => {
@@ -80,24 +106,90 @@ export function EventForm({ isOpen, onClose }: EventFormProps) {
       return;
     }
 
-    // 创建新事件
-    if (!eventFormDate) {
-      console.error('No date selected for event');
-      return;
-    }
-
-    addEvent({
+    const formData = {
       title: title.trim(),
       description: description.trim(),
-      date: eventFormDate,
+      date: editingEvent?.date || eventFormDate!,
       timeSlot,
       tag,
       customTag: tag === 'custom' ? customTag.trim() : undefined,
       recurrence,
       customRecurrence: recurrence === 'custom' && customRecurrence ? parseInt(customRecurrence) : undefined
-    });
+    };
+
+    if (editingEvent) {
+      // 编辑模式
+      const isRecurringEvent = editingEvent.recurrence !== 'none' || editingEvent.parentId;
+      const isChangingRecurrence = originalRecurrence !== recurrence;
+      
+      if (isRecurringEvent && !isChangingRecurrence) {
+        // 编辑重复事件（不改变周期）
+        setPendingUpdates(formData);
+        setShowEditModal(true);
+      } else if (isChangingRecurrence && originalRecurrence !== 'none') {
+        // 修改重复周期
+        setPendingUpdates(formData);
+        setShowEditModal(true);
+      } else if (originalRecurrence === 'none' && recurrence !== 'none') {
+        // 简单事件转重复事件
+        convertToRecurring(editingEvent.id, recurrence, formData.customRecurrence);
+        updateEvent(editingEvent.id, formData);
+        onClose();
+        resetForm();
+      } else if (originalRecurrence !== 'none' && recurrence === 'none') {
+        // 重复事件转简单事件
+        convertToSimple(editingEvent);
+        updateEvent(editingEvent.id, formData);
+        onClose();
+        resetForm();
+      } else {
+        // 普通编辑
+        updateEvent(editingEvent.id, formData);
+        onClose();
+        resetForm();
+      }
+    } else {
+      // 创建新事件
+      if (!eventFormDate) {
+        console.error('No date selected for event');
+        return;
+      }
+      addEvent(formData);
+      onClose();
+      resetForm();
+    }
+  };
+
+  // 处理重复事件的编辑选择
+  const handleEditChoice = (choice: 'single' | 'future' | 'all') => {
+    if (!editingEvent || !pendingUpdates) return;
     
-    // 关闭表单并重置
+    const isChangingRecurrence = originalRecurrence !== recurrence;
+    
+    if (isChangingRecurrence) {
+      // 修改重复周期，创建新系列
+      changeRecurrence(editingEvent, recurrence, pendingUpdates.customRecurrence);
+      const parentId = editingEvent.parentId || editingEvent.id;
+      const parentEvent = useEventStore.getState().getParentEvent(parentId);
+      if (parentEvent) {
+        updateEvent(parentEvent.id, pendingUpdates);
+      }
+    } else {
+      // 不改变周期的编辑
+      switch (choice) {
+        case 'single':
+          editSingleInstance(editingEvent, pendingUpdates);
+          break;
+        case 'future':
+          editThisAndFuture(editingEvent, pendingUpdates);
+          break;
+        case 'all':
+          editAllInstances(editingEvent, pendingUpdates);
+          break;
+      }
+    }
+    
+    setShowEditModal(false);
     onClose();
     resetForm();
   };
@@ -126,7 +218,7 @@ export function EventForm({ isOpen, onClose }: EventFormProps) {
       <div className={styles.overlay} onClick={handleCancel} />
       <div className={styles.modal}>
         <div className={styles.header}>
-          <h2 className={styles.title}>New Event</h2>
+          <h2 className={styles.title}>{editingEvent ? 'Edit Event' : 'New Event'}</h2>
           <button className={styles.closeButton} onClick={handleCancel}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M15 5L5 15M5 5l10 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
@@ -270,11 +362,22 @@ export function EventForm({ isOpen, onClose }: EventFormProps) {
               type="submit"
               className={styles.confirmButton}
             >
-              Create Event
+              {editingEvent ? 'Save Changes' : 'Create Event'}
             </button>
           </div>
         </form>
       </div>
+      
+      {/* 编辑重复事件的选择模态框 */}
+      <EditRecurringModal
+        isOpen={showEditModal}
+        eventTitle={title}
+        isChangingRecurrence={originalRecurrence !== recurrence}
+        onEditSingle={() => handleEditChoice('single')}
+        onEditFuture={() => handleEditChoice('future')}
+        onEditAll={() => handleEditChoice('all')}
+        onCancel={() => setShowEditModal(false)}
+      />
     </>
   );
 }

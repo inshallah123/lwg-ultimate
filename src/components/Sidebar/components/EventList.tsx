@@ -2,6 +2,7 @@ import React from 'react';
 import { EventCard } from './EventCard';
 import { useEventStore } from '@/stores/eventStore';
 import { useSidebarStore } from '../store';
+import { Event } from '@/types/event';
 import styles from './EventList.module.css';
 
 // 时间段列表 - 与 WeekView 和 EventForm 保持一致
@@ -14,6 +15,7 @@ const TIME_SLOTS = [
 export function EventList() {
   const selectedDate = useSidebarStore(state => state.selectedDate);
   const selectedHour = useSidebarStore(state => state.selectedHour);
+  const openEditForm = useSidebarStore(state => state.openEditForm);
   // 订阅 events 数组以触发重新渲染
   const allEvents = useEventStore(state => state.events);
   const getEventsInRange = useEventStore(state => state.getEventsInRange);
@@ -39,9 +41,8 @@ export function EventList() {
     return dayEvents;
   }, [allEvents, getEventsInRange, selectedDate, selectedHour]);
   
-  const handleEditEvent = (event: any) => {
-    // TODO: 实现编辑功能
-    console.log('Edit event:', event);
+  const handleEditEvent = (event: Event) => {
+    openEditForm(event);
   };
   
   if (!selectedDate) {

@@ -14,6 +14,8 @@ export function Sidebar() {
   const isEventFormOpen = useSidebarStore(state => state.isEventFormOpen);
   const openEventForm = useSidebarStore(state => state.openEventForm);
   const closeEventForm = useSidebarStore(state => state.closeEventForm);
+  const editingEvent = useSidebarStore(state => state.editingEvent);
+  const closeEditForm = useSidebarStore(state => state.closeEditForm);
   
   
   
@@ -54,7 +56,8 @@ export function Sidebar() {
       )}
       <EventForm 
         isOpen={isEventFormOpen} 
-        onClose={closeEventForm}
+        onClose={editingEvent ? closeEditForm : closeEventForm}
+        editingEvent={editingEvent}
       />
     </>
   );

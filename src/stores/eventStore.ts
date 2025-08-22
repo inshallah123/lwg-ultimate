@@ -13,16 +13,26 @@ interface EventStore {
   
   // 重复事件查询
   getEventsInRange: (startDate: Date, endDate: Date) => Event[];
+  getEventById: (id: string) => Event | undefined;
+  getParentEvent: (id: string) => Event | undefined;
   
   // 重复事件删除
   deleteRecurrenceInstance: (parentId: string, instanceDate: Date) => void;
   deleteRecurrenceFromDate: (parentId: string, fromDate: Date) => void;
+  
+  // 重复事件编辑
+  editSingleInstance: (event: Event, updates: UpdateEventInput) => void;
+  editThisAndFuture: (event: Event, updates: UpdateEventInput) => void;
+  editAllInstances: (event: Event, updates: UpdateEventInput) => void;
+  convertToRecurring: (id: string, recurrence: Event['recurrence'], customRecurrence?: number) => void;
+  convertToSimple: (event: Event) => void;
+  changeRecurrence: (event: Event, newRecurrence: Event['recurrence'], customRecurrence?: number) => void;
 }
 
 
 export const useEventStore = create<EventStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       events: [],
       
       addEvent: (input) => {
@@ -91,7 +101,7 @@ export const useEventStore = create<EventStore>()(
       
       getEventsInRange: (startDate, endDate) => {
         const result: Event[] = [];
-        const state = useEventStore.getState();
+        const state = get();
         
         state.events.forEach(event => {
           // 普通事件或修改过的实例
@@ -138,6 +148,259 @@ export const useEventStore = create<EventStore>()(
         
         // 按日期排序
         return result.sort((a, b) => a.date.getTime() - b.date.getTime());
+      },
+      
+      getEventById: (id) => {
+        return get().events.find(e => e.id === id);
+      },
+      
+      getParentEvent: (id) => {
+        const state = get();
+        const event = state.events.find(e => e.id === id);
+        if (!event) return undefined;
+        
+        if (event.parentId) {
+          return state.events.find(e => e.id === event.parentId);
+        }
+        return event;
+      },
+      
+      editSingleInstance: (event, updates) => {
+        set(state => {
+          if (event.parentId) {
+            // 已经是修改实例，直接更新
+            return {
+              events: state.events.map(e =>
+                e.id === event.id
+                  ? { ...e, ...updates, updatedAt: new Date() }
+                  : e
+              )
+            };
+          } else if (event.recurrence !== 'none') {
+            // 是母事件的虚拟实例，需要创建新的修改实例
+            const modifiedInstance: Event = {
+              ...event,
+              ...updates,
+              id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+              parentId: event.id,
+              instanceDate: event.date,
+              createdAt: new Date(),
+              updatedAt: new Date()
+            };
+            
+            // 将原始日期加入母事件的排除列表
+            const updatedEvents = state.events.map(e => {
+              if (e.id === event.id) {
+                const excludedDates = e.excludedDates || [];
+                return {
+                  ...e,
+                  excludedDates: [...excludedDates, event.date],
+                  updatedAt: new Date()
+                };
+              }
+              return e;
+            });
+            
+            return {
+              events: [...updatedEvents, modifiedInstance]
+            };
+          } else {
+            // 普通事件，直接更新
+            return {
+              events: state.events.map(e =>
+                e.id === event.id
+                  ? { ...e, ...updates, updatedAt: new Date() }
+                  : e
+              )
+            };
+          }
+        });
+      },
+      
+      editThisAndFuture: (event, updates) => {
+        set(state => {
+          const parentId = event.parentId || event.id;
+          const splitDate = event.instanceDate || event.date;
+          
+          // 获取母事件
+          const parentEvent = state.events.find(e => e.id === parentId);
+          if (!parentEvent) return state;
+          
+          // 1. 设置原母事件的结束日期为前一天
+          const endDate = new Date(splitDate);
+          endDate.setDate(endDate.getDate() - 1);
+          
+          // 2. 创建新的母事件（从这天开始）
+          const newParentEvent: Event = {
+            ...parentEvent,
+            ...updates,
+            id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+            date: splitDate,
+            excludedDates: [],
+            recurrenceEndDate: undefined,
+            parentId: undefined,
+            instanceDate: undefined,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          };
+          
+          // 更新事件列表
+          const updatedEvents = state.events.map(e => {
+            if (e.id === parentId) {
+              return {
+                ...e,
+                recurrenceEndDate: endDate,
+                updatedAt: new Date()
+              };
+            }
+            return e;
+          });
+          
+          return {
+            events: [...updatedEvents, newParentEvent]
+          };
+        });
+      },
+      
+      editAllInstances: (event, updates) => {
+        set(state => {
+          const parentId = event.parentId || event.id;
+          
+          // 如果修改了重复周期，需要特殊处理
+          if (updates.recurrence && updates.recurrence !== event.recurrence) {
+            // 删除原母事件
+            const filteredEvents = state.events.filter(e => e.id !== parentId && e.parentId !== parentId);
+            
+            // 创建新的母事件
+            const parentEvent = state.events.find(e => e.id === parentId);
+            if (!parentEvent) return state;
+            
+            const newEvent: Event = {
+              ...parentEvent,
+              ...updates,
+              id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+              excludedDates: [],
+              recurrenceEndDate: undefined,
+              parentId: undefined,
+              instanceDate: undefined,
+              createdAt: new Date(),
+              updatedAt: new Date()
+            };
+            
+            return {
+              events: [...filteredEvents, newEvent]
+            };
+          } else {
+            // 直接更新母事件
+            return {
+              events: state.events.map(e => {
+                if (e.id === parentId) {
+                  return { ...e, ...updates, updatedAt: new Date() };
+                }
+                // 删除所有修改过的实例（它们会继承母事件的新属性）
+                if (e.parentId === parentId) {
+                  return null;
+                }
+                return e;
+              }).filter(Boolean) as Event[]
+            };
+          }
+        });
+      },
+      
+      convertToRecurring: (id, recurrence, customRecurrence) => {
+        set(state => ({
+          events: state.events.map(event =>
+            event.id === id
+              ? {
+                  ...event,
+                  recurrence,
+                  customRecurrence,
+                  excludedDates: [],
+                  recurrenceEndDate: undefined,
+                  updatedAt: new Date()
+                }
+              : event
+          )
+        }));
+      },
+      
+      convertToSimple: (event) => {
+        set(state => {
+          if (event.parentId) {
+            // 如果是实例，转为独立的简单事件
+            return {
+              events: state.events.map(e =>
+                e.id === event.id
+                  ? {
+                      ...e,
+                      recurrence: 'none' as const,
+                      parentId: undefined,
+                      instanceDate: undefined,
+                      excludedDates: undefined,
+                      recurrenceEndDate: undefined,
+                      customRecurrence: undefined,
+                      updatedAt: new Date()
+                    }
+                  : e
+              )
+            };
+          } else {
+            // 如果是母事件，只保留第一个实例作为简单事件
+            return {
+              events: state.events.map(e => {
+                if (e.id === event.id) {
+                  return {
+                    ...e,
+                    recurrence: 'none' as const,
+                    excludedDates: undefined,
+                    recurrenceEndDate: undefined,
+                    customRecurrence: undefined,
+                    updatedAt: new Date()
+                  };
+                }
+                // 删除所有相关的修改实例
+                if (e.parentId === event.id) {
+                  return null;
+                }
+                return e;
+              }).filter(Boolean) as Event[]
+            };
+          }
+        });
+      },
+      
+      changeRecurrence: (event, newRecurrence, customRecurrence) => {
+        set(state => {
+          const parentId = event.parentId || event.id;
+          
+          // 删除原母事件及所有相关实例
+          const filteredEvents = state.events.filter(e => 
+            e.id !== parentId && e.parentId !== parentId
+          );
+          
+          // 获取原母事件作为基础
+          const parentEvent = state.events.find(e => e.id === parentId);
+          if (!parentEvent) return state;
+          
+          // 创建新的母事件
+          const newEvent: Event = {
+            ...parentEvent,
+            id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+            recurrence: newRecurrence,
+            customRecurrence,
+            excludedDates: [],
+            recurrenceEndDate: undefined,
+            parentId: undefined,
+            instanceDate: undefined,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          };
+          
+          return {
+            events: [...filteredEvents, newEvent]
+          };
+        });
       }
     }),
     {
