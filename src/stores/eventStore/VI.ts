@@ -1,5 +1,5 @@
 import { Event, UpdateEventInput, isVirtualInstance } from '@/types/event';
-import { EditScope, DeleteScope, StoreSet, StoreGet } from './types';
+import { StoreSet, StoreGet } from './types';
 import { generateEventId, calculateEndDateBeforeInstance } from '@/utils/eventHelpers';
 
 /**
@@ -7,15 +7,12 @@ import { generateEventId, calculateEndDateBeforeInstance } from '@/utils/eventHe
  * 根据需求矩阵，VI支持：
  * - ES (Edit Single): 编辑单个 -> 创建SE + 添加excludedDate
  * - EF (Edit Future): 编辑此后所有 -> 截断原RP + 创建新RP
- * - EA (Edit All): 编辑所有 -> 调用RP-EA
  * - DS (Delete Single): 删除单个 -> 添加excludedDate
  * - DF (Delete Future): 删除此后所有 -> 设置recurrenceEndDate
- * - DA (Delete All): 删除所有 -> 调用RP-DA
  * - CS (Convert to Simple): 转为简单事件 -> 创建SE + 添加excludedDate
- * - CC (Change Cycle): 改变周期 -> 截断原RP + 创建新RP(新周期)
  */
 
-export const createVIOperations = (set: StoreSet, get: StoreGet) => ({
+export const createVIOperations = (set: StoreSet) => ({
   // VI-ES: 编辑虚拟实例为单个
   editVirtualInstanceSingle: (event: Event, updates: UpdateEventInput) => {
     if (!isVirtualInstance(event)) {
@@ -201,58 +198,6 @@ export const createVIOperations = (set: StoreSet, get: StoreGet) => ({
       
       return {
         events: [...updatedEvents, newSimpleEvent]
-      };
-    });
-  },
-  
-  // VI-CC: 虚拟实例改变周期
-  changeVirtualInstanceCycle: (event: Event, newRecurrence: Event['recurrence'], customRecurrence?: number) => {
-    if (!isVirtualInstance(event)) {
-      throw new Error('Event is not a virtual instance');
-    }
-    
-    const parentId = event.parentId!;
-    const splitDate = event.instanceDate || event.date;
-    
-    set(state => {
-      const parentEvent = state.events.find(e => e.id === parentId);
-      if (!parentEvent) {
-        throw new Error('Parent event not found');
-      }
-      
-      // 1. 设置原母事件的recurrenceEndDate为前一天
-      const endDate = new Date(splitDate);
-      endDate.setDate(endDate.getDate() - 1);
-      
-      // 2. 创建新的母事件（新周期）
-      const newParentEvent: Event = {
-        ...parentEvent,
-        id: generateEventId(),
-        date: splitDate,
-        recurrence: newRecurrence,
-        customRecurrence,
-        excludedDates: [],
-        recurrenceEndDate: undefined,
-        parentId: undefined,
-        instanceDate: undefined,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      
-      // 3. 更新原母事件
-      const updatedEvents = state.events.map(e => {
-        if (e.id === parentId) {
-          return {
-            ...e,
-            recurrenceEndDate: endDate,
-            updatedAt: new Date()
-          };
-        }
-        return e;
-      });
-      
-      return {
-        events: [...updatedEvents, newParentEvent]
       };
     });
   }

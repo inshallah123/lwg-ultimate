@@ -31,10 +31,15 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
     
     const today = new Date();
     today.setHours(0, 0, 0, 0); // 设置为今天的开始
-    const oneYearLater = new Date(today);
-    oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
     
-    const allEventsInRange = getEventsInRange(today, oneYearLater);
+    // 搜索范围：前后各3年
+    const searchStartDate = new Date(today);
+    searchStartDate.setFullYear(searchStartDate.getFullYear() - 3); // 从3年前开始
+    
+    const searchEndDate = new Date(today);
+    searchEndDate.setFullYear(searchEndDate.getFullYear() + 3); // 到3年后结束
+    
+    const allEventsInRange = getEventsInRange(searchStartDate, searchEndDate);
     
     const results = searchEvents(searchQuery, allEventsInRange, today);
     return results;

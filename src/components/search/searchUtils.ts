@@ -27,6 +27,11 @@ export const searchEvents = (
 ): SearchResult[] => {
   if (!query.trim()) return [];
   
+  
+  // 确保 today 只包含日期部分，不包含时间
+  const todayStart = new Date(today);
+  todayStart.setHours(0, 0, 0, 0);
+  
   const searchQuery = query.toLowerCase();
   const results: SearchResult[] = [];
   const addedParentIds = new Set<string>();
@@ -42,14 +47,15 @@ export const searchEvents = (
     
     
     if (titleMatch || descMatch || tagMatch || timeMatch || dateMatch) {
-      // 如果是重复事件的实例
+      // 如果是虚拟实例（VI）
       if (event.parentId) {
+        // 对于重复事件的虚拟实例，按母事件ID分组，只显示最近的一个
         if (!addedParentIds.has(event.parentId)) {
           addedParentIds.add(event.parentId);
-          // 找到该重复事件的下一个实例
+          // 找到该重复事件的下一个实例（包括今天及以后的）
           const futureInstances = allEventsInRange.filter(e => 
             (e.parentId === event.parentId || e.id === event.parentId) && 
-            e.date >= today
+            e.date >= todayStart
           );
           
           if (futureInstances.length > 0) {
@@ -63,14 +69,20 @@ export const searchEvents = (
             });
           }
         }
-      } else if (event.recurrence !== 'none') {
-        // 母事件
+      } 
+      // 如果是母事件（RP）
+      else if (event.recurrence !== 'none') {
+        // 对于母事件，如果还没有添加过相关实例
         if (!addedParentIds.has(event.id)) {
           addedParentIds.add(event.id);
-          const futureInstances = allEventsInRange.filter(e => 
-            (e.parentId === event.id || e.id === event.id) && 
-            e.date >= today
+          // 母事件本身也可能是一个有效的实例（比如当天）
+          // 找到所有实例（包括母事件本身和虚拟实例）
+          const allInstances = allEventsInRange.filter(e => 
+            e.id === event.id || e.parentId === event.id
           );
+          
+          // 筛选出今天及以后的实例
+          const futureInstances = allInstances.filter(e => e.date >= todayStart);
           
           if (futureInstances.length > 0) {
             const nextInstance = futureInstances.sort((a, b) => 
@@ -83,8 +95,9 @@ export const searchEvents = (
             });
           }
         }
-      } else {
-        // 普通事件
+      } 
+      // 简单事件（SE）
+      else {
         results.push({ event });
       }
     }

@@ -15,7 +15,7 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
   // 获取各类型的操作
   const seOps = createSEOperations(set, get);
   const rpOps = createRPOperations(set, get);
-  const viOps = createVIOperations(set, get);
+  const viOps = createVIOperations(set);
   
   return {
     // ========== 基础CRUD ==========
@@ -33,23 +33,6 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
       }));
     },
     
-    // 直接更新事件（内部使用）
-    updateEvent: (id: string, updates: UpdateEventInput) => {
-      set(state => ({
-        events: state.events.map(event =>
-          event.id === id
-            ? { ...event, ...updates, updatedAt: new Date() }
-            : event
-        )
-      }));
-    },
-    
-    // 直接删除事件（内部使用）
-    deleteEvent: (id: string) => {
-      set(state => ({
-        events: state.events.filter(event => event.id !== id)
-      }));
-    },
     
     // ========== 统一的编辑接口 ==========
     editEvent: (event: Event, updates: UpdateEventInput, scope: EditScope) => {
@@ -151,7 +134,7 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
       }
     },
     
-    // CC: 改变周期（RP/VI）
+    // CC: 改变周期（仅RP）
     changeRecurrence: (event: Event, newRecurrence: Event['recurrence'], customRecurrence?: number) => {
       if (isSimpleEvent(event)) {
         throw new Error('Simple events do not have recurrence');
@@ -160,7 +143,7 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
       if (isRecurringParent(event)) {
         rpOps.changeRecurringParentCycle(event, newRecurrence, customRecurrence);
       } else if (isVirtualInstance(event)) {
-        viOps.changeVirtualInstanceCycle(event, newRecurrence, customRecurrence);
+        throw new Error('Virtual instances cannot change recurrence directly. Edit the parent event instead.');
       } else {
         throw new Error('Unknown event type');
       }
@@ -172,20 +155,28 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
     },
     
     getParentEvent: (id: string) => {
-      const state = get();
       // 注意：这个函数的id参数应该是parentId，而不是VI的id
       // VI是动态生成的，不在state.events中
-      return state.events.find(e => e.id === id);
+      return get().events.find(e => e.id === id);
     },
     
     getEventsInRange: (startDate: Date, endDate: Date) => {
       const result: Event[] = [];
       const state = get();
       
+      // 确保比较的是日期部分，忽略时间
+      const startDateOnly = new Date(startDate);
+      startDateOnly.setHours(0, 0, 0, 0);
+      const endDateOnly = new Date(endDate);
+      endDateOnly.setHours(23, 59, 59, 999);
+      
       state.events.forEach(event => {
         // SE: 简单事件，直接判断日期范围
         if (isSimpleEvent(event)) {
-          if (event.date >= startDate && event.date <= endDate) {
+          const eventDateOnly = new Date(event.date);
+          eventDateOnly.setHours(0, 0, 0, 0);
+          
+          if (eventDateOnly >= startDateOnly && eventDateOnly <= endDateOnly) {
             result.push(event);
           }
         }
@@ -208,8 +199,8 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
             if (isSameDate) {
               // 母事件的当天实例，直接使用母事件本身
               result.push({
-                ...event,
-                instanceDate: instanceDate
+                ...event
+                // 不添加 instanceDate，保持母事件的原始状态
               });
             } else {
               // 创建虚拟实例
@@ -223,46 +214,10 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
             }
           });
         }
-        // 注意：不应该有MI（修改实例）存在
       });
       
       // 按日期排序
       return result.sort((a, b) => a.date.getTime() - b.date.getTime());
-    },
-    
-    // ========== 内部辅助操作 ==========
-    
-    // 添加排除日期（内部使用）
-    addExcludedDate: (parentId: string, date: Date) => {
-      set(state => ({
-        events: state.events.map(e => {
-          if (e.id === parentId) {
-            const excludedDates = e.excludedDates || [];
-            return {
-              ...e,
-              excludedDates: [...excludedDates, date],
-              updatedAt: new Date()
-            };
-          }
-          return e;
-        })
-      }));
-    },
-    
-    // 设置重复结束日期（内部使用）
-    setRecurrenceEndDate: (parentId: string, endDate: Date) => {
-      set(state => ({
-        events: state.events.map(e => {
-          if (e.id === parentId) {
-            return {
-              ...e,
-              recurrenceEndDate: endDate,
-              updatedAt: new Date()
-            };
-          }
-          return e;
-        })
-      }));
     }
   };
 };

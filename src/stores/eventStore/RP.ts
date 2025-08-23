@@ -3,7 +3,7 @@ import { EditScope, DeleteScope, StoreSet, StoreGet } from './types';
 
 /**
  * RP (Recurring Parent) 母事件操作
- * 根据新的需求矩阵，RP只支持：
+ * 根据需求矩阵，RP只支持：
  * - EA (Edit All): 编辑所有实例 -> 直接修改RP
  * - DA (Delete All): 删除整个系列 -> 删除RP
  * - CC (Change Cycle): 改变周期 -> 修改RP的recurrence

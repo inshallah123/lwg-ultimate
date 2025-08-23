@@ -30,19 +30,6 @@ export interface EventStore {
   getEventsInRange: (startDate: Date, endDate: Date) => Event[];
   getEventById: (id: string) => Event | undefined;
   getParentEvent: (id: string) => Event | undefined;
-  
-  // ========== 内部操作（供上层接口调用） ==========
-  // 直接更新事件（用于简单事件）
-  updateEvent: (id: string, updates: UpdateEventInput) => void;
-  
-  // 直接删除事件（用于简单事件）
-  deleteEvent: (id: string) => void;
-  
-  // 添加排除日期（VI-DS的核心操作）
-  addExcludedDate: (parentId: string, date: Date) => void;
-  
-  // 设置重复结束日期（VI-DF的核心操作）
-  setRecurrenceEndDate: (parentId: string, endDate: Date) => void;
 }
 
 export type StoreSet = (partial: EventStore | Partial<EventStore> | ((state: EventStore) => EventStore | Partial<EventStore>)) => void;

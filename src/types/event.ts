@@ -31,8 +31,5 @@ export const isVirtualInstance = (event: Event): boolean => {
   return !!event.parentId && event.id.includes('_') && event.id.startsWith(event.parentId);
 };
 
-// 注意：MI（修改实例）不应该存在
-// 如果发现 parentId 存在但不是虚拟实例，这是旧数据，应该被转换为 SE
-
 export type CreateEventInput = Omit<Event, 'id' | 'createdAt' | 'updatedAt'>;
 export type UpdateEventInput = Partial<Omit<Event, 'id' | 'createdAt'>>;
