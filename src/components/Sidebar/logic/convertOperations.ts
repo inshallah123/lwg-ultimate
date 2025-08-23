@@ -1,4 +1,4 @@
-import { Event } from '@/types/event';
+import { Event, UpdateEventInput } from '@/types/event';
 import { getEventType } from './eventTypeUtils';
 import { useEventStore } from '@/stores/eventStore';
 
@@ -33,7 +33,8 @@ export function convertToSimple(event: Event): void {
 export function convertToRecurring(
   event: Event,
   recurrence: Event['recurrence'],
-  customRecurrence?: number
+  customRecurrence?: number,
+  updateInput?: UpdateEventInput
 ): void {
   const eventType = getEventType(event);
   const store = useEventStore.getState();
@@ -44,7 +45,7 @@ export function convertToRecurring(
   
   // CR-SE: 转换为RP，生成虚拟实例
   // 业务逻辑：SE变为RP，根据recurrence规则生成VI
-  store.convertToRecurring(event, recurrence, customRecurrence);
+  store.convertToRecurring(event, recurrence, customRecurrence, updateInput);
 }
 
 /**

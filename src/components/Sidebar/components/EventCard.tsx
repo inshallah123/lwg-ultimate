@@ -124,9 +124,9 @@ export function EventCard({ event }: EventCardProps) {
   // 处理编辑表单提交
   const handleEditSubmit = useCallback((updates: UpdateEventInput) => {
     if (convertOperation === 'toRecurring') {
-      // CR操作：转换为重复事件
+      // CR操作：转换为重复事件，同时应用所有用户输入的更新
       if (updates.recurrence && updates.recurrence !== 'none') {
-        convertToRecurring(event, updates.recurrence, updates.customRecurrence);
+        convertToRecurring(event, updates.recurrence, updates.customRecurrence, updates);
       }
     } else if (editScope && editScope !== 'changeCycle') {
       executeEditOperation({ event, updates, scope: editScope });
