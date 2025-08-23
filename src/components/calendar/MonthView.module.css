@@ -68,17 +68,46 @@
   margin-left: var(--spacing-lg);
 }
 
+.weekdayRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--color-border-light);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border-light);
+  border-bottom: none;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.scrollContainer {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  perspective: 1000px;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.monthLayer {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
 .calendarGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: auto repeat(6, 1fr);
+  grid-template-rows: repeat(6, minmax(85px, 1fr));
   gap: 1px;
   background: var(--color-border-light);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  flex: 1;
+  overflow: visible;
+  min-height: 100%;
   box-shadow: var(--shadow-inner);
   border: 1px solid var(--color-border-light);
+  border-top: none;
+  padding-bottom: 1px;
 }
 
 .weekdayHeader {
@@ -148,7 +177,15 @@
   display: flex;
   flex-direction: column;
   font-weight: var(--font-weight-medium);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-sm);
 }
+
+.emptyCell {
+  background: transparent;
+  min-height: 85px;
+}
+
 
 .dayCellHeader {
   width: 100%;
@@ -222,6 +259,7 @@
   background: var(--color-bg-hover);
   /* 移除transform和box-shadow，减少GPU压力 */
   z-index: 1;
+  border-color: var(--color-primary-light);
 }
 
 .currentMonth {
@@ -250,7 +288,7 @@
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
   position: relative;
-  border: 1px solid rgba(168, 196, 212, 0.35);
+  border: 2px solid rgba(168, 196, 212, 0.5);
 }
 
 .today::before {
