@@ -55,9 +55,10 @@ export function Sidebar() {
         </>
       )}
       <EventForm 
-        isOpen={isEventFormOpen} 
+        isOpen={isEventFormOpen}
+        mode={editingEvent ? 'edit' : 'create'}
+        event={editingEvent || undefined}
         onClose={editingEvent ? closeEditForm : closeEventForm}
-        editingEvent={editingEvent}
       />
     </>
   );

@@ -1,19 +1,15 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { EventStore } from './types';
-import { createCrudActions } from './crud';
-import { createRecurrenceActions } from './recurrence';
-import { createEditActions } from './edit';
+import { createCoreOperations } from './core';
 
 export const useEventStore = create<EventStore>()(
   persist(
     (set, get) => ({
       events: [],
       
-      // 合并所有action模块
-      ...createCrudActions(set, get),
-      ...createRecurrenceActions(set, get),
-      ...createEditActions(set)
+      // 使用新的核心操作
+      ...createCoreOperations(set, get)
     }),
     {
       name: 'event-storage',

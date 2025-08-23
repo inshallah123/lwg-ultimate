@@ -1,102 +1,78 @@
 import React from 'react';
-import styles from './DeleteConfirmModal.module.css';
+import { Event } from '@/types/event';
+import { EditScope } from '@/stores/eventStore/types';
+import { 
+  getEventType, 
+  getAvailableScopes, 
+  getScopeLabel, 
+  getScopeDescription 
+} from '../logic/eventTypeUtils';
+import styles from './EditRecurringModal.module.css';
 
 interface EditRecurringModalProps {
   isOpen: boolean;
-  eventTitle: string;
-  isChangingRecurrence: boolean;
-  onEditSingle: () => void;
-  onEditFuture: () => void;
-  onEditAll: () => void;
+  event?: Event;
+  onSelectScope: (scope: EditScope | 'changeCycle') => void;
   onCancel: () => void;
 }
 
 export function EditRecurringModal({
   isOpen,
-  eventTitle,
-  isChangingRecurrence,
-  onEditSingle,
-  onEditFuture,
-  onEditAll,
+  event,
+  onSelectScope,
   onCancel
 }: EditRecurringModalProps) {
-  if (!isOpen) return null;
+  if (!isOpen || !event) return null;
+  
+  const eventType = getEventType(event);
+  const availableScopes = getAvailableScopes(eventType, 'edit');
+  const showChangeRecurrence = eventType === 'RP';
 
   return (
-    <div className={styles.overlay} onClick={onCancel}>
+    <div className={styles.modalOverlay} onClick={onCancel}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <h2 className={styles.title}>Edit Recurring Event</h2>
-        <p className={styles.message}>
-          {isChangingRecurrence 
-            ? `Changing the recurrence pattern will create a new series and replace the existing one.`
-            : `How would you like to edit "${eventTitle}"?`
-          }
-        </p>
-        
-        <div className={styles.recurringOptions}>
-          {!isChangingRecurrence && (
-            <button 
-              className={styles.recurringOption}
-              onClick={onEditSingle}
-            >
-              <div className={styles.optionIcon}>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1.5"/>
-                  <path d="M10 6v4l2.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
-              </div>
-              <div className={styles.optionContent}>
-                <div className={styles.optionTitle}>This event only</div>
-                <div className={styles.optionDesc}>Edit only this occurrence</div>
-              </div>
-            </button>
-          )}
-          
-          {!isChangingRecurrence && (
-            <button 
-              className={styles.recurringOption}
-              onClick={onEditFuture}
-            >
-              <div className={styles.optionIcon}>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1.5"/>
-                  <path d="M10 10l5 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                  <path d="M12.5 7.5L15 10l-2.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div className={styles.optionContent}>
-                <div className={styles.optionTitle}>This and future events</div>
-                <div className={styles.optionDesc}>Edit this and all future occurrences</div>
-              </div>
-            </button>
-          )}
-          
-          <button 
-            className={styles.recurringOption}
-            onClick={onEditAll}
-          >
-            <div className={styles.optionIcon}>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1.5"/>
-                <circle cx="10" cy="10" r="2" fill="currentColor"/>
-                <path d="M10 4v2M10 14v2M4 10h2M14 10h2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-            </div>
-            <div className={styles.optionContent}>
-              <div className={styles.optionTitle}>
-                {isChangingRecurrence ? 'I understand' : 'All events in series'}
-              </div>
-              <div className={styles.optionDesc}>
-                {isChangingRecurrence 
-                  ? 'Continue with creating a new recurring series'
-                  : 'Edit all occurrences of this recurring event'
-                }
-              </div>
-            </div>
-          </button>
+        <div className={styles.header}>
+          <h3>Edit Recurring Event</h3>
         </div>
         
-        <div className={styles.actions}>
+        <div className={styles.content}>
+          <p className={styles.question}>
+            How would you like to edit this recurring event?
+          </p>
+          
+          <div className={styles.options}>
+            {availableScopes.map(scope => (
+              <button
+                key={scope}
+                className={styles.optionButton}
+                onClick={() => onSelectScope(scope)}
+              >
+                <div className={styles.optionLabel}>
+                  {getScopeLabel(scope, 'edit')}
+                </div>
+                <div className={styles.optionDescription}>
+                  {getScopeDescription(scope, 'edit', eventType)}
+                </div>
+              </button>
+            ))}
+            
+            {showChangeRecurrence && (
+              <button
+                className={styles.optionButton}
+                onClick={() => onSelectScope('changeCycle')}
+              >
+                <div className={styles.optionLabel}>
+                  Change Recurrence Pattern
+                </div>
+                <div className={styles.optionDescription}>
+                  Modify the recurrence pattern for all events in the series
+                </div>
+              </button>
+            )}
+          </div>
+        </div>
+        
+        <div className={styles.footer}>
           <button className={styles.cancelButton} onClick={onCancel}>
             Cancel
           </button>

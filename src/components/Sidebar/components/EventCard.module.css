@@ -31,13 +31,28 @@
   margin-bottom: 8px;
 }
 
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
 .title {
   font-size: 16px;
   font-weight: 600;
   color: #000000;
   margin: 0;
-  flex: 1;
   line-height: 1.4;
+}
+
+.recurrenceLabel {
+  font-size: 12px;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
 }
 
 .actions {
@@ -52,7 +67,8 @@
 }
 
 .editButton,
-.deleteButton {
+.deleteButton,
+.moreButton {
   background: transparent;
   border: none;
   padding: 6px;
@@ -62,6 +78,56 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.moreMenuContainer {
+  position: relative;
+}
+
+.moreButton {
+  color: #6b7280;
+}
+
+.moreButton:hover {
+  background: rgba(107, 114, 128, 0.1);
+}
+
+.moreMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+  z-index: 10;
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.menuItem:hover {
+  background: #f3f4f6;
+}
+
+.menuItem:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+.menuItem:last-child {
+  border-radius: 0 0 8px 8px;
 }
 
 .editButton {
@@ -87,23 +153,27 @@
   line-height: 1.5;
 }
 
-.meta {
+.footer {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
 }
 
-.timeSlot {
+.metadata {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 12px;
   font-size: 13px;
-  color: #374151;
+  color: #6b7280;
+}
+
+.time {
   font-weight: 500;
 }
 
-.timeSlot svg {
-  color: #4b5563;
+.duration {
+  color: #9ca3af;
 }
 
 .tags {

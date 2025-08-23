@@ -99,7 +99,6 @@ export function EventList() {
           <EventCard 
             key={event.id} 
             event={event}
-            onEdit={handleEditEvent}
           />
         ))}
       </div>
