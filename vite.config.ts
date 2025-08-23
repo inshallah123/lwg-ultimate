@@ -25,7 +25,10 @@ export default defineConfig({
   publicDir: 'public',
   build: {
     outDir: 'dist',
-    emptyOutDir: true
+    emptyOutDir: true,
+    rollupOptions: {
+      external: ['better-sqlite3']
+    }
   },
   server: {
     port: 5173,
@@ -36,5 +39,8 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src')
     }
+  },
+  optimizeDeps: {
+    exclude: ['better-sqlite3']
   }
 })

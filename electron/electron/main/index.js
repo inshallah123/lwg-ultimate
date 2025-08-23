@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Electron主进程入口文件
@@ -24,7 +27,9 @@ const path_1 = require("path");
 const fs_1 = require("fs");
 const os_1 = require("os");
 const checkUpdates_1 = require("../utils/checkUpdates");
+const database_1 = __importDefault(require("./database"));
 let mainWindow = null;
+let eventDb = null;
 // 确保只有一个实例运行
 const gotTheLock = electron_1.app.requestSingleInstanceLock();
 if (!gotTheLock) {
@@ -105,6 +110,13 @@ function createWindow() {
     }
 }
 electron_1.app.whenReady().then(async () => {
+    // 应用准备好后初始化数据库
+    try {
+        eventDb = new database_1.default();
+    }
+    catch (error) {
+        console.error('Failed to initialize database after app ready:', error);
+    }
     createWindow();
     // 延迟5秒后检查更新，避免影响启动速度
     setTimeout(async () => {
@@ -168,5 +180,74 @@ electron_1.app.on('before-quit', () => {
     if (mainWindow) {
         mainWindow.removeAllListeners();
     }
+    if (eventDb) {
+        eventDb.close();
+    }
+});
+// IPC通信处理
+electron_1.ipcMain.handle('db:getAllEvents', async () => {
+    // 确保数据库已初始化
+    if (!eventDb) {
+        // 尝试初始化数据库
+        try {
+            eventDb = new database_1.default();
+        }
+        catch (error) {
+            console.error('Failed to initialize database on demand:', error);
+            // 返回空数组而不是抛出错误，避免阻塞应用
+            return [];
+        }
+    }
+    try {
+        return eventDb.getAllEvents();
+    }
+    catch (error) {
+        console.error('Error getting events from database:', error);
+        return [];
+    }
+});
+electron_1.ipcMain.handle('db:addEvent', async (_, event) => {
+    if (!eventDb) {
+        try {
+            eventDb = new database_1.default();
+        }
+        catch (error) {
+            throw new Error('Database not initialized');
+        }
+    }
+    return eventDb.addEvent(event);
+});
+electron_1.ipcMain.handle('db:updateEvent', async (_, event) => {
+    if (!eventDb) {
+        try {
+            eventDb = new database_1.default();
+        }
+        catch (error) {
+            throw new Error('Database not initialized');
+        }
+    }
+    return eventDb.updateEvent(event);
+});
+electron_1.ipcMain.handle('db:deleteEvent', async (_, id) => {
+    if (!eventDb) {
+        try {
+            eventDb = new database_1.default();
+        }
+        catch (error) {
+            throw new Error('Database not initialized');
+        }
+    }
+    return eventDb.deleteEvent(id);
+});
+electron_1.ipcMain.handle('db:syncEvents', async (_, events) => {
+    if (!eventDb) {
+        try {
+            eventDb = new database_1.default();
+        }
+        catch (error) {
+            throw new Error('Database not initialized');
+        }
+    }
+    return eventDb.syncEvents(events);
 });
 //# sourceMappingURL=index.js.map

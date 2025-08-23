@@ -17,24 +17,22 @@ export const createRPOperations = (set: StoreSet, get: StoreGet) => ({
       throw new Error('Event is not a recurring parent');
     }
     
+    const updatedEvent = { 
+      ...event, 
+      ...updates,
+      // 保持原有的recurrence相关字段不变
+      recurrence: event.recurrence,
+      customRecurrence: event.customRecurrence,
+      recurrenceEndDate: event.recurrenceEndDate,
+      excludedDates: event.excludedDates,
+      updatedAt: new Date() 
+    };
+    
     // 修改母事件属性，虚拟实例会在 getEventsInRange 时自动继承新属性
-    // 注意：不要修改 recurrence 相关字段
     set(state => ({
-      events: state.events.map(e => {
-        if (e.id === event.id) {
-          return { 
-            ...e, 
-            ...updates,
-            // 保持原有的recurrence相关字段不变
-            recurrence: e.recurrence,
-            customRecurrence: e.customRecurrence,
-            recurrenceEndDate: e.recurrenceEndDate,
-            excludedDates: e.excludedDates,
-            updatedAt: new Date() 
-          };
-        }
-        return e;
-      })
+      events: state.events.map(e => 
+        e.id === event.id ? updatedEvent : e
+      )
     }));
   },
   

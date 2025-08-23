@@ -18,7 +18,6 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
   const openEventForm = useSidebarStore(state => state.openEventForm);
   
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [scrollPosition, setScrollPosition] = useState(0);
   const [allDays, setAllDays] = useState<Date[]>([]);
   const [centerIndex, setCenterIndex] = useState(0);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -27,6 +26,8 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
   const [monthsRange, setMonthsRange] = useState({ start: -6, end: 6 }); // 动态范围
   const lastScrollPositionRef = useRef(0);
   const scrollVelocityRef = useRef(0);
+  const [isInitialized, setIsInitialized] = useState(false); // 添加初始化标志
+  const [scrollPosition, setScrollPosition] = useState(0);
   
   // 生成连续的日期数组（根据动态范围）
   const generateContinuousDays = useCallback((centerDate: Date, startMonths: number, endMonths: number) => {
@@ -68,20 +69,36 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
   
   // 初始化日期数组
   useEffect(() => {
-    const { days, centerIndex } = generateContinuousDays(currentDate, monthsRange.start, monthsRange.end);
-    setAllDays(days);
-    setCenterIndex(centerIndex);
-  }, []); // 只在组件挂载时初始化一次
-  
-  // 设置初始滚动位置
-  useEffect(() => {
-    if (scrollContainerRef.current && centerIndex > 0) {
+    if (!isInitialized && scrollContainerRef.current) {
+      const today = new Date();
+      const { days, centerIndex } = generateContinuousDays(today, monthsRange.start, monthsRange.end);
+      
+      // 立即计算初始滚动位置
       const rowHeight = scrollContainerRef.current.clientHeight / 6;
       rowHeightRef.current = rowHeight;
-      const initialScroll = Math.floor(centerIndex / 7) * rowHeight;
+      
+      const todayIndex = days.findIndex(d => 
+        d.getFullYear() === today.getFullYear() && 
+        d.getMonth() === today.getMonth() &&
+        d.getDate() === today.getDate()
+      );
+      
+      let initialScroll = 0;
+      if (todayIndex !== -1) {
+        const todayRow = Math.floor(todayIndex / 7);
+        initialScroll = Math.max(0, (todayRow - 2.5) * rowHeight);
+      } else {
+        initialScroll = Math.floor(centerIndex / 7) * rowHeight;
+      }
+      
+      // 同步设置所有状态
+      setAllDays(days);
+      setCenterIndex(centerIndex);
       setScrollPosition(initialScroll);
+      setDate(today);
+      setIsInitialized(true);
     }
-  }, [centerIndex]);
+  }, [isInitialized, generateContinuousDays, setDate]);
   
   // 处理滚轮事件
   useEffect(() => {
@@ -132,7 +149,7 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
   
   // 更新当前月份
   useEffect(() => {
-    if (allDays.length === 0) return;
+    if (allDays.length === 0 || !isInitialized) return; // 初始化完成前不更新
     
     const rowHeight = rowHeightRef.current || 100;
     const currentRow = Math.floor((scrollPosition + rowHeight * 3) / rowHeight);
@@ -145,7 +162,7 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
         setDate(newDate);
       }
     }
-  }, [scrollPosition, allDays, currentDate, setDate]);
+  }, [scrollPosition, allDays, currentDate, setDate, isInitialized]);
   
   // 检查是否需要加载更多日期（无限滚动）
   useEffect(() => {
@@ -248,6 +265,9 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
   
   // 渲染可见的日期
   const renderVisibleDays = () => {
+    // 如果还没初始化完成，不渲染
+    if (!isInitialized || allDays.length === 0) return null;
+    
     const containerHeight = scrollContainerRef.current?.clientHeight || 600;
     const rowHeight = containerHeight / 6;
     const visibleStartRow = Math.floor(scrollPosition / rowHeight) - 2;

@@ -20,12 +20,12 @@ export const createSEOperations = (set: StoreSet, get: StoreGet) => ({
       throw new Error('Simple events only support single edit');
     }
     
+    const updatedEvent = { ...event, ...updates, updatedAt: new Date() };
+    
     // 直接更新简单事件
     set(state => ({
       events: state.events.map(e =>
-        e.id === event.id
-          ? { ...e, ...updates, updatedAt: new Date() }
-          : e
+        e.id === event.id ? updatedEvent : e
       )
     }));
   },

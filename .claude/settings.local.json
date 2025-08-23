@@ -15,7 +15,10 @@
       "Bash(npm run build:*)",
       "WebFetch(domain:6tail.cn)",
       "Bash(grep:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm rebuild:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

@@ -18,18 +18,18 @@ export interface Event {
   recurrenceEndDate?: Date;   // 仅用于母事件（RP），重复结束日期
 }
 
-// 事件类型判断辅助函数
-export const isSimpleEvent = (event: Event): boolean => {
-  return event.recurrence === 'none' && !event.parentId;
-};
-
-export const isRecurringParent = (event: Event): boolean => {
-  return event.recurrence !== 'none' && !event.parentId;
-};
-
-export const isVirtualInstance = (event: Event): boolean => {
-  return !!event.parentId && event.id.includes('_') && event.id.startsWith(event.parentId);
-};
-
 export type CreateEventInput = Omit<Event, 'id' | 'createdAt' | 'updatedAt'>;
 export type UpdateEventInput = Partial<Omit<Event, 'id' | 'createdAt'>>;
+
+// 事件类型判断辅助函数
+export function isSimpleEvent(event: Event): boolean {
+  return event.recurrence === 'none' && !event.parentId;
+}
+
+export function isRecurringParent(event: Event): boolean {
+  return event.recurrence !== 'none' && !event.parentId;
+}
+
+export function isVirtualInstance(event: Event): boolean {
+  return !!event.parentId && event.id.includes('_') && event.id.startsWith(event.parentId);
+}

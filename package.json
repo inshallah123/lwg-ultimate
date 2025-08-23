@@ -2,7 +2,7 @@
   "name": "littlewhitegoose",
   "version": "1.0.0",
   "description": "A beautiful desktop calendar application",
-  "main": "electron/main/index.js",
+  "main": "electron/electron/main/index.js",
   "scripts": {
     "dev": "concurrently \"npm:dev:vite\" \"npm:dev:electron\"",
     "dev:clean": "node scripts/dev.js",
@@ -16,7 +16,9 @@
     "typecheck": "tsc --noEmit",
     "test": "npx tsx src/tests/fullTestSuite.ts",
     "test:quick": "npx tsx src/tests/runTests.ts",
-    "test:full": "npx tsx src/tests/fullTestSuite.ts"
+    "test:full": "npx tsx src/tests/fullTestSuite.ts",
+    "rebuild": "electron-rebuild -f -w better-sqlite3",
+    "postinstall": "electron-rebuild -f -w better-sqlite3"
   },
   "keywords": [
     "calendar",
@@ -43,6 +45,7 @@
     "concurrently": "^8.2.2",
     "electron": "^28.2.2",
     "electron-builder": "^24.9.1",
+    "electron-rebuild": "^3.2.9",
     "eslint": "^8.56.0",
     "nodemon": "^3.0.3",
     "ts-node": "^10.9.2",

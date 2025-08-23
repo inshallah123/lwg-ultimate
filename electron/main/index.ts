@@ -22,8 +22,11 @@ import { join } from 'path';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { platform } from 'os';
 import { checkLunarLibraryUpdate, updateLunarLibrary } from '../utils/checkUpdates';
+import EventDatabase from './database';
+import { Event } from '../../src/types/event';
 
 let mainWindow: BrowserWindow | null = null;
+let eventDb: EventDatabase | null = null;
 
 // 确保只有一个实例运行
 const gotTheLock = app.requestSingleInstanceLock();
@@ -108,6 +111,13 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
+  // 应用准备好后初始化数据库
+  try {
+    eventDb = new EventDatabase();
+  } catch (error) {
+    console.error('Failed to initialize database after app ready:', error);
+  }
+  
   createWindow();
   
   // 延迟5秒后检查更新，避免影响启动速度
@@ -179,4 +189,73 @@ app.on('before-quit', () => {
   if (mainWindow) {
     mainWindow.removeAllListeners();
   }
+  if (eventDb) {
+    eventDb.close();
+  }
+});
+
+// IPC通信处理
+ipcMain.handle('db:getAllEvents', async () => {
+  // 确保数据库已初始化
+  if (!eventDb) {
+    // 尝试初始化数据库
+    try {
+      eventDb = new EventDatabase();
+    } catch (error) {
+      console.error('Failed to initialize database on demand:', error);
+      // 返回空数组而不是抛出错误，避免阻塞应用
+      return [];
+    }
+  }
+  
+  try {
+    return eventDb.getAllEvents();
+  } catch (error) {
+    console.error('Error getting events from database:', error);
+    return [];
+  }
+});
+
+ipcMain.handle('db:addEvent', async (_, event: Event) => {
+  if (!eventDb) {
+    try {
+      eventDb = new EventDatabase();
+    } catch (error) {
+      throw new Error('Database not initialized');
+    }
+  }
+  return eventDb.addEvent(event);
+});
+
+ipcMain.handle('db:updateEvent', async (_, event: Event) => {
+  if (!eventDb) {
+    try {
+      eventDb = new EventDatabase();
+    } catch (error) {
+      throw new Error('Database not initialized');
+    }
+  }
+  return eventDb.updateEvent(event);
+});
+
+ipcMain.handle('db:deleteEvent', async (_, id: string) => {
+  if (!eventDb) {
+    try {
+      eventDb = new EventDatabase();
+    } catch (error) {
+      throw new Error('Database not initialized');
+    }
+  }
+  return eventDb.deleteEvent(id);
+});
+
+ipcMain.handle('db:syncEvents', async (_, events: Event[]) => {
+  if (!eventDb) {
+    try {
+      eventDb = new EventDatabase();
+    } catch (error) {
+      throw new Error('Database not initialized');
+    }
+  }
+  return eventDb.syncEvents(events);
 });
