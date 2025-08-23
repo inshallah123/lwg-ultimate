@@ -9,7 +9,8 @@
       "Bash(npx electron:*)",
       "Bash(taskkill:*)",
       "Bash(git push:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(npm run typecheck:*)"
     ],
     "deny": [],
     "ask": []

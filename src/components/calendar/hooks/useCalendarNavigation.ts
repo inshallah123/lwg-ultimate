@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useCalendarStore } from '../store';
 
 export function useCalendarNavigation() {
@@ -7,6 +7,25 @@ export function useCalendarNavigation() {
   const navigateWeek = useCalendarStore(state => state.navigateWeek);
   const navigateYear = useCalendarStore(state => state.navigateYear);
   const goToToday = useCalendarStore(state => state.goToToday);
+  
+  // 使用 ref 存储最新的值，避免重新绑定事件
+  const storeRef = useRef({
+    viewMode,
+    navigateMonth,
+    navigateWeek,
+    navigateYear,
+    goToToday
+  });
+  
+  useEffect(() => {
+    storeRef.current = {
+      viewMode,
+      navigateMonth,
+      navigateWeek,
+      navigateYear,
+      goToToday
+    };
+  }, [viewMode, navigateMonth, navigateWeek, navigateYear, goToToday]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -16,46 +35,50 @@ export function useCalendarNavigation() {
         return;
       }
 
-      const keyMap: Record<string, () => void> = {
-        'ArrowLeft': () => {
+      const { viewMode, navigateMonth, navigateWeek, navigateYear, goToToday } = storeRef.current;
+      
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault();
           if (viewMode === 'month') {
             navigateMonth(-1);
           } else if (viewMode === 'week') {
             navigateWeek(-1);
           }
-        },
-        'ArrowRight': () => {
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
           if (viewMode === 'month') {
             navigateMonth(1);
           } else if (viewMode === 'week') {
             navigateWeek(1);
           }
-        },
-        'ArrowUp': () => {
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
           if (viewMode === 'month') {
             navigateYear(-1);
           } else if (viewMode === 'week') {
             navigateMonth(-1);
           }
-        },
-        'ArrowDown': () => {
+          break;
+        case 'ArrowDown':
+          e.preventDefault();
           if (viewMode === 'month') {
             navigateYear(1);
           } else if (viewMode === 'week') {
             navigateMonth(1);
           }
-        },
-        ' ': goToToday,
-        'Enter': goToToday
-      };
-      
-      if (keyMap[e.key]) {
-        e.preventDefault();
-        keyMap[e.key]();
+          break;
+        case ' ':
+        case 'Enter':
+          e.preventDefault();
+          goToToday();
+          break;
       }
     };
     
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, [viewMode, navigateMonth, navigateWeek, navigateYear, goToToday]);
+  }, []); // 空依赖数组，只绑定一次
 }
