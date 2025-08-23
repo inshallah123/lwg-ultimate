@@ -30,6 +30,7 @@
     "@esbuild/win32-x64": "^0.25.9",
     "@types/better-sqlite3": "^7.6.13",
     "better-sqlite3": "^12.2.0",
+    "lunar-javascript": "^1.7.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "zustand": "^5.0.8"

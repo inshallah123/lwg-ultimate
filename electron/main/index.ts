@@ -17,10 +17,11 @@
  *   - 配合 vite.config.ts (开发服务器配置)
  *   - 使用 .env (环境变量配置)
  */
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import { join } from 'path';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { platform } from 'os';
+import { checkLunarLibraryUpdate, updateLunarLibrary } from '../utils/checkUpdates';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -106,7 +107,61 @@ function createWindow() {
   }
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(async () => {
+  createWindow();
+  
+  // 延迟5秒后检查更新，避免影响启动速度
+  setTimeout(async () => {
+    const updateInfo = await checkLunarLibraryUpdate();
+    
+    if (updateInfo?.hasUpdate && mainWindow) {
+      const result = await dialog.showMessageBox(mainWindow, {
+        type: 'info',
+        title: '节假日数据更新',
+        message: `发现 lunar-javascript 新版本`,
+        detail: `当前版本: ${updateInfo.currentVersion}\n最新版本: ${updateInfo.latestVersion}\n\n更新后将获得最新的节假日和调休数据。是否现在更新？`,
+        buttons: ['稍后提醒', '立即更新'],
+        defaultId: 1,
+        cancelId: 0
+      });
+      
+      if (result.response === 1) {
+        // 用户选择更新
+        const updating = dialog.showMessageBox(mainWindow, {
+          type: 'info',
+          title: '正在更新',
+          message: '正在更新节假日数据库...',
+          buttons: []
+        });
+        
+        const success = await updateLunarLibrary();
+        
+        if (success) {
+          const restartResult = await dialog.showMessageBox(mainWindow, {
+            type: 'info',
+            title: '更新完成',
+            message: '节假日数据已更新到最新版本',
+            detail: '需要重启应用以加载新的数据。是否现在重启？',
+            buttons: ['稍后', '立即重启'],
+            defaultId: 1
+          });
+          
+          if (restartResult.response === 1) {
+            app.relaunch();
+            app.exit();
+          }
+        } else {
+          dialog.showMessageBox(mainWindow, {
+            type: 'error',
+            title: '更新失败',
+            message: '节假日数据更新失败',
+            detail: '请检查网络连接或稍后重试'
+          });
+        }
+      }
+    }
+  }, 5000);
+});
 
 app.on('window-all-closed', () => {
   if (platform() !== 'darwin') {

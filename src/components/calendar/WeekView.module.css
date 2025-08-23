@@ -45,15 +45,19 @@
 }
 
 .weekHeader {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-light);
-  color: var(--color-text-primary);
+  background: linear-gradient(135deg, #7a8a9a 0%, #9a8a9a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin: 0 var(--spacing-xl);
-  letter-spacing: -0.02em;
+  letter-spacing: 0.04em;
   position: relative;
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
+  font-variant-numeric: tabular-nums;
 }
 
 .weekHeader::before,
@@ -141,7 +145,7 @@
 
 /* Headers & Cells */
 .cornerCell {
-  height: 60px;
+  height: 80px;
   border-bottom: 2px solid var(--color-border);
   border-right: 1px solid var(--color-border);
   background: linear-gradient(135deg,
@@ -152,7 +156,7 @@
 }
 
 .dayHeader {
-  height: 60px;
+  height: 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -165,6 +169,8 @@
   position: relative;
   flex-shrink: 0;
   transition: all var(--transition-fast);
+  padding: var(--spacing-sm);
+  gap: 2px;
 }
 
 .dayHeader:hover {
@@ -190,18 +196,62 @@
 }
 
 .dayName {
-  font-size: var(--font-size-xs);
+  font-size: 0.7rem;
   font-weight: var(--font-weight-medium);
-  color: var(--color-text-muted);
+  color: #7a8590;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
 }
 
 .dayDate {
-  font-size: var(--font-size-xl);
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-medium);
+  color: #3a4556;
+  font-variant-numeric: tabular-nums;
+}
+
+.lunarInfo {
+  font-size: 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 3px;
+  flex-wrap: wrap;
+  justify-content: center;
+  line-height: 1.2;
+}
+
+.lunar {
+  color: #8a92a6;
+  opacity: 0.9;
+  font-weight: var(--font-weight-normal);
+}
+
+.festival {
+  color: #d6536d;
+  font-weight: var(--font-weight-medium);
+  background: linear-gradient(135deg, rgba(232, 93, 117, 0.06), rgba(232, 93, 117, 0.02));
+  padding: 1px 4px;
+  border-radius: 8px;
+  letter-spacing: 0.02em;
+}
+
+.solarTerm {
+  color: #4a8a73;
+  font-weight: var(--font-weight-medium);
+  background: linear-gradient(135deg, rgba(74, 157, 131, 0.06), rgba(74, 157, 131, 0.02));
+  padding: 1px 4px;
+  border-radius: 8px;
+  letter-spacing: 0.02em;
+}
+
+.workday {
+  color: #e6820c;
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  margin-top: 2px;
+  background: rgba(255, 149, 0, 0.06);
+  padding: 0 3px;
+  border-radius: 6px;
+  font-size: 0.6rem;
 }
 
 .dayHeader.today .dayName,

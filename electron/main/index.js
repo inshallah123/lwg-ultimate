@@ -23,6 +23,7 @@ const electron_1 = require("electron");
 const path_1 = require("path");
 const fs_1 = require("fs");
 const os_1 = require("os");
+const checkUpdates_1 = require("../utils/checkUpdates");
 let mainWindow = null;
 // 确保只有一个实例运行
 const gotTheLock = electron_1.app.requestSingleInstanceLock();
@@ -103,7 +104,56 @@ function createWindow() {
         console.error('Failed to create window:', error);
     }
 }
-electron_1.app.whenReady().then(createWindow);
+electron_1.app.whenReady().then(async () => {
+    createWindow();
+    // 延迟5秒后检查更新，避免影响启动速度
+    setTimeout(async () => {
+        const updateInfo = await (0, checkUpdates_1.checkLunarLibraryUpdate)();
+        if (updateInfo?.hasUpdate && mainWindow) {
+            const result = await electron_1.dialog.showMessageBox(mainWindow, {
+                type: 'info',
+                title: '节假日数据更新',
+                message: `发现 lunar-javascript 新版本`,
+                detail: `当前版本: ${updateInfo.currentVersion}\n最新版本: ${updateInfo.latestVersion}\n\n更新后将获得最新的节假日和调休数据。是否现在更新？`,
+                buttons: ['稍后提醒', '立即更新'],
+                defaultId: 1,
+                cancelId: 0
+            });
+            if (result.response === 1) {
+                // 用户选择更新
+                const updating = electron_1.dialog.showMessageBox(mainWindow, {
+                    type: 'info',
+                    title: '正在更新',
+                    message: '正在更新节假日数据库...',
+                    buttons: []
+                });
+                const success = await (0, checkUpdates_1.updateLunarLibrary)();
+                if (success) {
+                    const restartResult = await electron_1.dialog.showMessageBox(mainWindow, {
+                        type: 'info',
+                        title: '更新完成',
+                        message: '节假日数据已更新到最新版本',
+                        detail: '需要重启应用以加载新的数据。是否现在重启？',
+                        buttons: ['稍后', '立即重启'],
+                        defaultId: 1
+                    });
+                    if (restartResult.response === 1) {
+                        electron_1.app.relaunch();
+                        electron_1.app.exit();
+                    }
+                }
+                else {
+                    electron_1.dialog.showMessageBox(mainWindow, {
+                        type: 'error',
+                        title: '更新失败',
+                        message: '节假日数据更新失败',
+                        detail: '请检查网络连接或稍后重试'
+                    });
+                }
+            }
+        }
+    }, 5000);
+});
 electron_1.app.on('window-all-closed', () => {
     if ((0, os_1.platform)() !== 'darwin') {
         electron_1.app.quit();

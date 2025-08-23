@@ -3,6 +3,7 @@ import { useCalendarStore } from './store';
 import { useSidebarStore } from '../Sidebar/store';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { isToday, WEEKDAY_NAMES_SHORT } from '@/utils/dateHelpers';
+import { getLunarDateInfo } from '@/utils/lunarDate';
 import { EventIndicator } from './EventIndicator';
 import styles from './MonthView.module.css';
 
@@ -37,12 +38,13 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
       </div>
       <div className={styles.calendarGrid}>
         {WEEKDAY_NAMES_SHORT.map(day => (
-          <div key={day} className={styles.dayHeader}>
+          <div key={day} className={styles.weekdayHeader}>
             {day}
           </div>
         ))}
         {days.map((day) => {
           const dayKey = `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
+          const lunarInfo = getLunarDateInfo(day);
           return (
             <div 
               key={dayKey} 
@@ -51,7 +53,23 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
               } ${isToday(day) ? styles.today : ''}`}
               onClick={() => handleCellClick(day)}
             >
-              <span className={styles.dayNumber}>{day.getDate()}</span>
+              <div className={styles.dayCellHeader}>
+                <span className={styles.dayNumber}>{day.getDate()}</span>
+                <div className={styles.lunarInfo}>
+                  {lunarInfo.festival && (
+                    <span className={styles.festival}>{lunarInfo.festival}</span>
+                  )}
+                  {!lunarInfo.festival && lunarInfo.solarTerm && (
+                    <span className={styles.solarTerm}>{lunarInfo.solarTerm}</span>
+                  )}
+                  {!lunarInfo.festival && !lunarInfo.solarTerm && lunarInfo.lunar && (
+                    <span className={styles.lunar}>{lunarInfo.lunar}</span>
+                  )}
+                  {lunarInfo.workday && (
+                    <span className={styles.workday}>{lunarInfo.workday}</span>
+                  )}
+                </div>
+              </div>
               <EventIndicator 
                 date={day} 
                 view="month"

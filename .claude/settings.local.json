@@ -12,7 +12,10 @@
       "Bash(npx tsx:*)",
       "Bash(npm run typecheck:*)",
       "Bash(rm:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "WebFetch(domain:6tail.cn)",
+      "Bash(grep:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
