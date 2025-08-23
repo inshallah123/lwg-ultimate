@@ -323,11 +323,19 @@ export function EventForm({
                 value={recurrence}
                 onChange={(e) => setRecurrence(e.target.value as Event['recurrence'])}
               >
-                {RECURRENCE_OPTIONS.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
+                {RECURRENCE_OPTIONS
+                  .filter(option => {
+                    // CC操作时排除 'none' 选项
+                    if (editScope === 'changeCycle') {
+                      return option.value !== 'none';
+                    }
+                    return true;
+                  })
+                  .map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
               </select>
               
               {recurrence === 'custom' && (

@@ -4,6 +4,7 @@ import { Event } from '@/types/event';
 import { DeleteScope } from '@/stores/eventStore/types';
 import { useEventStore } from '@/stores/eventStore';
 import { useSidebarStore } from '../store';
+import { useCalendarStore } from '@/components/calendar/store';
 import { 
   getEventType,
   getAvailableScopes,
@@ -31,6 +32,7 @@ export function DeleteConfirmModal({
   // Hooks必须在顶层调用
   const { getEventById } = useEventStore();
   const { setSelectedDate } = useSidebarStore();
+  const { setDate } = useCalendarStore();
   
   // ESC键关闭
   useEffect(() => {
@@ -66,6 +68,9 @@ export function DeleteConfirmModal({
   // 处理跳转到母事件
   const handleGoToParent = () => {
     if (parentEvent) {
+      // 更新日历视图到母事件所在的日期
+      setDate(parentEvent.date);
+      // 更新侧边栏选中的日期
       setSelectedDate(parentEvent.date);
       onCancel();
     }
