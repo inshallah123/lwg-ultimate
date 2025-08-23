@@ -38,9 +38,6 @@ export interface EventStore {
   // 直接删除事件（用于简单事件）
   deleteEvent: (id: string) => void;
   
-  // 母事件身份转移（RP-ES/DS/CS的核心操作）
-  shiftRecurringParentDate: (parentId: string) => void;
-  
   // 添加排除日期（VI-DS的核心操作）
   addExcludedDate: (parentId: string, date: Date) => void;
   

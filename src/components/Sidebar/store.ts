@@ -18,6 +18,7 @@ interface SidebarState {
   // Sidebar 方法
   open: (date: Date, hour?: number) => void;
   close: () => void;
+  setSelectedDate: (date: Date) => void;
   
   // EventForm 方法
   openEventForm: (date?: Date, hour?: number) => void;
@@ -47,6 +48,11 @@ export const useSidebarStore = create<SidebarState>((set, get) => ({
   close: () => set({ 
     isOpen: false,
     selectedDate: null,
+    selectedHour: null
+  }),
+  setSelectedDate: (date) => set({
+    isOpen: true,
+    selectedDate: date,
     selectedHour: null
   }),
   

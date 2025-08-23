@@ -28,11 +28,9 @@ export function executeEditOperation({ event, updates, scope }: EditOperationPar
     return;
   }
   
-  // ES-RP: 顺延母事件身份，原母事件转为SE
-  // 业务逻辑：下一个VI成为新的RP，当前RP转为SE并应用修改
+  // RP不支持single编辑（根据新的需求矩阵）
   if (eventType === 'RP' && scope === 'single') {
-    store.editEvent(event, updatesWithoutRecurrence, 'single');
-    return;
+    throw new Error('Recurring parent does not support single edit');
   }
   
   // ES-VI: 当前VI转为SE，脱离母事件
@@ -56,14 +54,9 @@ export function executeEditOperation({ event, updates, scope }: EditOperationPar
     return;
   }
   
-  // EA-VI: 重定向到RP，修改母事件并更新所有实例
-  // 业务逻辑：找到母事件并修改，所有VI自动继承新的属性
+  // VI不支持all编辑（需要到母事件）
   if (eventType === 'VI' && scope === 'all') {
-    const parentEvent = store.getParentEvent(event.id);
-    if (parentEvent) {
-      store.editEvent(parentEvent, updatesWithoutRecurrence, 'all');
-    }
-    return;
+    throw new Error('To edit all instances, please edit the parent event');
   }
 }
 

@@ -10,7 +10,7 @@ import styles from './Eventform.module.css';
 
 interface EventFormProps {
   isOpen: boolean;
-  mode: 'create' | 'edit';
+  mode: 'create' | 'edit' | 'convertToRecurring';
   event?: Event;
   editScope?: EditScope | 'changeCycle' | null;
   onClose: () => void;
@@ -63,8 +63,8 @@ export function EventForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   // 判断是否应该禁用recurrence字段
-  // CR操作时（mode='create'且有event且event.id存在）应该显示recurrence
-  const isConvertToRecurring = mode === 'create' && event && event.id;
+  // CR操作时（mode='convertToRecurring'）应该显示recurrence
+  const isConvertToRecurring = mode === 'convertToRecurring';
   const disableRecurrence = mode === 'edit' && editScope !== 'changeCycle';
   
   // 判断是否仅显示recurrence字段（CC操作）
@@ -74,8 +74,8 @@ export function EventForm({
   useEffect(() => {
     if (!isOpen) return;
     
-    if (mode === 'edit' && event) {
-      // 编辑模式：加载事件数据
+    if ((mode === 'edit' || mode === 'convertToRecurring') && event) {
+      // 编辑模式或CR操作：加载事件数据
       setTitle(event.title);
       setDescription(event.description || '');
       setDate(new Date(event.date));
@@ -156,34 +156,33 @@ export function EventForm({
     }
     
     if (mode === 'create') {
-      // 检查是否是CR操作（转换为重复事件）
-      if (event && onSubmit) {
-        // CR操作：将现有事件转换为重复事件
-        const updates: UpdateEventInput = {
-          title: title.trim(),
-          description: description.trim() || undefined,
-          date,
-          timeSlot,
-          tag,
-          customTag: tag === 'custom' ? customTag.trim() : undefined,
-          recurrence,
-          customRecurrence: recurrence === 'custom' ? parseInt(customRecurrence) : undefined
-        };
-        onSubmit(updates);
-      } else {
-        // C操作：创建新事件
-        const input: CreateEventInput = {
-          title: title.trim(),
-          description: description.trim() || undefined,
-          date,
-          timeSlot,
-          tag,
-          customTag: tag === 'custom' ? customTag.trim() : undefined,
-          recurrence,
-          customRecurrence: recurrence === 'custom' ? parseInt(customRecurrence) : undefined
-        };
-        eventStore.addEvent(input);
-      }
+      // C操作：创建新事件
+      const input: CreateEventInput = {
+        title: title.trim(),
+        description: description.trim() || undefined,
+        date,
+        timeSlot,
+        tag,
+        customTag: tag === 'custom' ? customTag.trim() : undefined,
+        recurrence,
+        customRecurrence: recurrence === 'custom' ? parseInt(customRecurrence) : undefined
+      };
+      eventStore.addEvent(input);
+      onClose();
+      resetForm();
+    } else if (mode === 'convertToRecurring' && onSubmit) {
+      // CR操作：将现有事件转换为重复事件
+      const updates: UpdateEventInput = {
+        title: title.trim(),
+        description: description.trim() || undefined,
+        date,
+        timeSlot,
+        tag,
+        customTag: tag === 'custom' ? customTag.trim() : undefined,
+        recurrence,
+        customRecurrence: recurrence === 'custom' ? parseInt(customRecurrence) : undefined
+      };
+      onSubmit(updates);
       onClose();
       resetForm();
     } else if (mode === 'edit' && onSubmit) {

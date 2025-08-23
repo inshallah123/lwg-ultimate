@@ -2,7 +2,6 @@ import React from 'react';
 import { EventCard } from './EventCard';
 import { useEventStore } from '@/stores/eventStore';
 import { useSidebarStore } from '../store';
-import { Event } from '@/types/event';
 import styles from './EventList.module.css';
 
 // 时间段列表 - 与 WeekView 和 EventForm 保持一致
@@ -41,9 +40,6 @@ export function EventList() {
     return dayEvents;
   }, [allEvents, getEventsInRange, selectedDate, selectedHour]);
   
-  const handleEditEvent = (event: Event) => {
-    openEditForm(event);
-  };
   
   if (!selectedDate) {
     return (

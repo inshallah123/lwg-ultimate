@@ -19,6 +19,42 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
+/* 母事件样式 - 蓝色主题 */
+.parentModal {
+  border-top: 4px solid #3b82f6;
+}
+
+/* 虚拟实例样式 - 紫色主题 */
+.instanceModal {
+  border-top: 4px solid #8b5cf6;
+}
+
+/* 图标容器 */
+.iconContainer {
+  display: flex;
+  justify-content: center;
+  padding: 24px 24px 0;
+}
+
+.iconBackground {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.parentIcon {
+  background: #dbeafe;
+  color: #3b82f6;
+}
+
+.instanceIcon {
+  background: #ede9fe;
+  color: #8b5cf6;
+}
+
 .header {
   padding: 24px 24px 16px;
   border-bottom: 1px solid #e5e7eb;
@@ -32,13 +68,23 @@
 }
 
 .content {
-  padding: 24px;
+  padding: 16px 24px 24px;
+}
+
+.title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  text-align: center;
 }
 
 .question {
   margin: 0 0 20px;
   color: #6b7280;
   font-size: 14px;
+  text-align: center;
+  line-height: 1.5;
 }
 
 .options {
@@ -98,4 +144,47 @@
 .cancelButton:hover {
   background: #f9fafb;
   border-color: #9ca3af;
+}
+
+/* 信息提示框 */
+.infoBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #f0f9ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  color: #1e40af;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.infoBox svg {
+  flex-shrink: 0;
+}
+
+/* 链接按钮样式 */
+.linkButton {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: all 0.2s;
+}
+
+.linkButton:hover {
+  color: #1d4ed8;
+  text-decoration-thickness: 2px;
+}
+
+.parentDate {
+  font-weight: 600;
+  color: #1e40af;
+  margin-left: 4px;
 }

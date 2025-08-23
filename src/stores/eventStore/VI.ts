@@ -1,5 +1,6 @@
 import { Event, UpdateEventInput, isVirtualInstance } from '@/types/event';
 import { EditScope, DeleteScope, StoreSet, StoreGet } from './types';
+import { generateEventId, calculateEndDateBeforeInstance } from '@/utils/eventHelpers';
 
 /**
  * VI (Virtual Instance) 虚拟实例操作
@@ -29,7 +30,7 @@ export const createVIOperations = (set: StoreSet, get: StoreGet) => ({
       const newSimpleEvent: Event = {
         ...event,
         ...updates,
-        id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+        id: generateEventId(),
         parentId: undefined,
         recurrence: 'none' as const,
         excludedDates: undefined,
@@ -82,7 +83,7 @@ export const createVIOperations = (set: StoreSet, get: StoreGet) => ({
       const newParentEvent: Event = {
         ...parentEvent,
         ...updates,
-        id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+        id: generateEventId(),
         date: splitDate,
         excludedDates: [],
         recurrenceEndDate: undefined,
@@ -110,23 +111,6 @@ export const createVIOperations = (set: StoreSet, get: StoreGet) => ({
     });
   },
   
-  // VI-EA: 通过虚拟实例编辑所有
-  editVirtualInstanceAll: (event: Event, updates: UpdateEventInput) => {
-    if (!isVirtualInstance(event)) {
-      throw new Error('Event is not a virtual instance');
-    }
-    
-    const parentId = event.parentId!;
-    
-    // 找到母事件并修改其属性
-    set(state => ({
-      events: state.events.map(e =>
-        e.id === parentId
-          ? { ...e, ...updates, updatedAt: new Date() }
-          : e
-      )
-    }));
-  },
   
   // VI-DS: 删除单个虚拟实例
   deleteVirtualInstanceSingle: (event: Event) => {
@@ -160,8 +144,7 @@ export const createVIOperations = (set: StoreSet, get: StoreGet) => ({
     }
     
     const parentId = event.parentId!;
-    const endDate = new Date(event.instanceDate || event.date);
-    endDate.setDate(endDate.getDate() - 1);
+    const endDate = calculateEndDateBeforeInstance(event.instanceDate || event.date);
     
     // 设置母事件的recurrenceEndDate
     set(state => ({
@@ -178,19 +161,6 @@ export const createVIOperations = (set: StoreSet, get: StoreGet) => ({
     }));
   },
   
-  // VI-DA: 通过虚拟实例删除所有
-  deleteVirtualInstanceAll: (event: Event) => {
-    if (!isVirtualInstance(event)) {
-      throw new Error('Event is not a virtual instance');
-    }
-    
-    const parentId = event.parentId!;
-    
-    // 删除母事件
-    set(state => ({
-      events: state.events.filter(e => e.id !== parentId)
-    }));
-  },
   
   // VI-CS: 虚拟实例转简单事件
   convertVirtualInstanceToSimple: (event: Event) => {
@@ -205,7 +175,7 @@ export const createVIOperations = (set: StoreSet, get: StoreGet) => ({
       // 1. 创建新的简单事件
       const newSimpleEvent: Event = {
         ...event,
-        id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+        id: generateEventId(),
         parentId: undefined,
         recurrence: 'none' as const,
         excludedDates: undefined,
@@ -257,7 +227,7 @@ export const createVIOperations = (set: StoreSet, get: StoreGet) => ({
       // 2. 创建新的母事件（新周期）
       const newParentEvent: Event = {
         ...parentEvent,
-        id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+        id: generateEventId(),
         date: splitDate,
         recurrence: newRecurrence,
         customRecurrence,

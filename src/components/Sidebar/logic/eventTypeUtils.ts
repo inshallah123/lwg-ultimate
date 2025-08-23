@@ -29,14 +29,14 @@ export function getSupportedOperations(eventType: 'SE' | 'RP' | 'VI') {
       changeCycle: false
     },
     RP: {
-      edit: { single: true, future: false, all: true },
-      delete: { single: true, future: false, all: true },
-      convert: { toSimple: true, toRecurring: false },
+      edit: { single: false, future: false, all: true },  // RP只支持all
+      delete: { single: false, future: false, all: true }, // RP只支持all
+      convert: { toSimple: false, toRecurring: false },    // RP不支持转换
       changeCycle: true
     },
     VI: {
-      edit: { single: true, future: true, all: true },
-      delete: { single: true, future: true, all: true },
+      edit: { single: true, future: true, all: false },    // VI不直接支持all
+      delete: { single: true, future: true, all: false },  // VI不直接支持all
       convert: { toSimple: true, toRecurring: false },
       changeCycle: false
     }
@@ -71,12 +71,12 @@ export function getAvailableScopes(
   }
   
   if (eventType === 'RP') {
-    // RP不支持future
-    return ['single', 'all'];
+    // RP只支持all操作（根据新的需求矩阵）
+    return ['all'];
   }
   
-  // VI支持所有范围
-  return ['single', 'future', 'all'];
+  // VI支持single和future，不支持all（all操作需要到母事件）
+  return ['single', 'future'];
 }
 
 /**
@@ -112,35 +112,33 @@ export function getScopeDescription(
 ): string {
   if (operation === 'edit') {
     if (scope === 'single') {
-      if (eventType === 'RP') {
-        return 'Convert this occurrence to a single event and edit it independently';
-      }
       if (eventType === 'VI') {
-        return 'Edit only this occurrence, creating an independent event';
+        return 'This instance will become an independent event, separate from the series.';
       }
     }
     if (scope === 'future') {
-      return 'Edit this and all future occurrences, creating a new series';
+      return '⚠️ Warning: This will split the series. The original series will end before this date, and a new series will be created from this point forward.';
     }
     if (scope === 'all') {
-      return 'Edit all occurrences in the series';
+      if (eventType === 'RP') {
+        return 'Update the entire series. All instances will inherit the changes.';
+      }
     }
   }
   
   if (operation === 'delete') {
     if (scope === 'single') {
-      if (eventType === 'RP') {
-        return 'Delete only this occurrence, next occurrence becomes the series parent';
-      }
       if (eventType === 'VI') {
-        return 'Delete only this occurrence from the series';
+        return 'Remove only this specific occurrence. The series continues.';
       }
     }
     if (scope === 'future') {
-      return 'Delete this and all future occurrences';
+      return '⚠️ Warning: This will end the series at this point. All future occurrences will be permanently removed.';
     }
     if (scope === 'all') {
-      return 'Delete all occurrences in the series';
+      if (eventType === 'RP') {
+        return '⚠️ Caution: This will permanently delete the entire recurring series and all its instances.';
+      }
     }
   }
   

@@ -1,6 +1,7 @@
 import { Event, CreateEventInput, UpdateEventInput, isSimpleEvent, isRecurringParent, isVirtualInstance } from '@/types/event';
 import { EditScope, DeleteScope, StoreSet, StoreGet } from './types';
 import { generateRecurrenceInstances, isSameDay } from '@/utils/dateHelpers';
+import { generateEventId, generateVirtualInstanceId } from '@/utils/eventHelpers';
 import { createSEOperations } from './SE';
 import { createRPOperations } from './RP';
 import { createVIOperations } from './VI';
@@ -22,7 +23,7 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
     addEvent: (input: CreateEventInput) => {
       const newEvent: Event = {
         ...input,
-        id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+        id: generateEventId(),
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -61,22 +62,16 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
         return;
       }
       
-      // RP: 支持 single/all
+      // RP: 只支持 all（根据新的需求矩阵）
       if (isRecurringParent(event)) {
-        switch (scope) {
-          case 'single':
-            rpOps.editRecurringParentSingle(event, updates);
-            break;
-          case 'all':
-            rpOps.editRecurringParentAll(event, updates);
-            break;
-          case 'future':
-            throw new Error('Recurring parent does not support future edit, use all instead');
+        if (scope !== 'all') {
+          throw new Error('Recurring parent only supports editing all instances');
         }
+        rpOps.editRecurringParentAll(event, updates);
         return;
       }
       
-      // VI: 支持 single/future/all
+      // VI: 支持 single/future，不支持all（需要到母事件）
       if (isVirtualInstance(event)) {
         switch (scope) {
           case 'single':
@@ -86,8 +81,7 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
             viOps.editVirtualInstanceFuture(event, updates);
             break;
           case 'all':
-            viOps.editVirtualInstanceAll(event, updates);
-            break;
+            throw new Error('To edit all instances, please edit the parent event');
         }
         return;
       }
@@ -106,22 +100,16 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
         return;
       }
       
-      // RP: 支持 single/all
+      // RP: 只支持 all（根据新的需求矩阵）
       if (isRecurringParent(event)) {
-        switch (scope) {
-          case 'single':
-            rpOps.deleteRecurringParentSingle(event);
-            break;
-          case 'all':
-            rpOps.deleteRecurringParentAll(event);
-            break;
-          case 'future':
-            throw new Error('Recurring parent does not support future delete, use all instead');
+        if (scope !== 'all') {
+          throw new Error('Recurring parent only supports deleting all instances');
         }
+        rpOps.deleteRecurringParentAll(event);
         return;
       }
       
-      // VI: 支持 single/future/all
+      // VI: 支持 single/future，不支持all（需要到母事件）
       if (isVirtualInstance(event)) {
         switch (scope) {
           case 'single':
@@ -131,8 +119,7 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
             viOps.deleteVirtualInstanceFuture(event);
             break;
           case 'all':
-            viOps.deleteVirtualInstanceAll(event);
-            break;
+            throw new Error('To delete all instances, please delete the parent event');
         }
         return;
       }
@@ -149,14 +136,14 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
       seOps.convertSimpleToRecurring(event, recurrence, customRecurrence, updateInput);
     },
     
-    // CS: 转为简单事件（RP/VI）
+    // CS: 转为简单事件（仅VI，RP不支持）
     convertToSimple: (event: Event) => {
       if (isSimpleEvent(event)) {
         throw new Error('Event is already simple');
       }
       
       if (isRecurringParent(event)) {
-        rpOps.convertRecurringParentToSimple(event);
+        throw new Error('Recurring parent cannot be converted to simple event');
       } else if (isVirtualInstance(event)) {
         viOps.convertVirtualInstanceToSimple(event);
       } else {
@@ -186,13 +173,9 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
     
     getParentEvent: (id: string) => {
       const state = get();
-      const event = state.events.find(e => e.id === id);
-      if (!event) return undefined;
-      
-      if (event.parentId) {
-        return state.events.find(e => e.id === event.parentId);
-      }
-      return event;
+      // 注意：这个函数的id参数应该是parentId，而不是VI的id
+      // VI是动态生成的，不在state.events中
+      return state.events.find(e => e.id === id);
     },
     
     getEventsInRange: (startDate: Date, endDate: Date) => {
@@ -219,14 +202,25 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
           );
           
           instances.forEach(instanceDate => {
-            // 创建虚拟实例
-            result.push({
-              ...event,
-              id: `${event.id}_${instanceDate.getTime()}`,
-              date: instanceDate,
-              parentId: event.id,
-              instanceDate: instanceDate
-            });
+            // 检查是否是母事件的当天实例
+            const isSameDate = isSameDay(instanceDate, event.date);
+            
+            if (isSameDate) {
+              // 母事件的当天实例，直接使用母事件本身
+              result.push({
+                ...event,
+                instanceDate: instanceDate
+              });
+            } else {
+              // 创建虚拟实例
+              result.push({
+                ...event,
+                id: generateVirtualInstanceId(event.id, instanceDate),
+                date: instanceDate,
+                parentId: event.id,
+                instanceDate: instanceDate
+              });
+            }
           });
         }
         // 注意：不应该有MI（修改实例）存在
@@ -237,14 +231,6 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
     },
     
     // ========== 内部辅助操作 ==========
-    // 母事件身份转移（内部使用）
-    shiftRecurringParentDate: (parentId: string) => {
-      const parent = get().events.find(e => e.id === parentId);
-      if (!parent || !isRecurringParent(parent)) {
-        throw new Error('Parent event not found or not recurring');
-      }
-      rpOps.deleteRecurringParentSingle(parent);
-    },
     
     // 添加排除日期（内部使用）
     addExcludedDate: (parentId: string, date: Date) => {

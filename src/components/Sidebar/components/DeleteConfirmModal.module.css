@@ -32,6 +32,16 @@
   animation: slideUp 0.18s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* 母事件样式 - 红色警告主题 */
+.parentModal {
+  border-top: 4px solid #ef4444;
+}
+
+/* 虚拟实例样式 - 橙色警告主题 */
+.instanceModal {
+  border-top: 4px solid #f97316;
+}
+
 .iconContainer {
   display: flex;
   justify-content: center;
@@ -42,15 +52,28 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, 
-    rgba(239, 68, 68, 0.1),
-    rgba(220, 38, 38, 0.05)
-  );
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #dc2626;
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* 母事件图标 - 红色 */
+.parentIcon {
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 0.15),
+    rgba(220, 38, 38, 0.08)
+  );
+  color: #dc2626;
+}
+
+/* 虚拟实例图标 - 橙色 */
+.instanceIcon {
+  background: linear-gradient(135deg, 
+    rgba(249, 115, 22, 0.15),
+    rgba(234, 88, 12, 0.08)
+  );
+  color: #ea580c;
 }
 
 .content {
@@ -284,4 +307,47 @@
   .optionDesc {
     color: #9ca3af;
   }
+}
+
+/* 信息提示框 */
+.infoBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: 12px;
+  color: #92400e;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.infoBox svg {
+  flex-shrink: 0;
+}
+
+/* 链接按钮样式 */
+.linkButton {
+  background: none;
+  border: none;
+  color: #d97706;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: all 0.2s;
+}
+
+.linkButton:hover {
+  color: #b45309;
+  text-decoration-thickness: 2px;
+}
+
+.parentDate {
+  font-weight: 600;
+  color: #92400e;
+  margin-left: 4px;
 }

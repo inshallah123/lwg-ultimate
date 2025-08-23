@@ -14,7 +14,6 @@ export function convertToSimple(event: Event): void {
   const store = useEventStore.getState();
   
   if (eventType === 'SE') {
-    console.warn('SE already is a simple event');
     return;
   }
   
@@ -40,7 +39,6 @@ export function convertToRecurring(
   const store = useEventStore.getState();
   
   if (eventType !== 'SE') {
-    console.warn('Only SE can be converted to recurring');
     return;
   }
   
@@ -62,7 +60,6 @@ export function changeRecurrence(
   const store = useEventStore.getState();
   
   if (eventType !== 'RP') {
-    console.warn('Only RP can change recurrence directly');
     return;
   }
   
@@ -76,7 +73,8 @@ export function changeRecurrence(
  */
 export function canConvertToSimple(event: Event): boolean {
   const eventType = getEventType(event);
-  return eventType === 'RP' || eventType === 'VI';
+  // 根据新的需求矩阵，只有VI支持CS
+  return eventType === 'VI';
 }
 
 /**
@@ -105,11 +103,8 @@ export function getConvertConfirmMessage(
   const eventType = getEventType(event);
   
   if (operation === 'toSimple') {
-    if (eventType === 'RP') {
-      return 'Convert this recurring event to a single event? The next occurrence will become the new series parent.';
-    }
     if (eventType === 'VI') {
-      return 'Convert this occurrence to an independent single event?';
+      return 'Convert this occurrence to an independent single event? It will no longer be part of the recurring series.';
     }
   }
   
@@ -128,9 +123,6 @@ export function getConvertSuccessMessage(
   operation: 'toSimple' | 'toRecurring'
 ): string {
   if (operation === 'toSimple') {
-    if (eventType === 'RP') {
-      return 'Event converted to single event, series parent transferred';
-    }
     if (eventType === 'VI') {
       return 'Occurrence converted to independent event';
     }

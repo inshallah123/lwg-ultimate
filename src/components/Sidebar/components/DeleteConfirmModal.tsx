@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Event } from '@/types/event';
 import { DeleteScope } from '@/stores/eventStore/types';
+import { useEventStore } from '@/stores/eventStore';
+import { useSidebarStore } from '../store';
 import { 
   getEventType,
   getAvailableScopes,
@@ -25,6 +27,10 @@ export function DeleteConfirmModal({
   onSelectScope,
   onCancel
 }: DeleteConfirmModalProps) {
+  
+  // Hooks必须在顶层调用
+  const { getEventById } = useEventStore();
+  const { setSelectedDate } = useSidebarStore();
   
   // ESC键关闭
   useEffect(() => {
@@ -51,6 +57,19 @@ export function DeleteConfirmModal({
   const showScopeSelection = needsScopeSelection(eventType, 'delete');
   const availableScopes = getAvailableScopes(eventType, 'delete');
   const message = getDeleteConfirmMessage(eventType, 'single');
+  const isParent = eventType === 'RP';
+  
+  // 获取母事件信息（如果是VI）
+  // 注意：VI是动态生成的，不在state.events中，所以直接用parentId查找
+  const parentEvent = event.parentId ? getEventById(event.parentId) : null;
+  
+  // 处理跳转到母事件
+  const handleGoToParent = () => {
+    if (parentEvent) {
+      setSelectedDate(parentEvent.date);
+      onCancel();
+    }
+  };
   
   // SE只有删除选项，显示简单确认
   if (!showScopeSelection) {
@@ -95,9 +114,9 @@ export function DeleteConfirmModal({
   const modalContent = (
     <>
       <div className={styles.overlay} onClick={onCancel} />
-      <div className={styles.modal}>
+      <div className={`${styles.modal} ${isParent ? styles.parentModal : styles.instanceModal}`}>
         <div className={styles.iconContainer}>
-          <div className={styles.iconBackground}>
+          <div className={`${styles.iconBackground} ${isParent ? styles.parentIcon : styles.instanceIcon}`}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path 
                 d="M12 9v4m0 4h.01M5.07 19a10 10 0 1113.86 0" 
@@ -111,8 +130,15 @@ export function DeleteConfirmModal({
         </div>
         
         <div className={styles.content}>
-          <h3 className={styles.title}>Delete Recurring Event</h3>
-          <p className={styles.message}>How would you like to delete this recurring event?</p>
+          <h3 className={styles.title}>
+            {isParent ? 'Delete Recurring Series' : 'Delete Event Instance'}
+          </h3>
+          <p className={styles.message}>
+            {isParent 
+              ? 'You are about to delete the parent event of a recurring series. How would you like to proceed?'
+              : 'You are about to delete an instance of a recurring event. How would you like to proceed?'
+            }
+          </p>
         </div>
         
         <div className={styles.recurringOptions}>
@@ -132,6 +158,25 @@ export function DeleteConfirmModal({
               </div>
             </button>
           ))}
+          
+          {/* VI显示提示：要删除全部需要到母事件 */}
+          {eventType === 'VI' && parentEvent && (
+            <div className={styles.infoBox}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                <path d="M12 16v-4M12 8h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              <span>
+                To delete all events in the series, please{' '}
+                <button className={styles.linkButton} onClick={handleGoToParent}>
+                  go to the parent event
+                  <span className={styles.parentDate}>
+                    ({parentEvent.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})
+                  </span>
+                </button>
+              </span>
+            </div>
+          )}
         </div>
         
         <div className={styles.actions}>

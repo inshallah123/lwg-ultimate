@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Event, UpdateEventInput } from '@/types/event';
 import { EditScope, DeleteScope } from '@/stores/eventStore/types';
+import { useEventStore } from '@/stores/eventStore';
 import { getEventType, needsScopeSelection } from '../logic/eventTypeUtils';
 import { executeEditOperation } from '../logic/editOperations';
 import { executeDeleteOperation } from '../logic/deleteOperations';
@@ -29,10 +30,32 @@ const TAG_COLORS: Record<string, string> = {
 };
 
 // 格式化重复周期显示
-const formatRecurrence = (event: Event): string => {
+const formatRecurrence = (event: Event, getParentEvent?: (id: string) => Event | undefined): string => {
   const eventType = getEventType(event);
   
   if (eventType === 'VI') {
+    // 对于虚拟实例，显示母事件的重复周期
+    if (getParentEvent && event.parentId) {
+      const parent = getParentEvent(event.parentId);
+      if (parent) {
+        switch (parent.recurrence) {
+          case 'none':
+            return '🔁 Instance';
+          case 'weekly':
+            return '🔁 Weekly';
+          case 'monthly':
+            return '🔁 Monthly';
+          case 'quarterly':
+            return '🔁 Quarterly';
+          case 'yearly':
+            return '🔁 Yearly';
+          case 'custom':
+            return parent.customRecurrence ? `🔁 Every ${parent.customRecurrence} days` : '🔁 Custom';
+          default:
+            return '🔁 Instance';
+        }
+      }
+    }
     return '🔁 Recurring Instance';
   }
   
@@ -66,6 +89,10 @@ const truncateText = (text: string, maxLength: number = 60): string => {
 
 export function EventCard({ event }: EventCardProps) {
   const eventType = getEventType(event);
+  const { getParentEvent } = useEventStore();
+  
+  // 判断是否显示更多菜单按钮
+  const showMoreMenuButton = canConvertToSimple(event) || canConvertToRecurring(event);
   
   // 状态管理
   const [showEditModal, setShowEditModal] = useState(false);
@@ -140,20 +167,21 @@ export function EventCard({ event }: EventCardProps) {
   
   // 处理转换确认
   const handleConvertConfirm = useCallback((scope?: 'single' | 'all') => {
+    setShowConvertModal(false);
+    
     if (convertOperation === 'toSimple') {
       // CS操作
       convertToSimple(event);
+      setConvertOperation(null);
     } else if (convertOperation === 'toRecurring') {
       // CR操作：打开表单设置重复参数
+      // 注意：不要清除convertOperation，EventForm需要它来判断模式
       setShowEventForm(true);
-      // CR操作不需要设置editScope，使用mode='create'即可
     }
-    setShowConvertModal(false);
-    setConvertOperation(null);
   }, [event, convertOperation]);
   
   // 显示逻辑
-  const recurrenceText = formatRecurrence(event);
+  const recurrenceText = formatRecurrence(event, getParentEvent);
   const tagColor = TAG_COLORS[event.tag] || TAG_COLORS.custom;
   const displayTag = event.tag === 'custom' && event.customTag ? event.customTag : event.tag;
   
@@ -200,41 +228,43 @@ export function EventCard({ event }: EventCardProps) {
               </svg>
             </button>
             
-            {/* 更多选项按钮 */}
-            <div className={styles.moreMenuContainer}>
-              <button 
-                className={styles.moreButton}
-                onClick={() => setShowMoreMenu(!showMoreMenu)}
-                title="More options"
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <circle cx="8" cy="3" r="1" fill="currentColor"/>
-                  <circle cx="8" cy="8" r="1" fill="currentColor"/>
-                  <circle cx="8" cy="13" r="1" fill="currentColor"/>
-                </svg>
-              </button>
-              
-              {showMoreMenu && (
-                <div className={styles.moreMenu}>
-                  {canConvertToSimple(event) && (
-                    <button 
-                      className={styles.menuItem}
-                      onClick={handleConvertToSimpleClick}
-                    >
-                      Convert to Single Event
-                    </button>
-                  )}
-                  {canConvertToRecurring(event) && (
-                    <button 
-                      className={styles.menuItem}
-                      onClick={handleConvertToRecurringClick}
-                    >
-                      Set as Recurring
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
+            {/* 更多选项按钮 - 仅在有可用操作时显示 */}
+            {showMoreMenuButton && (
+              <div className={styles.moreMenuContainer}>
+                <button 
+                  className={styles.moreButton}
+                  onClick={() => setShowMoreMenu(!showMoreMenu)}
+                  title="More options"
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="3" r="1" fill="currentColor"/>
+                    <circle cx="8" cy="8" r="1" fill="currentColor"/>
+                    <circle cx="8" cy="13" r="1" fill="currentColor"/>
+                  </svg>
+                </button>
+                
+                {showMoreMenu && (
+                  <div className={styles.moreMenu}>
+                    {canConvertToSimple(event) && (
+                      <button 
+                        className={styles.menuItem}
+                        onClick={handleConvertToSimpleClick}
+                      >
+                        Convert to Single Event
+                      </button>
+                    )}
+                    {canConvertToRecurring(event) && (
+                      <button 
+                        className={styles.menuItem}
+                        onClick={handleConvertToRecurringClick}
+                      >
+                        Set as Recurring
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
         
@@ -295,7 +325,7 @@ export function EventCard({ event }: EventCardProps) {
       {showEventForm && (
         <EventForm
           isOpen={showEventForm}
-          mode={convertOperation === 'toRecurring' ? 'create' : 'edit'}
+          mode={convertOperation === 'toRecurring' ? 'convertToRecurring' : 'edit'}
           event={convertOperation === 'toRecurring' ? { ...event, recurrence: 'weekly' } : event}
           editScope={editScope}
           onClose={() => {
