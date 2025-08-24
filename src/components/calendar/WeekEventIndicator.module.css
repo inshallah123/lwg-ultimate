@@ -48,7 +48,7 @@
 /* 事件标题 */
 .eventTitle {
   font-weight: 500;
-  color: var(--accent-color, #1e293b);
+  color: #1e293b;
   letter-spacing: -0.01em;
   flex: 1;
   overflow: hidden;
@@ -61,7 +61,7 @@
 .eventTime {
   font-size: 9px;
   font-weight: 600;
-  color: var(--accent-color, #64748b);
+  color: #64748b;
   opacity: 0.7;
   flex-shrink: 0;
   padding: 1px 3px;
@@ -101,7 +101,7 @@
 .eventCount {
   font-size: 9px;
   font-weight: 700;
-  color: var(--accent-color, #64748b);
+  color: #64748b;
   background: rgba(255, 255, 255, 0.9);
   padding: 1px 4px;
   border-radius: 8px;
@@ -187,7 +187,7 @@
 /* 标签点动画 */
 .tagDot {
   animation: pulse 2s ease-in-out infinite;
-  animation-delay: calc(var(--dot-index, 0) * 0.1s);
+  /* animation-delay removed - not using dynamic CSS variable */
 }
 
 /* ==================== 响应式调整 ==================== */
@@ -217,17 +217,6 @@
   }
 }
 
-/* ==================== 高对比度模式支持 ==================== */
-@media (prefers-contrast: high) {
-  .eventCard,
-  .eventSummaryCard {
-    border-width: 2px;
-  }
-  
-  .eventTitle {
-    font-weight: 600;
-  }
-}
 
 /* ==================== 减少动画模式 ==================== */
 @media (prefers-reduced-motion: reduce) {

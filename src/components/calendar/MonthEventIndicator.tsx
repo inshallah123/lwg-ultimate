@@ -33,7 +33,7 @@ const TAG_BORDER_COLORS: Record<string, string> = {
   custom: 'rgba(124, 58, 237, 0.15)'
 };
 
-export function MonthEventIndicator({ date, maxDisplay = 4, isCurrentMonth = true }: MonthEventIndicatorProps) {
+export function MonthEventIndicator({ date, isCurrentMonth = true }: MonthEventIndicatorProps) {
   const allEvents = useEventStore(state => state.events);
   const getEventsInRange = useEventStore(state => state.getEventsInRange);
   const openSidebar = useSidebarStore(state => state.open);
@@ -78,7 +78,7 @@ export function MonthEventIndicator({ date, maxDisplay = 4, isCurrentMonth = tru
   
   // 根据事件数量和当前月份状态决定显示策略
   // 双列布局：最多显示4个事件（两行，每行两个）
-  let actualMaxDisplay = maxDisplay;
+  let actualMaxDisplay: number | undefined;
   
   if (!isCurrentMonth) {
     // 非当前月：最多显示2个

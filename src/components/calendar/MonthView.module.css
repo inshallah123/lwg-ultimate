@@ -152,7 +152,7 @@
 
 .dayCell {
   padding: 6px;
-  min-height: 85px;
+  min-height: 100px; /* 增加高度以容纳4个事件卡片和指示器 */
   background: var(--color-bg-primary);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -173,7 +173,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0px;
+  gap: 0;
   margin-bottom: 2px;
   flex-shrink: 0;
   min-height: 30px;
@@ -277,7 +277,7 @@
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
   position: relative;
-  border: 1.5px solid rgba(168, 196, 212, 0.4);
+  border: 2px solid rgba(168, 196, 212, 0.4);
   box-shadow: 0 2px 8px rgba(168, 196, 212, 0.15);
 }
 
