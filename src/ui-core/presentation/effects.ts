@@ -69,7 +69,7 @@ export interface Effects {
   
   // 性能优化
   willChange?: 'auto' | 'scroll-position' | 'contents' | string;
-  contain?: 'none' | 'strict' | 'content' | 'size' | 'layout' | 'style' | 'paint';
+  contain?: 'none' | 'strict' | 'content' | 'size' | 'layout' | 'style' | 'paint' | string;  // 允许组合值
   contentVisibility?: 'auto' | 'hidden' | 'visible';
   
   // 其他效果
