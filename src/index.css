@@ -1,12 +1,10 @@
-/* 全局样式 - 最顶层，最宏观 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap'); /* 全局样式 - 最顶层，最宏观 */
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@300;400;500;600;700;900&display=swap');
 
 body {
   font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
@@ -27,6 +25,7 @@ body {
   --color-primary-rgb: 91, 141, 190;
   --color-primary-hover: #4A7CAD;  /* hover态 */
   --color-primary-active: #3A6B9C;  /* active态 */
+  --color-primary-gradient: linear-gradient(135deg, #5B8DBE, #7BA7D1);
   
   /* 语义色彩 - 简洁实用 */
   --color-success: #52A373;
@@ -43,6 +42,12 @@ body {
   --color-bg-primary: #FFFFFF;
   --color-bg-secondary: #F8FAFC;
   --color-bg-tertiary: #F1F5F9;
+  
+  /* 玻璃效果 */
+  --glass-bg: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0.8)
+  );
   
   /* 边框 - 清晰可见 */
   --color-border: #E2E8F0;
@@ -68,9 +73,11 @@ body {
   --font-size-xl: 1.5rem;     /* 24px - 大标题 */
   
   /* 字重 - 简化为3个级别 */
+  --font-weight-light: 300;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
-  --font-weight-bold: 600;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
   
   /* 字体 */
   --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
@@ -86,6 +93,11 @@ body {
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.12);
   --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  
+  /* 模糊效果 */
+  --blur-sm: blur(4px);
+  --blur-md: blur(8px);
+  --blur-lg: blur(16px);
   
   /* 过渡 - 统一简化 */
   --transition-fast: 150ms ease-in-out;

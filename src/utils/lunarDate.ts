@@ -93,25 +93,3 @@ export function getLunarDateInfo(date: Date): LunarDateInfo {
   
   return info;
 }
-
-export function formatLunarDateInfo(info: LunarDateInfo): string {
-  const parts: string[] = [];
-  
-  if (info.lunar) {
-    parts.push(info.lunar);
-  }
-  
-  if (info.festival) {
-    parts.push(info.festival);
-  }
-  
-  if (info.solarTerm) {
-    parts.push(info.solarTerm);
-  }
-  
-  if (info.workday) {
-    parts.push(info.workday);
-  }
-  
-  return parts.join('·');
-}

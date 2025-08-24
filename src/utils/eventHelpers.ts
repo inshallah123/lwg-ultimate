@@ -15,22 +15,6 @@ export function generateEventId(): string {
 export function generateVirtualInstanceId(parentId: string, instanceDate: Date): string {
   return `${parentId}_${instanceDate.getTime()}`;
 }
-
-/**
- * 解析虚拟实例ID获取父事件ID
- */
-export function parseVirtualInstanceId(instanceId: string): { parentId: string; timestamp: number } | null {
-  const parts = instanceId.split('_');
-  if (parts.length < 4) return null; // event_timestamp_random_instanceTime
-  
-  const parentId = parts.slice(0, 3).join('_');
-  const timestamp = parseInt(parts[3], 10);
-  
-  if (isNaN(timestamp)) return null;
-  
-  return { parentId, timestamp };
-}
-
 /**
  * 计算从指定日期开始的前一天（用于设置recurrenceEndDate）
  */
