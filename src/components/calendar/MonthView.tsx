@@ -28,6 +28,8 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
   const scrollVelocityRef = useRef(0);
   const [isInitialized, setIsInitialized] = useState(false); // 添加初始化标志
   const [scrollPosition, setScrollPosition] = useState(0);
+  const rafRef = useRef<number>();
+  const [isDefaultView, setIsDefaultView] = useState(false); // 是否处于默认月视图（按空格后）
   
   // 生成连续的日期数组（根据动态范围）
   const generateContinuousDays = useCallback((centerDate: Date, startMonths: number, endMonths: number) => {
@@ -74,7 +76,7 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
       const { days, centerIndex } = generateContinuousDays(today, monthsRange.start, monthsRange.end);
       
       // 立即计算初始滚动位置
-      const rowHeight = scrollContainerRef.current.clientHeight / 6;
+      const rowHeight = Math.floor(scrollContainerRef.current.clientHeight / 6);
       rowHeightRef.current = rowHeight;
       
       const todayIndex = days.findIndex(d => 
@@ -86,9 +88,22 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
       let initialScroll = 0;
       if (todayIndex !== -1) {
         const todayRow = Math.floor(todayIndex / 7);
-        initialScroll = Math.max(0, (todayRow - 2.5) * rowHeight);
+        // 让今天在第三行（索引2），这样上面有2行，下面有3行，共6行
+        // 使用整数像素值，避免小数导致的显示问题
+        initialScroll = Math.round(Math.max(0, (todayRow - 2) * rowHeight));
       } else {
-        initialScroll = Math.floor(centerIndex / 7) * rowHeight;
+        // 如果没有今天，就显示当月第一天在第三行
+        const firstDayOfMonth = days.findIndex(d => 
+          d.getFullYear() === today.getFullYear() && 
+          d.getMonth() === today.getMonth() &&
+          d.getDate() === 1
+        );
+        if (firstDayOfMonth !== -1) {
+          const firstDayRow = Math.floor(firstDayOfMonth / 7);
+          initialScroll = Math.max(0, (firstDayRow - 2) * rowHeight);
+        } else {
+          initialScroll = Math.floor(centerIndex / 7) * rowHeight;
+        }
       }
       
       // 同步设置所有状态
@@ -109,21 +124,29 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
       e.preventDefault();
       e.stopPropagation();
       
-      const scrollSpeed = 0.3; // 更慢的滚动速度
+      const scrollSpeed = 0.25; // 稍微减慢滚动速度
       const delta = e.deltaY * scrollSpeed;
       
-      setScrollPosition(prev => {
-        // 无限滚动，不再限制范围
-        const newPosition = prev + delta;
-        
-        // 计算滚动速度
-        scrollVelocityRef.current = Math.abs(newPosition - lastScrollPositionRef.current);
-        lastScrollPositionRef.current = newPosition;
-        
-        return Math.max(0, newPosition); // 只限制不能滚动到负值
+      // 取消之前的动画帧
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+      
+      // 使用 requestAnimationFrame 优化性能
+      rafRef.current = requestAnimationFrame(() => {
+        setScrollPosition(prev => {
+          const newPosition = prev + delta;
+          
+          // 计算滚动速度
+          scrollVelocityRef.current = Math.abs(delta);
+          lastScrollPositionRef.current = newPosition;
+          
+          return Math.max(0, newPosition);
+        });
       });
       
       setIsScrolling(true);
+      setIsDefaultView(false); // 滚动时退出默认视图模式
       
       // 清除之前的timeout
       if (scrollTimeoutRef.current) {
@@ -133,7 +156,8 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
       // 停止滚动后恢复静态视图
       scrollTimeoutRef.current = setTimeout(() => {
         setIsScrolling(false);
-      }, 150);
+        scrollVelocityRef.current = 0;
+      }, 200); // 稍微延长等待时间
     };
     
     // 使用 passive: false 以允许 preventDefault
@@ -144,12 +168,18 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
     };
   }, [allDays.length]);
   
   // 更新当前月份
   useEffect(() => {
     if (allDays.length === 0 || !isInitialized) return; // 初始化完成前不更新
+    
+    // 在默认视图模式下不自动更新月份，保持显示今天所在的月份
+    if (isDefaultView) return;
     
     const rowHeight = rowHeightRef.current || 100;
     const currentRow = Math.floor((scrollPosition + rowHeight * 3) / rowHeight);
@@ -162,7 +192,7 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
         setDate(newDate);
       }
     }
-  }, [scrollPosition, allDays, currentDate, setDate, isInitialized]);
+  }, [scrollPosition, allDays, currentDate, setDate, isInitialized, isDefaultView]);
   
   // 检查是否需要加载更多日期（无限滚动）
   useEffect(() => {
@@ -173,17 +203,16 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
     const currentRow = Math.floor((scrollPosition + rowHeight * 3) / rowHeight);
     
     // 根据滚动速度动态调整加载阈值
-    // 速度越快，提前加载的距离越远
     const velocity = scrollVelocityRef.current;
-    const baseThreshold = 8 * 4; // 基础2个月的行数
-    const dynamicThreshold = baseThreshold + Math.floor(velocity / 10); // 速度越快，阈值越大
+    const baseThreshold = 12 * 4; // 增加基础阈值到3个月
+    const dynamicThreshold = baseThreshold + Math.floor(velocity / 5); // 更敏感的速度响应
     
     let needsUpdate = false;
     let newStart = monthsRange.start;
     let newEnd = monthsRange.end;
     
     // 根据速度决定加载的月份数量
-    const monthsToLoad = velocity > 50 ? 12 : 6; // 快速滚动时加载更多
+    const monthsToLoad = velocity > 30 ? 12 : velocity > 15 ? 9 : 6; // 分级加载
     
     // 检查是否接近顶部
     if (currentRow < dynamicThreshold) {
@@ -232,6 +261,7 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
         e.preventDefault();
         const today = new Date();
         setDate(today);
+        setIsDefaultView(true); // 设置为默认视图模式
         
         // 重置为初始范围
         const initialRange = { start: -6, end: 6 };
@@ -242,13 +272,13 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
         setCenterIndex(centerIndex);
         
         if (scrollContainerRef.current) {
-          const rowHeight = scrollContainerRef.current.clientHeight / 6;
+          const rowHeight = Math.floor(scrollContainerRef.current.clientHeight / 6);
           const todayIndex = days.findIndex(d => isToday(d));
           if (todayIndex !== -1) {
-            // 让今天显示在视图中间位置
             const todayRow = Math.floor(todayIndex / 7);
-            const initialScroll = Math.max(0, (todayRow - 2.5) * rowHeight); // 减去2.5行让今天在中间
-            setScrollPosition(initialScroll);
+            // 让今天固定在第三行，确保显示完整的6行
+            const targetScroll = Math.round(Math.max(0, (todayRow - 2) * rowHeight));
+            setScrollPosition(targetScroll);
           }
         }
       }
@@ -269,9 +299,12 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
     if (!isInitialized || allDays.length === 0) return null;
     
     const containerHeight = scrollContainerRef.current?.clientHeight || 600;
-    const rowHeight = containerHeight / 6;
-    const visibleStartRow = Math.floor(scrollPosition / rowHeight) - 2;
-    const visibleEndRow = Math.ceil((scrollPosition + containerHeight) / rowHeight) + 2;
+    const rowHeight = Math.floor(containerHeight / 6);
+    
+    // 增加渲染缓冲区，特别是在滚动时
+    const bufferRows = isScrolling ? 6 : 4; // 滚动时增加缓冲
+    const visibleStartRow = Math.floor(scrollPosition / rowHeight) - bufferRows;
+    const visibleEndRow = Math.ceil((scrollPosition + containerHeight) / rowHeight) + bufferRows;
     const startIndex = Math.max(0, visibleStartRow * 7);
     const endIndex = Math.min(allDays.length, visibleEndRow * 7);
     
@@ -282,7 +315,7 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
       
       const row = Math.floor(i / 7);
       const col = i % 7;
-      const top = row * rowHeight - scrollPosition;
+      const top = Math.round(row * rowHeight - scrollPosition);
       const left = (col / 7) * 100;
       
       const dayKey = `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
@@ -296,7 +329,12 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
       // 根据滚动状态决定样式
       let useCurrentStyle = isCurrentMonth;
       
-      if (isScrolling) {
+      if (isDefaultView && !isScrolling) {
+        // 默认视图（按空格后）：固定第1、6行涂灰，2-5行正常
+        const visibleRow = Math.floor((i - startIndex) / 7);
+        const absoluteRow = row - Math.floor(scrollPosition / rowHeight);
+        useCurrentStyle = absoluteRow >= 1 && absoluteRow <= 4; // 第2-5行为正常样式
+      } else if (isScrolling) {
         // 滚动时：滑动窗口效果，中心附近6行用当月样式
         const centerRow = Math.floor((scrollPosition + containerHeight / 2) / rowHeight);
         const distanceFromCenter = Math.abs(row - centerRow);
@@ -318,7 +356,7 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
             left: `${left}%`,
             width: `${100 / 7}%`,
             height: `${rowHeight}px`,
-            transition: 'all 0.2s ease-out'
+            transition: isScrolling ? 'none' : 'all 0.2s ease-out' // 滚动时禁用过渡
           }}
           onClick={() => handleCellClick(day)}
         >
@@ -367,8 +405,8 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
           );
           
           if (targetIndex !== -1 && scrollContainerRef.current) {
-            const rowHeight = scrollContainerRef.current.clientHeight / 6;
-            const targetScroll = Math.floor(targetIndex / 7) * rowHeight;
+            const rowHeight = Math.floor(scrollContainerRef.current.clientHeight / 6);
+            const targetScroll = Math.round(Math.floor(targetIndex / 7) * rowHeight);
             setScrollPosition(targetScroll);
           }
         }}>
@@ -388,8 +426,8 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
           );
           
           if (targetIndex !== -1 && scrollContainerRef.current) {
-            const rowHeight = scrollContainerRef.current.clientHeight / 6;
-            const targetScroll = Math.floor(targetIndex / 7) * rowHeight;
+            const rowHeight = Math.floor(scrollContainerRef.current.clientHeight / 6);
+            const targetScroll = Math.round(Math.floor(targetIndex / 7) * rowHeight);
             setScrollPosition(targetScroll);
           }
         }}>
