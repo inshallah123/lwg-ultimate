@@ -10,12 +10,12 @@ import {
 
 interface CalendarStore {
   currentDate: Date;
-  viewMode: 'month' | 'week';
+  viewMode: 'month' | 'week' | 'year';
   isTransitioning: boolean;
   transitionDirection: 'left' | 'right';
   
   setDate: (date: Date) => void;
-  handleViewChange: (mode: 'month' | 'week') => void;
+  handleViewChange: (mode: 'month' | 'week' | 'year') => void;
   
   navigateWeek: (delta: number) => void;
   goToToday: () => void;
@@ -39,8 +39,12 @@ export const useCalendarStore = create<CalendarStore>()(
     const currentMode = get().viewMode;
     if (mode === currentMode) return;
     
+    const viewOrder = ['year', 'month', 'week'];
+    const currentIndex = viewOrder.indexOf(currentMode);
+    const newIndex = viewOrder.indexOf(mode);
+    
     set({ 
-      transitionDirection: mode === 'week' ? 'right' : 'left',
+      transitionDirection: newIndex > currentIndex ? 'right' : 'left',
       isTransitioning: true 
     });
     

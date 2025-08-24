@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { MonthView } from './components/calendar/MonthView';
 import { WeekView } from './components/calendar/WeekView';
+import { YearView } from './components/calendar/YearView';
 import { SearchBox } from '@/components/search/SearchBox';
 import { Sidebar } from './components/Sidebar/sidebar';
 import { useSidebarStore } from './components/Sidebar/store';
@@ -52,6 +53,12 @@ function App() {
         />
         <div className={styles.viewToggle}>
           <button 
+            className={`${styles.viewButton} ${viewMode === 'year' ? styles.active : ''}`}
+            onClick={() => handleViewChange('year')}
+          >
+            Year
+          </button>
+          <button 
             className={`${styles.viewButton} ${viewMode === 'month' ? styles.active : ''}`}
             onClick={() => handleViewChange('month')}
           >
@@ -71,7 +78,9 @@ function App() {
           className={`${styles.viewContainer} ${isTransitioning ? styles.transitioning : ''} ${styles[transitionDirection]}`}
           data-view={viewMode}
         >
-          {viewMode === 'month' ? 
+          {viewMode === 'year' ? 
+            <YearView onOpenSideBar={openSidebar} /> :
+            viewMode === 'month' ? 
             <MonthView onOpenSideBar={openSidebar} /> : 
             <WeekView onOpenSideBar={openSidebar} />
           }
