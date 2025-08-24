@@ -1,6 +1,6 @@
 import React from 'react';
 import { isToday } from '@/utils/dateHelpers';
-import { EventIndicator } from '../EventIndicator';
+import { MonthEventIndicator } from '../MonthEventIndicator';
 import { LunarInfo } from './LunarInfo';
 import styles from '../MonthView.module.css';
 
@@ -72,10 +72,9 @@ export function DayCell({
         <span className={styles.dayNumber}>{day.getDate()}</span>
         <LunarInfo date={day} />
       </div>
-      <EventIndicator 
-        date={day} 
-        view="month"
-        maxDisplay={3}
+      <MonthEventIndicator 
+        date={day}
+        isCurrentMonth={useCurrentStyle}
       />
     </div>
   );

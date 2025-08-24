@@ -105,12 +105,15 @@
   flex-direction: column;
   background: var(--color-bg-primary);
   border-right: 1px solid var(--color-border-light);
-  transition: all var(--transition-fast);
+  transition: background-color 0.15s ease;
+  min-width: 120px; /* 确保最小宽度 */
 }
 
 .dayColumn:hover {
-  background: var(--color-bg-hover);
-  contain: layout; /* 限制hover影响范围 */
+  background: linear-gradient(180deg,
+    rgba(168, 196, 212, 0.02),
+    transparent
+  );
 }
 
 .dayColumn:last-child {
@@ -185,47 +188,42 @@
 }
 
 .lunarInfo {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   display: flex;
   align-items: center;
-  gap: 3px;
-  margin-top: 3px;
-  flex-wrap: wrap;
   justify-content: center;
-  line-height: 1.2;
+  margin-top: 2px;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .lunar {
   color: #8a92a6;
   opacity: 0.9;
   font-weight: var(--font-weight-normal);
+  font-size: 0.60rem;
 }
 
 .festival {
   color: #d6536d;
   font-weight: var(--font-weight-medium);
-  background: linear-gradient(135deg, rgba(232, 93, 117, 0.06), rgba(232, 93, 117, 0.02));
-  padding: 1px 4px;
-  border-radius: 8px;
-  letter-spacing: 0.02em;
+  font-size: 0.60rem;
+  letter-spacing: 0.01em;
 }
 
 .solarTerm {
   color: #4a8a73;
   font-weight: var(--font-weight-medium);
-  background: linear-gradient(135deg, rgba(74, 157, 131, 0.06), rgba(74, 157, 131, 0.02));
-  padding: 1px 4px;
-  border-radius: 8px;
-  letter-spacing: 0.02em;
+  font-size: 0.60rem;
+  letter-spacing: 0.01em;
 }
 
 .workday {
   color: #e6820c;
   font-weight: var(--font-weight-semibold);
-  background: rgba(255, 149, 0, 0.06);
-  padding: 0 3px;
-  border-radius: 6px;
-  font-size: 0.6rem;
+  font-size: 0.58rem;
 }
 
 .dayHeader.today .dayName,
@@ -262,16 +260,49 @@
   border-bottom: 1px solid var(--color-border-light);
   position: relative;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color 0.15s ease;
   background: var(--color-bg-primary);
   flex: 1;
-  min-height: 40px;
-  padding: 2px;
+  min-height: 50px; /* 增加高度以容纳更多卡片 */
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .hourCell:hover {
-  background: var(--color-bg-hover);
-  /* 移除hover阴影，减少重绘 */
+  background: linear-gradient(135deg, 
+    rgba(168, 196, 212, 0.03),
+    rgba(224, 197, 210, 0.02)
+  );
+}
+
+/* 单元格激活状态 */
+.hourCell:active {
+  background: linear-gradient(135deg, 
+    rgba(168, 196, 212, 0.05),
+    rgba(224, 197, 210, 0.03)
+  );
+}
+
+/* 单元格焦点状态 */
+.hourCell:focus-visible {
+  outline: 2px solid rgba(168, 196, 212, 0.3);
+  outline-offset: -2px;
+}
+
+/* 今天标识动画 */
+@keyframes todayPulse {
+  0%, 100% {
+    box-shadow: 0 -2px 8px rgba(168, 196, 212, 0.25);
+  }
+  50% {
+    box-shadow: 0 -2px 12px rgba(168, 196, 212, 0.35);
+  }
+}
+
+.dayHeader.today::after {
+  animation: todayPulse 2s ease-in-out infinite;
 }
 
 /* Mobile */
@@ -281,4 +312,18 @@
   .dayName { font-size: var(--font-size-xs); }
   .dayDate { font-size: var(--font-size-base); }
   .timeSlot { font-size: 10px; }
+  .hourCell { min-height: 45px; }
+  .dayColumn { min-width: 100px; }
+}
+
+/* 无障碍支持 */
+@media (prefers-reduced-motion: reduce) {
+  .dayHeader.today::after {
+    animation: none;
+  }
+  
+  .hourCell,
+  .dayColumn {
+    transition: none;
+  }
 }
