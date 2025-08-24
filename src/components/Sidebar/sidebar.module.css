@@ -20,40 +20,23 @@
   top: 0;
   width: 420px;
   height: 100vh;
-  background: var(--glass-bg);
-  backdrop-filter: var(--blur-sm); /* 降低模糊程度 */
-  box-shadow: var(--shadow-lg); /* 简化阴影 */
+  background: var(--color-bg-primary);
+  box-shadow: var(--shadow-xl);
   display: flex;
   flex-direction: column;
   z-index: calc(var(--z-index-modal) + 1);
-  animation: slideIn var(--transition-base) cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideIn var(--transition-base) ease-out;
   overflow: hidden;
   border-right: 1px solid var(--color-border-light);
-  contain: layout style; /* 限制重绘范围 */
+  contain: layout style;
 }
 
-/* 背景渐变装饰 */
-.backgroundGradient {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 300px;
-  background: linear-gradient(180deg,
-    var(--color-primary-light) 0%,
-    transparent 100%
-  );
-  opacity: 0.3;
-  pointer-events: none;
-}
+/* 移除背景装饰 */
 
 /* 头部 */
 .header {
   padding: var(--spacing-lg);
-  background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.05),
-    transparent
-  );
+  background: var(--color-bg-secondary);
   border-bottom: 1px solid var(--color-border-light);
   display: flex;
   justify-content: space-between;
@@ -106,23 +89,22 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-md);
-  background: var(--glass-bg);
-  backdrop-filter: var(--blur-sm);
+  background: var(--color-bg-primary);
   border: 1px solid var(--color-border-light);
   color: var(--color-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast);
+  transition: var(--transition-transform), var(--transition-shadow), var(--transition-colors);
   box-shadow: var(--shadow-sm);
 }
 
 .closeButton:hover {
-  background: var(--color-bg-primary);
+  background: var(--color-bg-secondary);
   color: var(--color-primary);
-  transform: rotate(90deg);
-  box-shadow: var(--shadow-md);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-hover);
 }
 
 /* 内容区 */
@@ -169,10 +151,7 @@
 .footer {
   padding: var(--spacing-lg);
   border-top: 1px solid var(--color-border-light);
-  background: linear-gradient(180deg,
-    transparent,
-    rgba(255, 255, 255, 0.02)
-  );
+  background: var(--color-bg-secondary);
   min-height: 80px;
 }
 
@@ -180,25 +159,26 @@
   width: 100%;
   padding: var(--spacing-md) var(--spacing-lg);
   border-radius: var(--radius-lg);
-  background: var(--color-primary-gradient);
+  background: var(--color-primary);
   color: white;
   border: none;
   font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
-  transition: all var(--transition-fast);
-  box-shadow: var(--shadow-md);
+  transition: var(--transition-transform), var(--transition-shadow);
+  box-shadow: var(--shadow-primary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
 }
 
 .actionButton:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-hover);
+  background: var(--color-primary-hover);
 }
 
 .actionButton:active {

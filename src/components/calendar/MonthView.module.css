@@ -2,10 +2,9 @@
 
 .monthContainer {
   padding: var(--spacing-xl);
-  background: var(--glass-bg);
-  /* backdrop-filter: var(--blur-sm); 移除以提升性能 */
+  background: var(--color-bg-primary);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
   width: 100%;
   min-height: calc(100vh - 150px);
   height: calc(100vh - 150px);
@@ -14,23 +13,10 @@
   border: 1px solid var(--color-border-light);
   position: relative;
   overflow: hidden;
-  contain: strict; /* 使用更严格的contain以提升性能 */
+  contain: layout style;
 }
 
-.monthContainer::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 200px;
-  background: linear-gradient(180deg, 
-    rgba(168, 196, 212, 0.08) 0%, 
-    rgba(224, 197, 210, 0.04) 100%
-  );
-  opacity: 0.9;
-  pointer-events: none;
-}
+/* 移除装饰性渐变以提升性能 */
 
 .monthHeaderContainer {
   display: flex;
@@ -45,11 +31,8 @@
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-light);
   margin: 0;
-  background: linear-gradient(135deg, #7a8a9a 0%, #9a8a9a 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: 0.05em;
+  color: var(--color-text-primary);
+  letter-spacing: 0.02em;
   position: relative;
   display: flex;
   align-items: center;
@@ -61,10 +44,7 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, 
-    rgba(168, 196, 212, 0.4), 
-    rgba(224, 197, 210, 0.2)
-  );
+  background: var(--color-border-light);
   margin-left: var(--spacing-lg);
 }
 
@@ -86,115 +66,59 @@
   position: relative;
   flex: 1;
   overflow: hidden;
-  perspective: 1000px;
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   border: 1px solid var(--color-border-light);
   border-top: none;
 }
 
-
-.weekdayHeader {
-  padding: calc(var(--spacing-md) + 2px) var(--spacing-md);
-  font-weight: var(--font-weight-medium);
-  text-align: center;
-  background: 
-    linear-gradient(180deg,
-      rgba(255, 255, 255, 0.15) 0%,
-      transparent 50%
-    ),
-    linear-gradient(135deg, 
-      rgba(188, 211, 224, 0.28) 0%,
-      rgba(219, 211, 224, 0.22) 35%,
-      rgba(237, 219, 232, 0.20) 65%,
-      rgba(247, 223, 235, 0.18) 100%
-    );
-  color: #64748b;
-  font-size: var(--font-size-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  position: relative;
-  /* backdrop-filter: blur(10px); 移除以提升性能 */
-  box-shadow: 
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 1px 0 rgba(183, 206, 219, 0.08);
-  transition: all 0.3s ease;
-}
-
-.weekdayHeader::before {
-  content: '';
+.weekRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
   position: absolute;
-  top: 0;
   left: 0;
   right: 0;
-  height: 1px;
-  background: linear-gradient(90deg,
-    transparent 5%,
-    rgba(255, 255, 255, 0.3) 20%,
-    rgba(255, 255, 255, 0.3) 80%,
-    transparent 95%
-  );
-  opacity: 0.6;
 }
 
+
+.weekdayHeader {
+  padding: var(--spacing-md);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  position: relative;
+  border-bottom: 1px solid var(--color-border-light);
+  transition: var(--transition-colors);
+}
+
+/* 移除装饰性元素 */
+
 .weekdayHeader:hover {
-  background: 
-    linear-gradient(180deg,
-      rgba(255, 255, 255, 0.18) 0%,
-      transparent 50%
-    ),
-    linear-gradient(135deg, 
-      rgba(188, 211, 224, 0.32) 0%,
-      rgba(219, 211, 224, 0.26) 35%,
-      rgba(237, 219, 232, 0.24) 65%,
-      rgba(247, 223, 235, 0.22) 100%
-    );
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
 }
 
 .dayCell {
-  padding: 6px;
-  min-height: 100px; /* 增加高度以容纳4个事件卡片和指示器 */
+  padding: 8px;
   background: var(--color-bg-primary);
   cursor: pointer;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast); /* 只过渡必要属性 */
-  position: relative;
   display: flex;
   flex-direction: column;
   font-weight: var(--font-weight-medium);
   border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-sm);
   gap: 2px;
-  overflow: visible; /* 改为visible防止内容被截断 */
-  will-change: auto; /* 避免过度使用GPU加速 */
-  contain: layout style; /* 限制重绘范围 */
+  box-sizing: border-box;
+  transition: background 0.2s ease, transform 0.2s ease;
+  height: 100%;
 }
 
 
 
-.dayCellHeader {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  margin-bottom: 2px;
-  flex-shrink: 0;
-  min-height: 30px;
-  max-height: 32px;
-}
 
-.dayNumber {
-  font-size: 14px;
-  line-height: 1.1;
-  font-weight: var(--font-weight-medium);
-  color: #4a5568;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
-}
-
-.currentMonth .dayNumber {
-  color: #3a4556;
-  font-weight: var(--font-weight-semibold);
-}
+/* 日期头部相关样式已移至 MonthEventIndicator.module.css */
 
 .lunarInfo {
   font-size: 0.65rem;
@@ -210,89 +134,73 @@
 }
 
 .lunar {
-  color: #8a92a6;
-  opacity: 0.85;
-  font-weight: var(--font-weight-normal);
+  color: var(--color-text-secondary);
+  opacity: 0.9;
+  font-weight: var(--font-weight-medium);
   letter-spacing: 0.01em;
-  font-size: 0.62rem;
+  font-size: var(--font-size-2xs);
 }
 
 .festival {
   color: #d6536d;
-  font-weight: var(--font-weight-medium);
-  font-size: 0.62rem;
-  letter-spacing: 0.01em;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-2xs);
+  letter-spacing: 0.02em;
 }
 
 .solarTerm {
   color: #4a8a73;
-  font-weight: var(--font-weight-medium);
-  font-size: 0.62rem;
-  letter-spacing: 0.01em;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-2xs);
+  letter-spacing: 0.02em;
 }
 
 .workday {
   color: #e6820c;
-  font-weight: var(--font-weight-semibold);
-  font-size: 0.60rem;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-2xs);
+  letter-spacing: 0.02em;
 }
 
 .dayCell:hover {
-  background: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.98),
-    rgba(248, 250, 252, 0.95)
-  );
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background: var(--color-bg-secondary);
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
   z-index: 1;
-  border-color: rgba(168, 196, 212, 0.25);
-  transform: translateY(-1px);
+  position: relative;
+}
+
+.dayCell:active {
+  background: var(--color-bg-tertiary);
 }
 
 .currentMonth {
   color: var(--color-text-primary);
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.95),
-    rgba(248, 250, 252, 0.9)
-  );
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  background: var(--color-bg-primary);
 }
 
 .otherMonth {
   color: var(--color-text-muted);
-  background: linear-gradient(135deg,
-    rgba(196, 184, 200, 0.06),
-    rgba(196, 184, 200, 0.02)
-  );
-  opacity: 0.75;
+  background: var(--color-bg-tertiary);
+  opacity: 0.6;
 }
 
 .otherMonth:hover {
-  opacity: 0.8;
-  background: var(--color-bg-tertiary);
+  opacity: 0.75;
+  background: var(--color-bg-secondary);
 }
 
 .today {
-  background: linear-gradient(135deg,
-    rgba(168, 196, 212, 0.12),
-    rgba(224, 197, 210, 0.06)
-  );
+  background: var(--color-primary-light);
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+  z-index: 2;
   position: relative;
-  border: 2px solid rgba(168, 196, 212, 0.4);
-  box-shadow: 0 2px 8px rgba(168, 196, 212, 0.15);
 }
 
-.today::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #a8c4d4, #e0c5d2);
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-}
+/* 移除today::before伪元素，避免溢出 */
 
 /* pulse动画移除以减少闪烁 */
 

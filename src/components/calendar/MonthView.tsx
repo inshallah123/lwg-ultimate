@@ -250,48 +250,63 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
     const startIndex = Math.max(0, visibleStartRow * 7);
     const endIndex = Math.min(allDays.length, visibleEndRow * 7);
     
-    const cells = [];
-    for (let i = startIndex; i < endIndex; i++) {
-      const day = allDays[i];
-      if (!day) continue;
+    const rows = [];
+    for (let rowIndex = Math.floor(startIndex / 7); rowIndex < Math.ceil(endIndex / 7); rowIndex++) {
+      const rowCells = [];
+      for (let col = 0; col < 7; col++) {
+        const dayIndex = rowIndex * 7 + col;
+        if (dayIndex < startIndex || dayIndex >= endIndex || dayIndex >= allDays.length) continue;
+        
+        const day = allDays[dayIndex];
+        if (!day) continue;
+        
+        const dayKey = `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
+        
+        // 判断是否为当前视图月份
+        const viewMonth = currentDate.getMonth();
+        const viewYear = currentDate.getFullYear();
+        const isCurrentMonth = day.getMonth() === viewMonth && day.getFullYear() === viewYear;
+        
+        rowCells.push(
+          <DayCell
+            key={dayKey}
+            day={day}
+            isCurrentMonth={isCurrentMonth}
+            isScrolling={isScrolling}
+            isDefaultView={isDefaultView}
+            row={rowIndex}
+            scrollPosition={scrollPosition}
+            rowHeight={rowHeight}
+            containerHeight={containerHeight}
+            onClick={handleCellClick}
+            style={{}}
+          />
+        );
+      }
       
-      const row = Math.floor(i / 7);
-      const col = i % 7;
-      const top = Math.round(row * rowHeight - scrollPosition);
-      const left = (col / 7) * 100;
-      
-      const dayKey = `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
-      
-      // 判断是否为当前视图月份
-      const viewMonth = currentDate.getMonth();
-      const viewYear = currentDate.getFullYear();
-      const isCurrentMonth = day.getMonth() === viewMonth && day.getFullYear() === viewYear;
-      
-      cells.push(
-        <DayCell
-          key={dayKey}
-          day={day}
-          isCurrentMonth={isCurrentMonth}
-          isScrolling={isScrolling}
-          isDefaultView={isDefaultView}
-          row={row}
-          scrollPosition={scrollPosition}
-          rowHeight={rowHeight}
-          containerHeight={containerHeight}
-          onClick={handleCellClick}
-          style={{
-            position: 'absolute',
-            top: `${top}px`,
-            left: `${left}%`,
-            width: `${100 / 7}%`,
-            height: `${rowHeight}px`,
-            willChange: isScrolling ? 'transform' : 'auto', // 滚动时优化GPU渲染
-          }}
-        />
-      );
+      if (rowCells.length > 0) {
+        rows.push(
+          <div 
+            key={`row-${rowIndex}`}
+            className={styles.weekRow}
+            style={{
+              position: 'absolute',
+              top: `${Math.round(rowIndex * rowHeight - scrollPosition)}px`,
+              left: 0,
+              right: 0,
+              height: `${rowHeight}px`,
+              display: 'grid',
+              gridTemplateColumns: 'repeat(7, 1fr)',
+              willChange: isScrolling ? 'transform' : 'auto'
+            }}
+          >
+            {rowCells}
+          </div>
+        );
+      }
     }
     
-    return cells;
+    return rows;
   };
   
   return (
@@ -305,11 +320,6 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
       <div 
         ref={scrollContainerRef}
         className={styles.scrollContainer}
-        style={{
-          position: 'relative',
-          flex: 1,
-          overflow: 'hidden',
-        }}
       >
         {renderVisibleDays()}
       </div>

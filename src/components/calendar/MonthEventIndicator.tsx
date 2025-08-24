@@ -1,12 +1,14 @@
 import React, { useMemo } from 'react';
 import { useEventStore } from '@/stores/eventStore';
 import { useSidebarStore } from '@/components/Sidebar/store';
+import { LunarInfo } from './components/LunarInfo';
 import styles from './MonthEventIndicator.module.css';
 
 interface MonthEventIndicatorProps {
   date: Date;
   maxDisplay?: number;
   isCurrentMonth?: boolean;
+  dayNumber: number;
 }
 
 // 优化的颜色系统 - 高对比度
@@ -33,7 +35,7 @@ const TAG_BORDER_COLORS: Record<string, string> = {
   custom: 'rgba(124, 58, 237, 0.15)'
 };
 
-export const MonthEventIndicator = React.memo(function MonthEventIndicator({ date, isCurrentMonth = true }: MonthEventIndicatorProps) {
+export const MonthEventIndicator = React.memo(function MonthEventIndicator({ date, isCurrentMonth = true, dayNumber }: MonthEventIndicatorProps) {
   const allEvents = useEventStore(state => state.events);
   const getEventsInRange = useEventStore(state => state.getEventsInRange);
   const openSidebar = useSidebarStore(state => state.open);
@@ -48,7 +50,17 @@ export const MonthEventIndicator = React.memo(function MonthEventIndicator({ dat
     return getEventsInRange(startOfDay, endOfDay);
   }, [date, getEventsInRange, allEvents]);
   
-  if (events.length === 0) return null;
+  // 始终显示日期头部
+  if (events.length === 0) {
+    return (
+      <>
+        <div className={styles.dayCellHeader}>
+          <span className={styles.dayNumber}>{dayNumber}</span>
+          <LunarInfo date={date} />
+        </div>
+      </>
+    );
+  }
   
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -125,60 +137,59 @@ export const MonthEventIndicator = React.memo(function MonthEventIndicator({ dat
   }
   
   return (
-    <div className={styles.monthEventContainer}>
-      {/* 事件卡片网格 - 双列布局 */}
-      {displayEvents.length > 0 && (
-        <div className={`${styles.eventGrid} ${displayEvents.length === 1 ? styles.singleEvent : ''}`}>
-          {displayEvents.map((event, index) => (
-            <div
-              key={`${event.id}-${index}`}
-              className={`${styles.eventCard} ${!isCurrentMonth ? styles.muted : ''}`}
-              style={{
-                background: TAG_BG_COLORS[event.tag] || TAG_BG_COLORS.custom,
-                borderColor: TAG_BORDER_COLORS[event.tag] || TAG_BORDER_COLORS.custom,
-                '--accent-color': TAG_COLORS[event.tag] || TAG_COLORS.custom,
-                opacity: isCurrentMonth ? 1 : 0.7
-              } as React.CSSProperties}
-              onClick={handleClick}
-              title={`${event.title}${event.description ? `\n${event.description}` : ''}`}
-            >
-              <span className={styles.eventDot} 
-                    style={{ backgroundColor: TAG_COLORS[event.tag] || TAG_COLORS.custom }} />
-              <span className={styles.eventTitle}>
-                {truncateTitle(event.title, 
-                  displayEvents.length === 1 ? 12 : 
-                  isCurrentMonth ? 6 : 5
-                )}
-              </span>
-            </div>
-          ))}
+    <>
+      {/* 日期头部区域 - 包含日期、农历和更多指示器 */}
+      <div className={styles.dayCellHeader}>
+        <div className={styles.headerLeft}>
+          <span className={styles.dayNumber}>{dayNumber}</span>
+          <LunarInfo date={date} />
         </div>
-      )}
+        {/* 更多指示器移到头部右侧 */}
+        {remainingCount > 0 && (
+          <div 
+            className={styles.moreIndicatorCompact}
+            onClick={handleClick}
+            title={generateTooltip()}
+          >
+            <span className={styles.moreTextCompact}>
+              +{remainingCount}
+            </span>
+          </div>
+        )}
+      </div>
       
-      {/* 更多指示器 - 单独一行 */}
-      {remainingCount > 0 && (
-        <div 
-          className={styles.moreIndicator}
-          onClick={handleClick}
-          title={generateTooltip()}
-        >
-          <span className={styles.moreText}>
-            {remainingCount === 1 ? `还有1个` : `+${remainingCount}个`}
-          </span>
-          {remainingCount <= 4 && (
-            <div className={styles.moreDots}>
-              {events.slice(displayEvents.length, displayEvents.length + Math.min(4, remainingCount)).map((e, i) => (
-                <span
-                  key={i}
-                  className={styles.moreDot}
-                  style={{ backgroundColor: TAG_COLORS[e.tag] || TAG_COLORS.custom }}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+      {/* 事件容器 */}
+      <div className={styles.monthEventContainer}>
+        {/* 事件卡片网格 - 双列布局 */}
+        {displayEvents.length > 0 && (
+          <div className={`${styles.eventGrid} ${displayEvents.length === 1 ? styles.singleEvent : ''}`}>
+            {displayEvents.map((event, index) => (
+              <div
+                key={`${event.id}-${index}`}
+                className={`${styles.eventCard} ${!isCurrentMonth ? styles.muted : ''}`}
+                style={{
+                  background: TAG_BG_COLORS[event.tag] || TAG_BG_COLORS.custom,
+                  borderColor: TAG_BORDER_COLORS[event.tag] || TAG_BORDER_COLORS.custom,
+                  '--accent-color': TAG_COLORS[event.tag] || TAG_COLORS.custom,
+                  opacity: isCurrentMonth ? 1 : 0.7
+                } as React.CSSProperties}
+                onClick={handleClick}
+                title={`${event.title}${event.description ? `\n${event.description}` : ''}`}
+              >
+                <span className={styles.eventDot} 
+                      style={{ backgroundColor: TAG_COLORS[event.tag] || TAG_COLORS.custom }} />
+                <span className={styles.eventTitle}>
+                  {truncateTitle(event.title, 
+                    displayEvents.length === 1 ? 12 : 
+                    isCurrentMonth ? 6 : 5
+                  )}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   );
 }, (prevProps, nextProps) => {
   // 自定义比较函数，只在date或isCurrentMonth变化时重新渲染

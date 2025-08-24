@@ -185,15 +185,6 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
             </button>
           )}
         </form>
-        
-        {/* 搜索快捷键提示 */}
-        {!isFocused && !searchQuery && (
-          <div className={styles.shortcutHint}>
-            <kbd className={styles.kbd}>Ctrl</kbd>
-            <span className={styles.plus}>+</span>
-            <kbd className={styles.kbd}>K</kbd>
-          </div>
-        )}
       </div>
       
       {/* 搜索建议列表 */}

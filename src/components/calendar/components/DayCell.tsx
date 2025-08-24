@@ -62,19 +62,13 @@ export const DayCell = React.memo(function DayCell({
       className={`${styles.dayCell} ${
         useCurrentStyle ? styles.currentMonth : styles.otherMonth
       } ${isToday(day) ? styles.today : ''}`}
-      style={{
-        ...style,
-        transition: isScrolling ? 'none' : 'all 0.2s ease-out'
-      }}
+      style={style}
       onClick={() => onClick(day)}
     >
-      <div className={styles.dayCellHeader}>
-        <span className={styles.dayNumber}>{day.getDate()}</span>
-        <LunarInfo date={day} />
-      </div>
       <MonthEventIndicator 
         date={day}
         isCurrentMonth={useCurrentStyle}
+        dayNumber={day.getDate()}
       />
     </div>
   );
