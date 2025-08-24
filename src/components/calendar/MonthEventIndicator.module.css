@@ -8,6 +8,8 @@
   min-height: 0;
   overflow: visible; /* 改为visible防止截断 */
   justify-content: flex-start;
+  will-change: auto; /* 避免过度使用GPU加速 */
+  contain: layout style; /* 限制重绘范围 */
 }
 
 /* 事件网格 - 双列布局 */
@@ -37,9 +39,9 @@
   font-size: 9px;
   line-height: 1.2;
   border: 1px solid;
-  backdrop-filter: blur(4px);
+  /* backdrop-filter: blur(4px); 移除以提升性能 */
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease; /* 优化transition，只过渡必要属性 */
   min-height: 15px;
   max-height: 16px; /* 限制卡片高度 */
   position: relative;
@@ -108,7 +110,7 @@
   );
   border: 1px solid rgba(148, 163, 184, 0.12);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease; /* 优化transition，只过渡必要属性 */
   min-height: 11px;
   height: 11px;
   flex-shrink: 0;
@@ -160,9 +162,9 @@
   font-size: 10px;
   line-height: 1.3;
   border: 1px solid;
-  backdrop-filter: blur(4px);
+  /* backdrop-filter: blur(4px); 移除以提升性能 */
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease; /* 优化transition，只过渡必要属性 */
   min-height: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   justify-content: center;
@@ -193,32 +195,11 @@
 }
 
 /* ==================== 动画 ==================== */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-2px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* 移除动画以防止闪烁 */
 .eventCard {
-  animation: fadeIn 0.15s ease-out;
-  animation-fill-mode: both;
-}
-
-.eventCard:nth-child(1) {
-  animation-delay: 0ms;
-}
-
-.eventCard:nth-child(2) {
-  animation-delay: 30ms;
-}
-
-.eventCard:nth-child(3) {
-  animation-delay: 60ms;
+  /* animation removed to prevent flickering */
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* ==================== 响应式设计 ==================== */

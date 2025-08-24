@@ -274,6 +274,7 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
             left: `${left}%`,
             width: `${100 / 7}%`,
             height: `${rowHeight}px`,
+            willChange: isScrolling ? 'transform' : 'auto', // 滚动时优化GPU渲染
           }}
         />
       );

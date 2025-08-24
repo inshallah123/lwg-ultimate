@@ -17,7 +17,7 @@ interface DayCellProps {
   style: React.CSSProperties;
 }
 
-export function DayCell({ 
+export const DayCell = React.memo(function DayCell({ 
   day, 
   isCurrentMonth,
   isScrolling,
@@ -78,4 +78,14 @@ export function DayCell({
       />
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // 比较关键属性，减少不必要的重渲染
+  return prevProps.day.getTime() === nextProps.day.getTime() &&
+         prevProps.isCurrentMonth === nextProps.isCurrentMonth &&
+         prevProps.isScrolling === nextProps.isScrolling &&
+         prevProps.isDefaultView === nextProps.isDefaultView &&
+         prevProps.row === nextProps.row &&
+         Math.abs(prevProps.scrollPosition - nextProps.scrollPosition) < 1 && // 允许微小差异
+         prevProps.style.top === nextProps.style.top &&
+         prevProps.style.left === nextProps.style.left;
+});

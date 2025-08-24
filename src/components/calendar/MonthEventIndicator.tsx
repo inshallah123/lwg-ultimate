@@ -33,7 +33,7 @@ const TAG_BORDER_COLORS: Record<string, string> = {
   custom: 'rgba(124, 58, 237, 0.15)'
 };
 
-export function MonthEventIndicator({ date, isCurrentMonth = true }: MonthEventIndicatorProps) {
+export const MonthEventIndicator = React.memo(function MonthEventIndicator({ date, isCurrentMonth = true }: MonthEventIndicatorProps) {
   const allEvents = useEventStore(state => state.events);
   const getEventsInRange = useEventStore(state => state.getEventsInRange);
   const openSidebar = useSidebarStore(state => state.open);
@@ -180,4 +180,8 @@ export function MonthEventIndicator({ date, isCurrentMonth = true }: MonthEventI
       )}
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // 自定义比较函数，只在date或isCurrentMonth变化时重新渲染
+  return prevProps.date.getTime() === nextProps.date.getTime() && 
+         prevProps.isCurrentMonth === nextProps.isCurrentMonth;
+});
