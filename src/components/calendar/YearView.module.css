@@ -211,7 +211,7 @@
     rgba(168, 196, 212, 0.12),
     rgba(224, 197, 210, 0.06)
   );
-  border: 1.5px solid rgba(168, 196, 212, 0.3);
+  border: 2px solid rgba(168, 196, 212, 0.3);
   box-shadow: 
     0 2px 8px rgba(168, 196, 212, 0.1),
     inset 0 0 12px rgba(168, 196, 212, 0.03);

@@ -4,7 +4,6 @@ import { useSidebarStore } from '../Sidebar/store';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { DayCell, WeekdayHeader, MonthHeader } from './components';
 import { useWheelHandler, useKeyboardNavigation } from './hooks';
-import { isToday } from '@/utils/dateHelpers';
 import styles from './MonthView.module.css';
 
 interface MonthViewProps {

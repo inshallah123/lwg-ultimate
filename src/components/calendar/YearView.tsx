@@ -1,16 +1,11 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { useCalendarStore } from './store';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {useCalendarStore} from './store';
 import styles from './YearView.module.css';
 import sharedStyles from './shared.module.css';
 
 const MONTH_NAMES = ['一月', '二月', '三月', '四月', '五月', '六月', 
                      '七月', '八月', '九月', '十月', '十一月', '十二月'];
-
-interface YearViewProps {
-  onOpenSideBar?: (date: Date) => void;
-}
-
-export function YearView({ onOpenSideBar }: YearViewProps = {}) {
+export function YearView() {
   const currentDate = useCalendarStore(state => state.currentDate);
   const setDate = useCalendarStore(state => state.setDate);
   const handleViewChange = useCalendarStore(state => state.handleViewChange);
@@ -44,8 +39,7 @@ export function YearView({ onOpenSideBar }: YearViewProps = {}) {
       const years = generateYears(currentYear, yearsRange.start, yearsRange.end);
       
       // 计算初始滚动位置（滚动到当前年份）
-      const containerHeight = scrollContainerRef.current.clientHeight;
-      yearHeightRef.current = containerHeight;
+        yearHeightRef.current = scrollContainerRef.current.clientHeight;
       
       const currentYearIndex = years.indexOf(currentYear);
       const initialScroll = currentYearIndex * yearHeightRef.current;

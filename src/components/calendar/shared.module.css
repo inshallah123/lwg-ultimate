@@ -3,8 +3,8 @@
   width: 40px;
   height: 40px;
   border-radius: var(--radius-md);
-  background: var(--glass-bg);
-  backdrop-filter: var(--blur-sm);
+  background: var(--color-bg-primary);
+  backdrop-filter: blur(2px);
   border: 1px solid var(--color-border-light);
   color: var(--color-text-secondary);
   cursor: pointer;
@@ -17,7 +17,7 @@
 }
 
 .navButton:hover {
-  background: var(--color-bg-hover);
+  background: var(--color-bg-secondary);
   color: var(--color-text-primary);
   border-color: var(--color-border);
   transform: translateY(-1px);

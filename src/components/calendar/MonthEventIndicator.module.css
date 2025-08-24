@@ -44,7 +44,7 @@
 
 .moreIndicatorCompact:hover {
   background: var(--color-primary);
-  border-color: var(--color-primary-dark);
+  border-color: var(--color-primary-active);
 }
 
 .moreIndicatorCompact:hover .moreTextCompact {

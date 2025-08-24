@@ -81,6 +81,10 @@
   position: relative;
   border-right: 1px solid var(--color-border-light);
   border-bottom: 1px solid var(--color-border-light);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .dayCell:first-child {
