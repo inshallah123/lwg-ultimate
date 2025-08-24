@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useCalendarStore } from './store';
 import { useSidebarStore } from '../Sidebar/store';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
@@ -18,11 +18,31 @@ export function WeekView({ onOpenSideBar }: WeekViewProps = {}) {
   useCalendarStore(state => state.currentDate);
   
   const navigateWeek = useCalendarStore(state => state.navigateWeek);
+  const goToToday = useCalendarStore(state => state.goToToday);
   const getWeekDays = useCalendarStore(state => state.getWeekDays);
   const getWeekHeader = useCalendarStore(state => state.getWeekHeader);
   const openEventForm = useSidebarStore(state => state.openEventForm);
   
   const weekDays = getWeekDays();
+  
+  // 添加空格键监听
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // 如果用户正在输入，不处理快捷键
+      if (e.target instanceof HTMLInputElement || 
+          e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      
+      if (e.code === 'Space' && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+        e.preventDefault();
+        goToToday();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [goToToday]);
   
   const handleCellClick = useDoubleClick(
     (day: Date, hourIndex: number) => onOpenSideBar?.(day, hourIndex),
