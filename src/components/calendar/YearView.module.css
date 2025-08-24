@@ -263,15 +263,13 @@
 .currentYear .monthCard::after {
   content: '';
   position: absolute;
-  inset: -1px;
+  inset: 0;
   border-radius: var(--radius-lg);
-  padding: 1px;
+  border: 1px solid transparent;
   background: linear-gradient(135deg, 
     rgba(168, 196, 212, 0.1),
     rgba(224, 197, 210, 0.05)
-  );
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
+  ) border-box;
   pointer-events: none;
   opacity: 0.5;
 }

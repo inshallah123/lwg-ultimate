@@ -19,7 +19,7 @@ function App() {
   const openSidebar = useSidebarStore(state => state.open);
   
   
-  const handleSearch = (query: string) => {
+  const handleSearch = () => {
     // 基础搜索功能（可选）
   };
   
@@ -79,7 +79,7 @@ function App() {
           data-view={viewMode}
         >
           {viewMode === 'year' ? 
-            <YearView onOpenSideBar={openSidebar} /> :
+            <YearView /> :
             viewMode === 'month' ? 
             <MonthView onOpenSideBar={openSidebar} /> : 
             <WeekView onOpenSideBar={openSidebar} />
