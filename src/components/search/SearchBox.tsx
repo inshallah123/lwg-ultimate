@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useEventStore } from '@/stores/eventStore';
-import { Event } from '@/types/event';
-import { SearchSuggestions } from './SearchSuggestions';
-import { searchEvents } from './searchUtils';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {useEventStore} from '@/stores/eventStore';
+import {Event} from '@/types/event';
+import {SearchSuggestions} from './SearchSuggestions';
+import {searchEvents} from './searchUtils';
 import styles from './SearchBox.module.css';
 
 interface SearchBoxProps {
@@ -40,9 +40,8 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
     searchEndDate.setFullYear(searchEndDate.getFullYear() + 3); // 到3年后结束
     
     const allEventsInRange = getEventsInRange(searchStartDate, searchEndDate);
-    
-    const results = searchEvents(searchQuery, allEventsInRange, today);
-    return results;
+
+  return searchEvents(searchQuery, allEventsInRange, today);
   }, [searchQuery, getEventsInRange]);
   
   // 处理键盘导航

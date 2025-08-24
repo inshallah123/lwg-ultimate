@@ -5,13 +5,10 @@ import { SearchBox } from '@/components/search/SearchBox';
 import { Sidebar } from './components/Sidebar/sidebar';
 import { useSidebarStore } from './components/Sidebar/store';
 import { useCalendarStore } from './components/calendar/store';
-import { useCalendarNavigation } from './components/calendar/hooks/useCalendarNavigation';
 import { Event } from '@/types/event';
 import styles from './App.module.css';
 
 function App() {
-  // 启用键盘导航
-  useCalendarNavigation();
   const viewMode = useCalendarStore(state => state.viewMode);
   const isTransitioning = useCalendarStore(state => state.isTransitioning);
   const transitionDirection = useCalendarStore(state => state.transitionDirection);

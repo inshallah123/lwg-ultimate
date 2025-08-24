@@ -17,9 +17,7 @@ interface CalendarStore {
   setDate: (date: Date) => void;
   handleViewChange: (mode: 'month' | 'week') => void;
   
-  navigateMonth: (delta: number) => void;
   navigateWeek: (delta: number) => void;
-  navigateYear: (delta: number) => void;
   goToToday: () => void;
   
   getMonthDays: () => Date[];
@@ -56,21 +54,9 @@ export const useCalendarStore = create<CalendarStore>()(
     });
   },
   
-  navigateMonth: (delta) => set((state) => {
-    const newDate = new Date(state.currentDate);
-    newDate.setMonth(newDate.getMonth() + delta);
-    return { currentDate: newDate };
-  }),
-  
   navigateWeek: (delta) => set((state) => {
     const newDate = new Date(state.currentDate);
     newDate.setDate(newDate.getDate() + delta * 7);
-    return { currentDate: newDate };
-  }),
-  
-  navigateYear: (delta) => set((state) => {
-    const newDate = new Date(state.currentDate);
-    newDate.setFullYear(newDate.getFullYear() + delta);
     return { currentDate: newDate };
   }),
   

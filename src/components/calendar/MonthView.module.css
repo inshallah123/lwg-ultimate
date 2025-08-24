@@ -92,25 +92,6 @@
   border-top: none;
 }
 
-.monthLayer {
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  transform-style: preserve-3d;
-}
-
-.calendarGrid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(6, minmax(85px, 1fr));
-  gap: 1px;
-  background: var(--color-border-light);
-  overflow: visible;
-  min-height: 100%;
-  box-shadow: var(--shadow-inner);
-  border: 1px solid var(--color-border-light);
-  border-top: none;
-  padding-bottom: 1px;
-}
 
 .weekdayHeader {
   padding: calc(var(--spacing-md) + 2px) var(--spacing-md);
@@ -183,10 +164,6 @@
   border-radius: var(--radius-sm);
 }
 
-.emptyCell {
-  background: transparent;
-  min-height: 85px;
-}
 
 
 .dayCellHeader {
@@ -315,36 +292,5 @@
   }
 }
 
-/* 导航控制 */
-.navigationControls {
-  display: flex;
-  gap: var(--spacing-sm);
-}
 
-.monthNavButton {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  background: var(--glass-bg);
-  backdrop-filter: var(--blur-sm);
-  border: 1px solid var(--color-border-light);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-base);
-  font-size: var(--font-size-lg);
-  box-shadow: var(--shadow-sm);
-}
-
-.monthNavButton:hover {
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
-}
-
-.monthNavButton:active {
-  transform: translateY(0);
-}
+/* monthNavButton 样式已移至 shared.module.css */
