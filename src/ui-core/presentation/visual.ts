@@ -14,13 +14,24 @@ export interface Visual {
     text?: string;
     background?: string;
     border?: string;
+    outline?: string;
+    caretColor?: string; // 光标颜色
   };
   
   // 边框
   border?: {
     width?: string;
-    style?: 'solid' | 'dashed' | 'dotted' | 'none';
+    style?: 'solid' | 'dashed' | 'dotted' | 'none' | 'double' | 'groove' | 'ridge' | 'inset' | 'outset';
     radius?: string;
+    color?: string;
+  };
+  
+  // 轮廓线
+  outline?: {
+    width?: string;
+    style?: 'solid' | 'dashed' | 'dotted' | 'none' | 'double';
+    color?: string;
+    offset?: string;
   };
   
   // 背景
@@ -28,11 +39,25 @@ export interface Visual {
     color?: string;
     gradient?: string;
     image?: string;
+    size?: string;
+    position?: string;
+    repeat?: 'repeat' | 'repeat-x' | 'repeat-y' | 'no-repeat' | 'space' | 'round';
+    attachment?: 'scroll' | 'fixed' | 'local';
     opacity?: number;
   };
   
   // 基础透明度
   opacity?: number;
+  
+  // 可见性
+  visibility?: 'visible' | 'hidden' | 'collapse';
+  
+  // 高级视觉效果
+  backdropFilter?: string; // 背景滤镜（毛玻璃效果等）
+  clipPath?: string;       // 裁剪路径
+  mask?: string;          // 遮罩
+  mixBlendMode?: string;  // 混合模式
+  isolation?: 'auto' | 'isolate'; // 创建新的堆叠上下文
 }
 
 /**
@@ -86,13 +111,15 @@ export function visualToCSS(visual?: Visual): Record<string, any> {
   if (!visual) return {};
   
   const css: Record<string, any> = {};
-  const { colors, border, background, opacity } = visual;
+  const { colors, border, outline, background, opacity, visibility, backdropFilter, clipPath, mask, mixBlendMode, isolation } = visual;
   
   // 处理颜色
   if (colors) {
     if (colors.text) css.color = colors.text;
     if (colors.background) css.backgroundColor = colors.background;
     if (colors.border) css.borderColor = colors.border;
+    if (colors.outline) css.outlineColor = colors.outline;
+    if (colors.caretColor) css.caretColor = colors.caretColor;
   }
   
   // 处理边框
@@ -100,6 +127,15 @@ export function visualToCSS(visual?: Visual): Record<string, any> {
     if (border.width) css.borderWidth = border.width;
     if (border.style) css.borderStyle = border.style;
     if (border.radius) css.borderRadius = border.radius;
+    if (border.color) css.borderColor = border.color;
+  }
+  
+  // 处理轮廓线
+  if (outline) {
+    if (outline.width) css.outlineWidth = outline.width;
+    if (outline.style) css.outlineStyle = outline.style;
+    if (outline.color) css.outlineColor = outline.color;
+    if (outline.offset) css.outlineOffset = outline.offset;
   }
   
   // 处理背景
@@ -112,15 +148,25 @@ export function visualToCSS(visual?: Visual): Record<string, any> {
     if (background.image) {
       css.backgroundImage = `url(${background.image})`;
     }
+    if (background.size) css.backgroundSize = background.size;
+    if (background.position) css.backgroundPosition = background.position;
+    if (background.repeat) css.backgroundRepeat = background.repeat;
+    if (background.attachment) css.backgroundAttachment = background.attachment;
     if (background.opacity !== undefined) {
       css.backgroundOpacity = background.opacity;
     }
   }
   
-  // 处理透明度
-  if (opacity !== undefined) {
-    css.opacity = opacity;
-  }
+  // 处理透明度和可见性
+  if (opacity !== undefined) css.opacity = opacity;
+  if (visibility) css.visibility = visibility;
+  
+  // 处理高级视觉效果
+  if (backdropFilter) css.backdropFilter = backdropFilter;
+  if (clipPath) css.clipPath = clipPath;
+  if (mask) css.mask = mask;
+  if (mixBlendMode) css.mixBlendMode = mixBlendMode;
+  if (isolation) css.isolation = isolation;
   
   return css;
 }

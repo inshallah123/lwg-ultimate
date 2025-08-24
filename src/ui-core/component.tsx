@@ -133,7 +133,7 @@ export function usePresentation(
  * 示例：使用严格模式创建日历组件
  */
 export const StrictCalendarComponents = {
-  // 月视图容器
+  // 月视图容器 - 展示新的overflow和scrollBehavior属性
   MonthContainer: createComponent('MonthContainer', {
     presentation: {
       spatial: {
@@ -147,6 +147,10 @@ export const StrictCalendarComponents = {
         },
         spacing: {
           padding: '24px'
+        },
+        overflow: {
+          y: 'auto',
+          scrollBehavior: 'smooth'
         }
       },
       visual: {
@@ -155,15 +159,17 @@ export const StrictCalendarComponents = {
         },
         border: {
           radius: '12px'
-        }
+        },
+        backdropFilter: 'blur(10px)' // 新增毛玻璃效果
       },
       effects: {
-        shadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+        shadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        willChange: 'transform' // 性能优化
       }
     }
   }),
   
-  // 日历格子
+  // 日历格子 - 展示新的cursor和userSelect属性
   DayCell: createComponent('DayCell', {
     presentation: {
       spatial: {
@@ -188,15 +194,20 @@ export const StrictCalendarComponents = {
         }
       },
       effects: {
+        cursor: 'pointer',
+        userSelect: 'none',
         transition: {
-          property: ['background-color', 'border-color'],
+          property: ['background-color', 'border-color', 'transform'],
           duration: '150ms'
+        },
+        transform: {
+          scale: 1
         }
       }
     }
   }),
   
-  // 事件指示器
+  // 事件指示器 - 展示Typography的新属性
   EventIndicator: createComponent('EventIndicator', {
     presentation: {
       spatial: {
@@ -221,7 +232,91 @@ export const StrictCalendarComponents = {
       },
       typography: {
         fontSize: '12px',
-        fontWeight: 500
+        fontWeight: 500,
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
+      }
+    }
+  }),
+  
+  // 固定头部 - 展示sticky布局和新视觉效果
+  StickyHeader: createComponent('StickyHeader', {
+    presentation: {
+      spatial: {
+        layout: 'sticky',
+        position: {
+          top: '0',
+          zIndex: 100
+        },
+        size: {
+          width: '100%',
+          height: '60px'
+        },
+        spacing: {
+          padding: '0 24px'
+        }
+      },
+      visual: {
+        colors: {
+          background: 'rgba(255, 255, 255, 0.8)'
+        },
+        backdropFilter: 'blur(20px) saturate(180%)',
+        border: {
+          width: '1px',
+          style: 'solid',
+          color: 'rgba(0, 0, 0, 0.1)'
+        }
+      },
+      effects: {
+        shadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+        contain: 'layout style'
+      }
+    }
+  }),
+  
+  // 交互按钮 - 展示完整的交互反馈
+  InteractiveButton: createComponent('InteractiveButton', {
+    presentation: {
+      spatial: {
+        layout: 'flex',
+        display: 'inline-flex',
+        layoutDetails: {
+          align: 'center',
+          justify: 'center'
+        },
+        spacing: {
+          padding: '8px 16px'
+        }
+      },
+      visual: {
+        colors: {
+          background: '#5B8DBE',
+          text: '#ffffff'
+        },
+        border: {
+          radius: '8px',
+          style: 'none'
+        }
+      },
+      typography: {
+        fontSize: '14px',
+        fontWeight: 600,
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px'
+      },
+      effects: {
+        cursor: 'pointer',
+        userSelect: 'none',
+        pointerEvents: 'auto',
+        transition: {
+          property: ['all'],
+          duration: '200ms',
+          easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+        },
+        transform: {
+          scale: 1
+        },
+        willChange: 'transform, box-shadow'
       }
     }
   })

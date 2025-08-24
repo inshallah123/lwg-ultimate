@@ -10,7 +10,10 @@
  */
 export interface Spatial {
   // 布局模式 - 互斥选择
-  layout: 'flex' | 'grid' | 'absolute' | 'static';
+  layout: 'flex' | 'grid' | 'absolute' | 'static' | 'fixed' | 'sticky' | 'relative';
+  
+  // 显示类型
+  display?: 'block' | 'inline' | 'inline-block' | 'none' | 'flex' | 'grid' | 'inline-flex' | 'inline-grid' | 'table' | 'table-cell' | 'table-row';
   
   // 尺寸定义
   size?: {
@@ -29,13 +32,22 @@ export interface Spatial {
     gap?: string;
   };
   
-  // 定位（仅在layout为absolute时有效）
+  // 定位（在absolute/fixed/sticky/relative布局时有效）
   position?: {
     top?: string;
     right?: string;
     bottom?: string;
     left?: string;
     zIndex?: number;
+    inset?: string; // 简写属性
+  };
+  
+  // 溢出控制
+  overflow?: {
+    x?: 'visible' | 'hidden' | 'scroll' | 'auto' | 'clip';
+    y?: 'visible' | 'hidden' | 'scroll' | 'auto' | 'clip';
+    scrollBehavior?: 'auto' | 'smooth';
+    scrollSnapType?: string;
   };
   
   // 布局细节
@@ -70,7 +82,7 @@ export class SpatialValidator {
       return false;
     }
     
-    const validLayouts = ['flex', 'grid', 'absolute', 'static'];
+    const validLayouts = ['flex', 'grid', 'absolute', 'static', 'fixed', 'sticky', 'relative'];
     if (!spatial.layout || !validLayouts.includes(spatial.layout)) {
       throw new Error(`Invalid layout: ${spatial.layout}. Must be one of: ${validLayouts.join(', ')}`);
     }
@@ -85,9 +97,21 @@ export class SpatialValidator {
       }
     }
     
-    // 验证position仅在absolute布局时有效
-    if (spatial.position && spatial.layout !== 'absolute') {
-      throw new Error('Position can only be set when layout is absolute');
+    // 验证position在需要定位的布局时有效
+    const positionLayouts = ['absolute', 'fixed', 'sticky', 'relative'];
+    if (spatial.position && !positionLayouts.includes(spatial.layout)) {
+      throw new Error(`Position can only be set when layout is one of: ${positionLayouts.join(', ')}`);
+    }
+    
+    // 验证overflow属性
+    if (spatial.overflow) {
+      const validOverflow = ['visible', 'hidden', 'scroll', 'auto', 'clip'];
+      if (spatial.overflow.x && !validOverflow.includes(spatial.overflow.x)) {
+        throw new Error(`Invalid overflow-x: ${spatial.overflow.x}`);
+      }
+      if (spatial.overflow.y && !validOverflow.includes(spatial.overflow.y)) {
+        throw new Error(`Invalid overflow-y: ${spatial.overflow.y}`);
+      }
     }
     
     return true;
@@ -109,11 +133,16 @@ export function spatialToCSS(spatial?: Spatial): Record<string, any> {
   if (!spatial) return {};
   
   const css: Record<string, any> = {};
-  const { layout, size, spacing, position, layoutDetails } = spatial;
+  const { layout, display, size, spacing, position, overflow, layoutDetails } = spatial;
+  
+  // 处理显示类型（如果明确指定）
+  if (display) {
+    css.display = display;
+  }
   
   // 处理布局模式
   if (layout === 'flex') {
-    css.display = 'flex';
+    if (!display) css.display = 'flex'; // 如果没有明确指定display，使用默认值
     if (layoutDetails && 'direction' in layoutDetails) {
       css.flexDirection = layoutDetails.direction;
       css.justifyContent = layoutDetails.justify;
@@ -121,7 +150,7 @@ export function spatialToCSS(spatial?: Spatial): Record<string, any> {
       if (layoutDetails.wrap) css.flexWrap = 'wrap';
     }
   } else if (layout === 'grid') {
-    css.display = 'grid';
+    if (!display) css.display = 'grid';
     if (layoutDetails && 'columns' in layoutDetails) {
       css.gridTemplateColumns = typeof layoutDetails.columns === 'number' 
         ? `repeat(${layoutDetails.columns}, 1fr)` 
@@ -139,11 +168,24 @@ export function spatialToCSS(spatial?: Spatial): Record<string, any> {
     }
   } else if (layout === 'absolute') {
     css.position = 'absolute';
-    if (position) {
-      Object.assign(css, position);
-    }
+  } else if (layout === 'fixed') {
+    css.position = 'fixed';
+  } else if (layout === 'sticky') {
+    css.position = 'sticky';
+  } else if (layout === 'relative') {
+    css.position = 'relative';
   } else if (layout === 'static') {
     css.position = 'static';
+  }
+  
+  // 处理定位属性
+  if (position) {
+    if (position.inset) css.inset = position.inset;
+    if (position.top !== undefined) css.top = position.top;
+    if (position.right !== undefined) css.right = position.right;
+    if (position.bottom !== undefined) css.bottom = position.bottom;
+    if (position.left !== undefined) css.left = position.left;
+    if (position.zIndex !== undefined) css.zIndex = position.zIndex;
   }
   
   // 处理尺寸
@@ -170,6 +212,14 @@ export function spatialToCSS(spatial?: Spatial): Record<string, any> {
     }
     
     if (spacing.gap) css.gap = spacing.gap;
+  }
+  
+  // 处理溢出控制
+  if (overflow) {
+    if (overflow.x) css.overflowX = overflow.x;
+    if (overflow.y) css.overflowY = overflow.y;
+    if (overflow.scrollBehavior) css.scrollBehavior = overflow.scrollBehavior;
+    if (overflow.scrollSnapType) css.scrollSnapType = overflow.scrollSnapType;
   }
   
   return css;

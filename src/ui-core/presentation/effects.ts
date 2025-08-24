@@ -11,6 +11,7 @@
 export interface Effects {
   // 阴影
   shadow?: string;
+  boxShadow?: string;  // 盒阴影的完整写法
   
   // 滤镜
   filter?: {
@@ -21,15 +22,24 @@ export interface Effects {
     saturate?: number;
     sepia?: number;
     hueRotate?: string;
+    dropShadow?: string;
+    invert?: number;
   };
   
   // 变换
   transform?: {
-    scale?: number | { x?: number; y?: number };
-    rotate?: string;
-    translate?: { x?: string; y?: string };
+    scale?: number | { x?: number; y?: number; z?: number };
+    rotate?: string | { x?: string; y?: string; z?: string };
+    translate?: { x?: string; y?: string; z?: string };
     skew?: { x?: string; y?: string };
+    perspective?: string;
+    matrix?: string;
   };
+  transformOrigin?: string;
+  transformStyle?: 'flat' | 'preserve-3d';
+  backfaceVisibility?: 'visible' | 'hidden';
+  perspective?: string;
+  perspectiveOrigin?: string;
   
   // 过渡动画
   transition?: {
@@ -48,7 +58,23 @@ export interface Effects {
     iteration?: number | 'infinite';
     direction?: 'normal' | 'reverse' | 'alternate' | 'alternate-reverse';
     fillMode?: 'none' | 'forwards' | 'backwards' | 'both';
+    playState?: 'running' | 'paused';
   };
+  
+  // 交互反馈（鼠标、指针、选择）
+  cursor?: 'auto' | 'default' | 'pointer' | 'wait' | 'text' | 'move' | 'not-allowed' | 'grab' | 'grabbing' | 'crosshair' | 'help' | 'progress' | 'zoom-in' | 'zoom-out' | string;
+  pointerEvents?: 'auto' | 'none' | 'visiblePainted' | 'visibleFill' | 'visibleStroke' | 'visible' | 'painted' | 'fill' | 'stroke' | 'all';
+  userSelect?: 'auto' | 'none' | 'text' | 'all' | 'contain';
+  touchAction?: 'auto' | 'none' | 'pan-x' | 'pan-y' | 'pan-left' | 'pan-right' | 'pan-up' | 'pan-down' | 'pinch-zoom' | 'manipulation';
+  
+  // 性能优化
+  willChange?: 'auto' | 'scroll-position' | 'contents' | string;
+  contain?: 'none' | 'strict' | 'content' | 'size' | 'layout' | 'style' | 'paint';
+  contentVisibility?: 'auto' | 'hidden' | 'visible';
+  
+  // 其他效果
+  resize?: 'none' | 'both' | 'horizontal' | 'vertical';
+  appearance?: 'none' | 'auto' | 'button' | 'textfield' | 'searchfield' | 'textarea' | 'push-button' | 'button-bevel' | 'slider-horizontal' | 'checkbox' | 'radio' | 'square-button' | 'menulist' | 'listbox' | 'meter' | 'progress-bar';
 }
 
 /**
@@ -60,7 +86,12 @@ export class EffectsValidator {
       return true; // 效果属性是可选的
     }
     
-    const validKeys = ['shadow', 'filter', 'transform', 'transition', 'animation'];
+    const validKeys = [
+      'shadow', 'boxShadow', 'filter', 'transform', 'transformOrigin', 'transformStyle',
+      'backfaceVisibility', 'perspective', 'perspectiveOrigin', 'transition', 'animation',
+      'cursor', 'pointerEvents', 'userSelect', 'touchAction',
+      'willChange', 'contain', 'contentVisibility', 'resize', 'appearance'
+    ];
     const keys = Object.keys(effects);
     
     const invalidKeys = keys.filter(key => !validKeys.includes(key));
@@ -115,11 +146,16 @@ export function effectsToCSS(effects?: Effects): Record<string, any> {
   if (!effects) return {};
   
   const css: Record<string, any> = {};
-  const { shadow, filter, transform, transition, animation } = effects;
+  const { 
+    shadow, boxShadow, filter, transform, transformOrigin, transformStyle,
+    backfaceVisibility, perspective, perspectiveOrigin, transition, animation,
+    cursor, pointerEvents, userSelect, touchAction,
+    willChange, contain, contentVisibility, resize, appearance
+  } = effects;
   
   // 处理阴影
-  if (shadow) {
-    css.boxShadow = shadow;
+  if (shadow || boxShadow) {
+    css.boxShadow = boxShadow || shadow;
   }
   
   // 处理滤镜
@@ -132,6 +168,8 @@ export function effectsToCSS(effects?: Effects): Record<string, any> {
     if (filter.saturate !== undefined) filters.push(`saturate(${filter.saturate})`);
     if (filter.sepia !== undefined) filters.push(`sepia(${filter.sepia})`);
     if (filter.hueRotate) filters.push(`hue-rotate(${filter.hueRotate})`);
+    if (filter.dropShadow) filters.push(`drop-shadow(${filter.dropShadow})`);
+    if (filter.invert !== undefined) filters.push(`invert(${filter.invert})`);
     
     if (filters.length > 0) {
       css.filter = filters.join(' ');
@@ -146,32 +184,55 @@ export function effectsToCSS(effects?: Effects): Record<string, any> {
       if (typeof transform.scale === 'number') {
         transforms.push(`scale(${transform.scale})`);
       } else {
-        const x = transform.scale.x ?? 1;
-        const y = transform.scale.y ?? 1;
-        transforms.push(`scale(${x}, ${y})`);
+        if (transform.scale.z !== undefined) {
+          transforms.push(`scale3d(${transform.scale.x ?? 1}, ${transform.scale.y ?? 1}, ${transform.scale.z})`);
+        } else {
+          transforms.push(`scale(${transform.scale.x ?? 1}, ${transform.scale.y ?? 1})`);
+        }
       }
     }
     
     if (transform.rotate) {
-      transforms.push(`rotate(${transform.rotate})`);
+      if (typeof transform.rotate === 'string') {
+        transforms.push(`rotate(${transform.rotate})`);
+      } else {
+        if (transform.rotate.x) transforms.push(`rotateX(${transform.rotate.x})`);
+        if (transform.rotate.y) transforms.push(`rotateY(${transform.rotate.y})`);
+        if (transform.rotate.z) transforms.push(`rotateZ(${transform.rotate.z})`);
+      }
     }
     
     if (transform.translate) {
-      const x = transform.translate.x || '0';
-      const y = transform.translate.y || '0';
-      transforms.push(`translate(${x}, ${y})`);
+      if (transform.translate.z) {
+        transforms.push(`translate3d(${transform.translate.x || '0'}, ${transform.translate.y || '0'}, ${transform.translate.z})`);
+      } else {
+        transforms.push(`translate(${transform.translate.x || '0'}, ${transform.translate.y || '0'})`);
+      }
     }
     
     if (transform.skew) {
-      const x = transform.skew.x || '0';
-      const y = transform.skew.y || '0';
-      transforms.push(`skew(${x}, ${y})`);
+      transforms.push(`skew(${transform.skew.x || '0'}, ${transform.skew.y || '0'})`);
+    }
+    
+    if (transform.perspective) {
+      transforms.push(`perspective(${transform.perspective})`);
+    }
+    
+    if (transform.matrix) {
+      transforms.push(`matrix(${transform.matrix})`);
     }
     
     if (transforms.length > 0) {
       css.transform = transforms.join(' ');
     }
   }
+  
+  // 处理变换相关属性
+  if (transformOrigin) css.transformOrigin = transformOrigin;
+  if (transformStyle) css.transformStyle = transformStyle;
+  if (backfaceVisibility) css.backfaceVisibility = backfaceVisibility;
+  if (perspective) css.perspective = perspective;
+  if (perspectiveOrigin) css.perspectiveOrigin = perspectiveOrigin;
   
   // 处理过渡
   if (transition) {
@@ -193,7 +254,23 @@ export function effectsToCSS(effects?: Effects): Record<string, any> {
       animation.fillMode || 'none'
     ];
     css.animation = parts.join(' ');
+    if (animation.playState) css.animationPlayState = animation.playState;
   }
+  
+  // 处理交互反馈
+  if (cursor) css.cursor = cursor;
+  if (pointerEvents) css.pointerEvents = pointerEvents;
+  if (userSelect) css.userSelect = userSelect;
+  if (touchAction) css.touchAction = touchAction;
+  
+  // 处理性能优化
+  if (willChange) css.willChange = willChange;
+  if (contain) css.contain = contain;
+  if (contentVisibility) css.contentVisibility = contentVisibility;
+  
+  // 处理其他效果
+  if (resize) css.resize = resize;
+  if (appearance) css.appearance = appearance;
   
   return css;
 }

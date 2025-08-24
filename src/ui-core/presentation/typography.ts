@@ -12,11 +12,21 @@ export interface Typography {
   fontFamily?: string;
   fontSize?: string;
   fontWeight?: number | string;
+  fontStyle?: 'normal' | 'italic' | 'oblique';
   lineHeight?: number | string;
   letterSpacing?: string;
-  textAlign?: 'left' | 'center' | 'right' | 'justify';
-  textTransform?: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
-  textDecoration?: 'none' | 'underline' | 'line-through';
+  wordSpacing?: string;
+  textAlign?: 'left' | 'center' | 'right' | 'justify' | 'start' | 'end';
+  textTransform?: 'none' | 'uppercase' | 'lowercase' | 'capitalize' | 'full-width';
+  textDecoration?: 'none' | 'underline' | 'overline' | 'line-through' | 'underline overline';
+  textDecorationStyle?: 'solid' | 'double' | 'dotted' | 'dashed' | 'wavy';
+  textDecorationColor?: string;
+  textIndent?: string;
+  textOverflow?: 'clip' | 'ellipsis' | string;
+  wordBreak?: 'normal' | 'break-all' | 'keep-all' | 'break-word';
+  whiteSpace?: 'normal' | 'nowrap' | 'pre' | 'pre-wrap' | 'pre-line' | 'break-spaces';
+  textShadow?: string;
+  writingMode?: 'horizontal-tb' | 'vertical-rl' | 'vertical-lr';
 }
 
 /**
@@ -29,8 +39,10 @@ export class TypographyValidator {
     }
     
     const validKeys = [
-      'fontFamily', 'fontSize', 'fontWeight', 'lineHeight',
-      'letterSpacing', 'textAlign', 'textTransform', 'textDecoration'
+      'fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight',
+      'letterSpacing', 'wordSpacing', 'textAlign', 'textTransform', 'textDecoration',
+      'textDecorationStyle', 'textDecorationColor', 'textIndent', 'textOverflow',
+      'wordBreak', 'whiteSpace', 'textShadow', 'writingMode'
     ];
     const keys = Object.keys(typography);
     
