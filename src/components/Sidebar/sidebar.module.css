@@ -163,7 +163,7 @@
   color: white;
   border: none;
   font-size: var(--font-size-base);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
   display: flex;
   align-items: center;

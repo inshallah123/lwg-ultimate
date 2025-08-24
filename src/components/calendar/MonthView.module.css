@@ -1,19 +1,15 @@
 @import './style/index.css';
 
 .monthContainer {
-  padding: var(--spacing-xl);
+  padding: var(--spacing-lg);
   background: var(--color-bg-primary);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   width: 100%;
-  min-height: calc(100vh - 150px);
   height: calc(100vh - 150px);
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--color-border-light);
-  position: relative;
   overflow: hidden;
-  contain: layout style;
 }
 
 /* 移除装饰性渐变以提升性能 */
@@ -28,35 +24,20 @@
 }
 
 .monthHeader {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-light);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
   margin: 0;
   color: var(--color-text-primary);
-  letter-spacing: 0.02em;
-  position: relative;
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  font-variant-numeric: tabular-nums;
-}
-
-.monthHeader::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--color-border-light);
-  margin-left: var(--spacing-lg);
 }
 
 .weekdayRow {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
-  background: var(--color-border-light);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  overflow: hidden;
-  border: 1px solid var(--color-border-light);
-  border-bottom: 1px solid var(--color-border-light);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -66,9 +47,6 @@
   position: relative;
   flex: 1;
   overflow: hidden;
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  border: 1px solid var(--color-border-light);
-  border-top: none;
 }
 
 .weekRow {
@@ -81,38 +59,32 @@
 
 
 .weekdayHeader {
-  padding: var(--spacing-md);
-  font-weight: var(--font-weight-semibold);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-weight: var(--font-weight-medium);
   text-align: center;
-  background: var(--color-bg-secondary);
   color: var(--color-text-secondary);
   font-size: var(--font-size-xs);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  position: relative;
-  border-bottom: 1px solid var(--color-border-light);
-  transition: var(--transition-colors);
-}
-
-/* 移除装饰性元素 */
-
-.weekdayHeader:hover {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
+  letter-spacing: 0.05em;
 }
 
 .dayCell {
-  padding: 8px;
+  padding: 12px;
   background: var(--color-bg-primary);
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  font-weight: var(--font-weight-medium);
-  border: 1px solid var(--color-border-light);
-  gap: 2px;
-  box-sizing: border-box;
-  transition: background 0.2s ease, transform 0.2s ease;
+  gap: 4px;
+  transition: var(--transition-colors);
   height: 100%;
+  box-sizing: border-box;
+  position: relative;
+  border-right: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.dayCell:first-child {
+  border-left: 1px solid var(--color-border-light);
 }
 
 
@@ -138,40 +110,36 @@
   opacity: 0.9;
   font-weight: var(--font-weight-medium);
   letter-spacing: 0.01em;
-  font-size: var(--font-size-2xs);
+  font-size: var(--font-size-xs);
 }
 
 .festival {
   color: #d6536d;
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xs);
   letter-spacing: 0.02em;
 }
 
 .solarTerm {
   color: #4a8a73;
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xs);
   letter-spacing: 0.02em;
 }
 
 .workday {
   color: #e6820c;
   font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-2xs);
+  font-size: var(--font-size-xs);
   letter-spacing: 0.02em;
 }
 
 .dayCell:hover {
   background: var(--color-bg-secondary);
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
-  z-index: 1;
+  border-color: var(--color-primary);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+  z-index: 10;
   position: relative;
-}
-
-.dayCell:active {
-  background: var(--color-bg-tertiary);
 }
 
 .currentMonth {
@@ -182,21 +150,19 @@
 .otherMonth {
   color: var(--color-text-muted);
   background: var(--color-bg-tertiary);
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .otherMonth:hover {
-  opacity: 0.75;
-  background: var(--color-bg-secondary);
+  opacity: 0.85;
 }
 
 .today {
   background: var(--color-primary-light);
   font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
-  z-index: 2;
+  border-color: var(--color-primary);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+  z-index: 20;
   position: relative;
 }
 

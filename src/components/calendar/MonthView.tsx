@@ -4,6 +4,7 @@ import { useSidebarStore } from '../Sidebar/store';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { DayCell, WeekdayHeader, MonthHeader } from './components';
 import { useWheelHandler, useKeyboardNavigation } from './hooks';
+import { isToday } from '@/utils/dateHelpers';
 import styles from './MonthView.module.css';
 
 interface MonthViewProps {
@@ -279,7 +280,9 @@ export function MonthView({ onOpenSideBar }: MonthViewProps = {}) {
             rowHeight={rowHeight}
             containerHeight={containerHeight}
             onClick={handleCellClick}
-            style={{}}
+            style={{
+              borderTop: rowIndex === 0 ? '1px solid var(--color-border-light)' : 'none'
+            }}
           />
         );
       }

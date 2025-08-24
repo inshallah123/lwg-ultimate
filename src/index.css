@@ -12,58 +12,42 @@ body {
   font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   line-height: 1.6;
   color: var(--color-text-primary);
-  background: linear-gradient(180deg, 
-    #fefeff 0%, 
-    #f8f9fb 100%
-  );
+  background: var(--color-bg-secondary);
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
   min-height: 100vh;
 }
 
 :root {
-  /* 核心颜色 - 莫兰迪淡蓝淡粉色系 (微调提升活力) */
-  --color-primary: #9ebdce;  /* 略微加深提升对比度 */
-  --color-primary-light: rgba(158, 189, 206, 0.15);
-  --color-primary-rgb: 158, 189, 206;
-  --color-primary-gradient: linear-gradient(135deg, #9ebdce 0%, #c4b8c8 50%, #e0c5d2 100%);
-  --color-primary-hover: #8fb1c4;  /* hover态 */
-  --color-primary-active: #7fa5ba;  /* active态 */
+  /* 核心颜色 - 清新蓝色系，提升对比度 */
+  --color-primary: #5B8DBE;  /* 更饱和的主蓝色 */
+  --color-primary-light: rgba(91, 141, 190, 0.12);
+  --color-primary-rgb: 91, 141, 190;
+  --color-primary-hover: #4A7CAD;  /* hover态 */
+  --color-primary-active: #3A6B9C;  /* active态 */
   
-  /* 文本颜色 - 柔和灰色系 */
-  --color-text-primary: #5a5a5c;
-  --color-text-secondary: #7a7a7c;
-  --color-text-tertiary: #9a9a9c;
-  --color-text-muted: #9a9a9c;
-  --color-text-inverse: #fefefe;
+  /* 语义色彩 - 简洁实用 */
+  --color-success: #52A373;
+  --color-warning: #F39C4D;
+  --color-error: #E15554;
   
-  /* 背景颜色 - 淡粉蓝基调 */
-  --color-bg-primary: #fefeff;
-  --color-bg-secondary: #f8f9fb;
-  --color-bg-tertiary: #f3f4f7;
-  --color-bg-tertiary-rgb: 243, 244, 247;
-  --color-bg-hover: #edeef2;
-  --color-bg-active: #e7e8ed;
+  /* 文本颜色 - 提升可读性 */
+  --color-text-primary: #2C3E50;  /* 深色，高对比度 */
+  --color-text-secondary: #5A6C7D;
+  --color-text-muted: #94A3B8;
+  --color-text-inverse: #FFFFFF;
   
-  /* 玻璃态背景 - 简化为单色，缓存渐变 */
-  --glass-bg: rgba(254, 254, 255, 0.92);
-  --glass-bg-gradient: linear-gradient(135deg, 
-    rgba(254, 254, 255, 0.95),
-    rgba(248, 249, 251, 0.9)
-  );
-  --glass-bg-dark: linear-gradient(135deg, 
-    rgba(90, 90, 92, 0.6),
-    rgba(90, 90, 92, 0.4)
-  );
+  /* 背景颜色 - 简洁干净 */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F8FAFC;
+  --color-bg-tertiary: #F1F5F9;
   
-  /* 边框 - 淡雅色系 */
-  --color-border: #e8e9ed;
-  --color-border-light: #f0f1f4;
-  --color-border-lighter: #f5f6f8;
-  --color-border-dark: #dcdde2;
+  /* 边框 - 清晰可见 */
+  --color-border: #E2E8F0;
+  --color-border-light: #F1F5F9;
+  --color-border-dark: #CBD5E1;
   --border-width: 1px;
   --border-style: solid;
   --border-default: var(--border-width) var(--border-style) var(--color-border);
@@ -76,69 +60,41 @@ body {
   --spacing-xl: 32px;
   --spacing-2xl: 48px;
   
-  /* 核心字号 - 重新设计，提升层级清晰度 */
-  --font-size-2xs: 0.625rem;  /* 10px - 最小标签 */
-  --font-size-xs: 0.75rem;    /* 12px - 辅助说明 */
-  --font-size-sm: 0.875rem;   /* 14px - 次要信息 */
-  --font-size-base: 1rem;     /* 16px - 基础正文 */
-  --font-size-lg: 1.125rem;   /* 18px - 强调文字 */
-  --font-size-xl: 1.375rem;   /* 22px - 小标题 */
-  --font-size-2xl: 1.75rem;   /* 28px - 标题 */
-  --font-size-3xl: 2.25rem;   /* 36px - 大标题 */
-  --font-size-4xl: 3rem;      /* 48px - 展示标题 */
+  /* 核心字号 - 简化为5个级别 */
+  --font-size-xs: 0.75rem;    /* 12px - 注释 */
+  --font-size-sm: 0.875rem;   /* 14px - 辅助 */
+  --font-size-base: 1rem;     /* 16px - 正文 */
+  --font-size-lg: 1.25rem;    /* 20px - 标题 */
+  --font-size-xl: 1.5rem;     /* 24px - 大标题 */
   
-  /* 字重 - 增加更多层级 */
-  --font-weight-light: 300;
+  /* 字重 - 简化为3个级别 */
   --font-weight-normal: 400;
   --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
-  --font-weight-extrabold: 800;
-  --font-weight-black: 900;
+  --font-weight-bold: 600;
   
   /* 字体 */
   --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
   
-  /* 圆角 - 更现代 */
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
+  /* 圆角 - 简化为3个级别 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
   --radius-full: 9999px;
   
-  /* Elevation系统 - 更现代的阴影层级 */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.10);
-  --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.12);
-  --shadow-2xl: 0 24px 48px rgba(0, 0, 0, 0.16);
-  
-  /* 彩色阴影 - 用于特殊元素 */
-  --shadow-primary: 0 4px 12px rgba(158, 189, 206, 0.25);
-  --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.08);
-  
-  /* 内阴影 */
+  /* 阴影系统 - 简化且更清晰 */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.12);
   --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
   
-  /* 过渡 - 性能优先 */
-  --transition-instant: 80ms ease-out;
-  --transition-fast: 150ms ease-out;
-  --transition-base: 200ms ease-out;
-  --transition-slow: 300ms ease-out;
-  --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  /* 过渡 - 统一简化 */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 200ms ease-in-out;
   
   /* 仅过渡必要属性 */
-  --transition-colors: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out;
-  --transition-transform: transform 150ms ease-out;
-  --transition-shadow: box-shadow 150ms ease-out;
-  
-  /* 模糊效果 - 进一步降低模糊半径以提升性能 */
-  --blur-sm: blur(1px);
-  --blur-md: blur(2px);
-  --blur-lg: blur(3px);
-  --blur-xl: blur(4px);
+  --transition-colors: background-color 150ms ease-in-out, border-color 150ms ease-in-out, color 150ms ease-in-out;
+  --transition-transform: transform 150ms ease-in-out;
+  --transition-shadow: box-shadow 150ms ease-in-out;
   
   /* z-index层级 */
   --z-index-dropdown: 100;

@@ -3,9 +3,9 @@
 /* Container */
 .yearContainer {
   padding: var(--spacing-xl);
-  background: var(--glass-bg);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg);
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   width: 100%;
   height: calc(100vh - 150px);
   display: flex;
@@ -43,8 +43,8 @@
 }
 
 .yearHeader {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-light);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-normal);
   margin: 0;
   background: linear-gradient(135deg, #7a8a9a 0%, #9a8a9a 100%);
   -webkit-background-clip: text;
@@ -168,8 +168,8 @@
 }
 
 .monthNumber {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-light);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-normal);
   color: rgba(122, 138, 154, 0.5);
   line-height: 1;
   margin-bottom: var(--spacing-xs);
@@ -202,7 +202,7 @@
 
 .currentMonth .monthName {
   color: rgba(74, 85, 104, 0.8);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
 }
 
 /* Today Month */
@@ -224,7 +224,7 @@
 
 .todayMonth .monthName {
   color: var(--color-primary);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
 }
 
 .todayIndicator {
