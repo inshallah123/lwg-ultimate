@@ -21,7 +21,8 @@
       "WebSearch",
       "Bash(git tag:*)",
       "Bash(git checkout:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(npm version:*)"
     ],
     "deny": [],
     "ask": []
