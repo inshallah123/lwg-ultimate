@@ -42,11 +42,49 @@ export function useMonthScroll({
     start: MONTH_RANGE.START_OFFSET, 
     end: MONTH_RANGE.END_OFFSET 
   });
+  const [containerHeight, setContainerHeight] = useState(600);
   
   const scrollVelocityRef = useRef(0);
   const rowHeightRef = useRef(0);
   const rafIdRef = useRef<number>();
   const scrollTimeoutRef = useRef<NodeJS.Timeout>();
+
+  // 监听容器大小变化
+  useEffect(() => {
+    if (!scrollContainerRef.current) return;
+    
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const newHeight = entry.contentRect.height;
+        if (newHeight > 0 && newHeight !== containerHeight) {
+          setContainerHeight(newHeight);
+          const newRowHeight = Math.floor(newHeight / VIEW_CONFIG.ROWS_PER_SCREEN);
+          rowHeightRef.current = newRowHeight;
+          
+          // 如果已经初始化，需要重新计算滚动位置
+          if (isInitialized && allDays.length > 0) {
+            // 找到当前视图中心的日期
+            const oldRowHeight = rowHeightRef.current || VIEW_CONFIG.DEFAULT_ROW_HEIGHT;
+            const centerRow = Math.round(scrollPosition / oldRowHeight + VIEW_CONFIG.ROWS_PER_SCREEN / 2);
+            const centerDayIndex = Math.min(centerRow * VIEW_CONFIG.DAYS_PER_WEEK, allDays.length - 1);
+            const centerDate = allDays[centerDayIndex];
+            
+            // 重新计算滚动位置以保持相同的日期在视图中心
+            if (centerDate) {
+              const newScroll = calculateScrollPositionForDate(centerDate, allDays, newRowHeight);
+              setScrollPosition(newScroll);
+            }
+          }
+        }
+      }
+    });
+    
+    resizeObserver.observe(scrollContainerRef.current);
+    
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [containerHeight, isInitialized, allDays, scrollPosition]);
 
   // 初始化日期列表
   useEffect(() => {
@@ -58,8 +96,9 @@ export function useMonthScroll({
       monthsRange.end
     );
     
-    const containerHeight = scrollContainerRef.current.clientHeight;
-    const rowHeight = Math.floor(containerHeight / VIEW_CONFIG.ROWS_PER_SCREEN);
+    const currentContainerHeight = scrollContainerRef.current.clientHeight;
+    setContainerHeight(currentContainerHeight);
+    const rowHeight = Math.floor(currentContainerHeight / VIEW_CONFIG.ROWS_PER_SCREEN);
     rowHeightRef.current = rowHeight;
     
     const initialScroll = calculateScrollPositionForDate(currentDate, days, rowHeight);
@@ -92,8 +131,9 @@ export function useMonthScroll({
       MONTH_RANGE.END_OFFSET
     );
     
-    const containerHeight = scrollContainerRef.current.clientHeight;
-    const rowHeight = Math.floor(containerHeight / VIEW_CONFIG.ROWS_PER_SCREEN);
+    const currentContainerHeight = scrollContainerRef.current.clientHeight;
+    setContainerHeight(currentContainerHeight);
+    const rowHeight = Math.floor(currentContainerHeight / VIEW_CONFIG.ROWS_PER_SCREEN);
     rowHeightRef.current = rowHeight;
     
     const initialScroll = calculateScrollPositionForDate(date, days, rowHeight);
@@ -176,7 +216,6 @@ export function useMonthScroll({
   useEffect(() => {
     if (!scrollContainerRef.current || allDays.length === 0) return;
     
-    const containerHeight = scrollContainerRef.current.clientHeight;
     const rowHeight = rowHeightRef.current || VIEW_CONFIG.DEFAULT_ROW_HEIGHT;
     const bufferRows = isScrolling ? BUFFER_ROWS.SCROLLING : BUFFER_ROWS.IDLE;
     
@@ -190,7 +229,7 @@ export function useMonthScroll({
     
     const visible = allDays.slice(startIndex, endIndex);
     setVisibleDays(visible);
-  }, [scrollPosition, allDays, isScrolling]);
+  }, [scrollPosition, allDays, isScrolling, containerHeight]);
 
   // 无限滚动加载
   useEffect(() => {
