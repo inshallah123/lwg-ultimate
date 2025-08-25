@@ -178,6 +178,8 @@
   text-align: center;
   white-space: nowrap;
   flex: 1;
+  min-height: 50px;
+  box-sizing: border-box;
 }
 
 .timeSlot:last-child,
@@ -193,6 +195,7 @@
   background: var(--color-bg-primary);
   flex: 1;
   min-height: 50px;
+  height: auto;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -201,6 +204,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  box-sizing: border-box;
 }
 
 .hourCell:hover {

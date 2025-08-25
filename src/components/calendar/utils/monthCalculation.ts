@@ -120,22 +120,6 @@ export function calculateVisibleDayRange(
   
   return { startIndex, endIndex };
 }
-
-/**
- * 计算月份在日期数组中的位置
- */
-export function findMonthPosition(
-  year: number,
-  month: number,
-  days: Date[]
-): number {
-  return days.findIndex(d => 
-    d.getFullYear() === year && 
-    d.getMonth() === month &&
-    d.getDate() === 1
-  );
-}
-
 /**
  * 计算可见内容的参数
  */

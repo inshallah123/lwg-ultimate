@@ -4,7 +4,7 @@
 
 // 滚动配置
 export const SCROLL_CONFIG = {
-  SPEED: 0.25,                // 滚动速度系数
+  SPEED: 0.8,                 // 滚动速度系数（与年视图一致）
   TIMEOUT: 200,                // 滚动结束延迟
   BASE_THRESHOLD: 48,          // 基础加载阈值（行数）
   VELOCITY_THRESHOLD: 30,      // 高速滚动速度阈值
