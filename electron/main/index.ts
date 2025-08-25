@@ -17,7 +17,7 @@
  *   - 配合 vite.config.ts (开发服务器配置)
  *   - 使用 .env (环境变量配置)
  */
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, Menu } from 'electron';
 import { join } from 'path';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { platform } from 'os';
@@ -69,6 +69,56 @@ function saveWindowState() {
   }
 }
 
+function createCustomMenu() {
+  const poem = `Time's White Goose
+
+Through morning mist and twilight's glow,
+A white goose glides where rivers flow.
+Each ripple marks a moment passed,
+While feathers hold what cannot last.
+
+She watches seasons come and go,
+Spring blossoms fall to winter snow.
+Her wings have carried countless days,
+Through golden dawns and purple haze.
+
+Time whispers secrets in her flight,
+Between the darkness and the light.
+Each honk a bell that softly chimes,
+To mark the passage of our times.
+
+Yet graceful still, she swims along,
+Her presence like an ancient song.
+For time and geese both understand:
+Life flows like water through our hands.`;
+
+  const template: Electron.MenuItemConstructorOptions[] = [
+    {
+      label: 'What about...?',
+      submenu: [
+        {
+          label: 'Time\'s White Goose',
+          click: () => {
+            if (mainWindow) {
+              dialog.showMessageBox(mainWindow, {
+                type: 'info',
+                title: 'What about...?',
+                message: 'Time\'s White Goose',
+                detail: poem,
+                buttons: ['Close'],
+                noLink: true
+              });
+            }
+          }
+        }
+      ]
+    }
+  ];
+  
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
+}
+
 function createWindow() {
   try {
     const state = getWindowState();
@@ -77,6 +127,7 @@ function createWindow() {
       height: state.height,
       x: state.x,
       y: state.y,
+      icon: join(__dirname, '../../../build/icons/icon.ico'), // 设置窗口图标
       webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,
@@ -106,7 +157,8 @@ function createWindow() {
     if (isDev) {
       mainWindow.loadURL(`http://localhost:${devPort}`).catch(console.error); // 加载开发服务器(如Vite)，服务器会渲染包含App.tsx的页面
     } else {
-      mainWindow.loadFile(join(__dirname, '../../dist/index.html')).catch(console.error);
+      // 生产环境下，从app.asar包的根目录加载dist/index.html
+      mainWindow.loadFile(join(__dirname, '../../../dist/index.html')).catch(console.error);
     }
   } catch (error) {
     console.error('Failed to create window:', error);
@@ -141,6 +193,7 @@ async function initDatabase(): Promise<EventDatabase | null> {
 app.whenReady().then(async () => {
   // 应用准备好后初始化数据库
   await initDatabase();
+  createCustomMenu();
   createWindow();
   
   // 初始化应用自动更新

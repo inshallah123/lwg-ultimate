@@ -46,7 +46,8 @@
     "appId": "com.littlewhitegoose.calendar",
     "productName": "小白鹅日历",
     "directories": {
-      "output": "release"
+      "output": "release",
+      "buildResources": "build"
     },
     "files": [
       "dist/**/*",
@@ -55,6 +56,7 @@
       "!electron/tsconfig.json"
     ],
     "win": {
+      "icon": "build/icons/icon.ico",
       "target": [
         {
           "target": "nsis",
@@ -72,6 +74,7 @@
       "deleteAppDataOnUninstall": false
     },
     "mac": {
+      "icon": "build/icons/icon.icns",
       "category": "public.app-category.productivity",
       "target": [
         "dmg",
@@ -79,6 +82,7 @@
       ]
     },
     "linux": {
+      "icon": "build/icons",
       "target": [
         "AppImage",
         "deb"
