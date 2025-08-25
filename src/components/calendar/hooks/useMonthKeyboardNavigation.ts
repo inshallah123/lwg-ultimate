@@ -28,7 +28,8 @@ export function useMonthKeyboardNavigation({
     // 如果今天在当前日期范围内，直接滚动到今天
     const todayIndex = allDays.findIndex(d => isToday(d));
     if (todayIndex !== -1 && scrollContainerRef.current) {
-      const rowHeight = Math.floor(scrollContainerRef.current.clientHeight / VIEW_CONFIG.ROWS_PER_SCREEN);
+      const containerHeight = scrollContainerRef.current.clientHeight;
+      const rowHeight = Math.floor(containerHeight / VIEW_CONFIG.ROWS_PER_SCREEN);
       const todayRow = Math.floor(todayIndex / VIEW_CONFIG.DAYS_PER_WEEK);
       const targetScroll = Math.round(Math.max(0, (todayRow - NAVIGATION.CENTER_ROW_OFFSET) * rowHeight));
       onScrollPositionChange(targetScroll);
@@ -51,8 +52,10 @@ export function useMonthKeyboardNavigation({
     );
     
     if (targetIndex !== -1 && scrollContainerRef.current) {
-      const rowHeight = Math.floor(scrollContainerRef.current.clientHeight / VIEW_CONFIG.ROWS_PER_SCREEN);
-      const targetScroll = Math.round(Math.floor(targetIndex / VIEW_CONFIG.DAYS_PER_WEEK) * rowHeight);
+      const containerHeight = scrollContainerRef.current.clientHeight;
+      const rowHeight = Math.floor(containerHeight / VIEW_CONFIG.ROWS_PER_SCREEN);
+      const targetRow = Math.floor(targetIndex / VIEW_CONFIG.DAYS_PER_WEEK);
+      const targetScroll = Math.round(targetRow * rowHeight);
       onScrollPositionChange(targetScroll);
     }
   }, [currentDate, allDays, scrollContainerRef, onDateChange, onScrollPositionChange]);
