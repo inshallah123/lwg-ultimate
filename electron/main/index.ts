@@ -199,6 +199,7 @@ app.whenReady().then(async () => {
   // 初始化应用自动更新
   if (!app.isPackaged) {
     console.log('开发模式，跳过自动更新');
+    console.log('版本: 1.0.1');
   } else {
     appUpdater = new AppUpdater();
     // 配置GitHub更新地址
