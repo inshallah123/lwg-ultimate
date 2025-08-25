@@ -71,7 +71,8 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "perMachine": false,
-      "deleteAppDataOnUninstall": false
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "littlewhitegoose-setup-${version}.${ext}"
     },
     "mac": {
       "icon": "build/icons/icon.icns",
