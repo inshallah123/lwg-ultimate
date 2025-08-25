@@ -39,15 +39,15 @@ export const DayCell = React.memo(function DayCell({
     // 第1行（索引0）和第6行（索引5）涂灰
     useCurrentStyle = relativeRow >= 1 && relativeRow <= 4; // 第2-5行为正常样式
   } else if (isScrolling) {
-    // 滚动时：滑动窗口效果，视口中心的6行用当月样式
+    // 滚动时：滑动窗口效果，缩小涂灰范围
     const cellTop = row * rowHeight - scrollPosition;
     const cellBottom = cellTop + rowHeight;
     // 如果单元格在视口内（0到containerHeight之间）
     if (cellTop < containerHeight && cellBottom > 0) {
       // 计算单元格在视口中的行位置
       const visibleRow = Math.floor(cellTop / rowHeight);
-      // 中间4行使用当月样式
-      useCurrentStyle = visibleRow >= 1 && visibleRow <= 4;
+      // 扩大正常显示范围：只有最顶部和最底部的行涂灰
+      useCurrentStyle = visibleRow >= 0.5 && visibleRow <= 5; // 几乎所有可见行都正常显示
     } else {
       useCurrentStyle = false;
     }
