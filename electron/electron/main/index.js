@@ -28,9 +28,11 @@ const fs_1 = require("fs");
 const os_1 = require("os");
 const checkUpdates_1 = require("../utils/checkUpdates");
 const database_1 = __importDefault(require("./database"));
+const AppUpdater = require('./updater');
 let mainWindow = null;
 let eventDb = null;
 let dbInitPromise = null;
+let appUpdater = null;
 // 确保只有一个实例运行
 const gotTheLock = electron_1.app.requestSingleInstanceLock();
 if (!gotTheLock) {
@@ -139,6 +141,23 @@ electron_1.app.whenReady().then(async () => {
     // 应用准备好后初始化数据库
     await initDatabase();
     createWindow();
+    // 初始化应用自动更新
+    if (!electron_1.app.isPackaged) {
+        console.log('开发模式，跳过自动更新');
+    }
+    else {
+        appUpdater = new AppUpdater();
+        // 配置GitHub更新地址
+        appUpdater.setFeedURL({
+            provider: 'github',
+            owner: 'inshallah123',
+            repo: 'lwg-ultimate'
+        });
+        // 延迟检查应用更新
+        setTimeout(() => {
+            appUpdater.checkForUpdates();
+        }, 3000);
+    }
     // 延迟5秒后检查更新，避免影响启动速度
     setTimeout(async () => {
         const updateInfo = await (0, checkUpdates_1.checkLunarLibraryUpdate)();

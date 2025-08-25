@@ -18,7 +18,11 @@
     "test:quick": "npx tsx src/tests/runTests.ts",
     "test:full": "npx tsx src/tests/fullTestSuite.ts",
     "rebuild": "electron-rebuild -f -w better-sqlite3",
-    "postinstall": "electron-rebuild -f -w better-sqlite3"
+    "postinstall": "electron-rebuild -f -w better-sqlite3",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:linux": "npm run build && electron-builder --linux"
   },
   "keywords": [
     "calendar",
@@ -31,11 +35,64 @@
   "dependencies": {
     "@esbuild/win32-x64": "^0.25.9",
     "@types/better-sqlite3": "^7.6.13",
+    "electron-updater": "^6.6.2",
     "lunar-javascript": "^1.7.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sql.js": "^1.13.0",
     "zustand": "^5.0.8"
+  },
+  "build": {
+    "appId": "com.littlewhitegoose.calendar",
+    "productName": "小白鹅日历",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "!electron/**/*.ts",
+      "!electron/tsconfig.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "publisherName": "YYH"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "deleteAppDataOnUninstall": false
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Utility"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "inshallah123",
+        "repo": "lwg-ultimate",
+        "releaseType": "release"
+      }
+    ]
   },
   "devDependencies": {
     "@types/node": "^20.11.19",

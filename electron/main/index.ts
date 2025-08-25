@@ -24,10 +24,12 @@ import { platform } from 'os';
 import { checkLunarLibraryUpdate, updateLunarLibrary } from '../utils/checkUpdates';
 import EventDatabase from './database';
 import { Event } from '../../src/types/event';
+const AppUpdater = require('./updater');
 
 let mainWindow: BrowserWindow | null = null;
 let eventDb: EventDatabase | null = null;
 let dbInitPromise: Promise<EventDatabase | null> | null = null;
+let appUpdater: any = null;
 
 // 确保只有一个实例运行
 const gotTheLock = app.requestSingleInstanceLock();
@@ -140,6 +142,23 @@ app.whenReady().then(async () => {
   // 应用准备好后初始化数据库
   await initDatabase();
   createWindow();
+  
+  // 初始化应用自动更新
+  if (!app.isPackaged) {
+    console.log('开发模式，跳过自动更新');
+  } else {
+    appUpdater = new AppUpdater();
+    // 配置GitHub更新地址
+    appUpdater.setFeedURL({
+      provider: 'github',
+      owner: 'inshallah123',
+      repo: 'lwg-ultimate'
+    });
+    // 延迟检查应用更新
+    setTimeout(() => {
+      appUpdater.checkForUpdates();
+    }, 3000);
+  }
   
   // 延迟5秒后检查更新，避免影响启动速度
   setTimeout(async () => {
