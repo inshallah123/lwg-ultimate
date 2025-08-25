@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { MonthView } from './components/calendar/MonthView';
 import { WeekView } from './components/calendar/WeekView';
-import { YearView } from './components/calendar/YearView';
+import { YearView } from './components/calendar/year/YearView';
 import { SearchBox } from '@/components/search/SearchBox';
 import { Sidebar } from './components/Sidebar/sidebar';
 import { useSidebarStore } from './components/Sidebar/store';

@@ -1,0 +1,38 @@
+.yearSection {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+.yearSection.scrolling {
+  opacity: 0.7;
+}
+
+.yearSection.currentYear::before {
+  content: attr(data-year);
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 3em;
+  font-weight: 100;
+  color: #a8c4d4;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.monthsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 15px;
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 4/3;
+}

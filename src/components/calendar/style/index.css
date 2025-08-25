@@ -28,6 +28,9 @@
   --calendar-cell-min-height: 40px;
   --header-height: 60px;
   
+  /* Year View 特有样式 */
+  --calendar-year-watermark: #a8c4d4;
+  
   /* 响应式断点 */
   --breakpoint-mobile: 640px;
   --breakpoint-tablet: 768px;

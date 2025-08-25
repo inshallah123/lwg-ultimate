@@ -1,16 +1,15 @@
-@import './style/index.css';
 
 /* Container */
 .yearContainer {
-  padding: var(--spacing-xl);
-  background: var(--color-bg-primary);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  padding: 32px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
   height: calc(100vh - 150px);
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--color-border-light);
+  border: 1px solid #f1f5f9;
   position: relative;
   overflow: hidden;
   contain: layout style paint;
@@ -37,14 +36,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: 32px;
   position: relative;
   z-index: 1;
 }
 
 .yearHeader {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-normal);
+  font-size: 1.5rem;
+  font-weight: 400;
   margin: 0;
   background: linear-gradient(135deg, #7a8a9a 0%, #9a8a9a 100%);
   -webkit-background-clip: text;
@@ -54,7 +53,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: 16px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -66,7 +65,7 @@
     rgba(168, 196, 212, 0.4), 
     rgba(224, 197, 210, 0.2)
   );
-  margin-left: var(--spacing-lg);
+  margin-left: 24px;
 }
 
 /* Scroll Container */
@@ -75,8 +74,8 @@
   flex: 1;
   overflow: hidden;
   perspective: 1000px;
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  border: 1px solid var(--color-border-light);
+  border-radius: 0 0 12px 12px;
+  border: 1px solid #f1f5f9;
   border-top: none;
   background: linear-gradient(180deg, 
     rgba(255, 255, 255, 0.02),
@@ -89,9 +88,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-2xl);
+  padding: 48px;
   width: 100%;
   height: 100%;
+  position: absolute;
+  will-change: auto;
+}
+
+.yearSection.scrolling {
+  will-change: transform;
 }
 
 /* Months Grid */
@@ -99,10 +104,10 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: var(--spacing-xl);
+  gap: 32px;
   width: 100%;
   max-width: 900px;
-  padding: var(--spacing-lg);
+  padding: 24px;
 }
 
 /* Month Card */
@@ -112,15 +117,15 @@
     rgba(255, 255, 255, 0.95),
     rgba(248, 250, 252, 0.9)
   );
-  border: 1px solid var(--color-border-light);
-  border-radius: var(--radius-lg);
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
   padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: all 200ms ease-in-out;
   position: relative;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
   overflow: hidden;
@@ -139,7 +144,7 @@
     rgba(224, 197, 210, 0.02) 100%
   );
   opacity: 0;
-  transition: opacity var(--transition-base);
+  transition: opacity 200ms ease-in-out;
 }
 
 .monthCard:hover {
@@ -168,21 +173,21 @@
 }
 
 .monthNumber {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-normal);
+  font-size: 1.5rem;
+  font-weight: 400;
   color: rgba(122, 138, 154, 0.5);
   line-height: 1;
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: 4px;
   font-variant-numeric: tabular-nums;
-  transition: all var(--transition-base);
+  transition: all 200ms ease-in-out;
 }
 
 .monthName {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-size: 0.875rem;
+  font-weight: 500;
   color: rgba(74, 85, 104, 0.6);
   letter-spacing: 0.08em;
-  transition: all var(--transition-base);
+  transition: all 200ms ease-in-out;
   text-transform: uppercase;
 }
 
@@ -197,12 +202,12 @@
 
 .currentMonth .monthNumber {
   color: rgba(168, 196, 212, 0.7);
-  font-weight: var(--font-weight-normal);
+  font-weight: 400;
 }
 
 .currentMonth .monthName {
   color: rgba(74, 85, 104, 0.8);
-  font-weight: var(--font-weight-bold);
+  font-weight: 700;
 }
 
 /* Today Month */
@@ -218,19 +223,19 @@
 }
 
 .todayMonth .monthNumber {
-  color: var(--color-primary);
-  font-weight: var(--font-weight-medium);
+  color: #5b8dbe;
+  font-weight: 500;
 }
 
 .todayMonth .monthName {
-  color: var(--color-primary);
-  font-weight: var(--font-weight-bold);
+  color: #5b8dbe;
+  font-weight: 700;
 }
 
 .todayIndicator {
   position: absolute;
-  top: var(--spacing-sm);
-  right: var(--spacing-sm);
+  top: 8px;
+  right: 8px;
   width: 6px;
   height: 6px;
   background: linear-gradient(135deg, #a8c4d4, #e0c5d2);
@@ -264,7 +269,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: var(--radius-lg);
+  border-radius: 12px;
   border: 1px solid transparent;
   background: linear-gradient(135deg, 
     rgba(168, 196, 212, 0.1),
@@ -280,24 +285,24 @@
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(4, 1fr);
     max-width: 700px;
-    gap: var(--spacing-lg);
+    gap: 24px;
   }
 }
 
 @media (max-width: 768px) {
   .yearContainer {
-    padding: var(--spacing-md);
+    padding: 16px;
   }
   
   .yearHeader {
-    font-size: var(--font-size-xl);
+    font-size: 1.5rem;
   }
   
   .monthsGrid {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(4, 1fr);
-    gap: var(--spacing-md);
-    padding: var(--spacing-md);
+    gap: 16px;
+    padding: 16px;
   }
   
   .monthCard {
@@ -305,7 +310,7 @@
   }
   
   .monthNumber {
-    font-size: var(--font-size-xl);
+    font-size: 1.5rem;
   }
   
   .monthName {
@@ -317,7 +322,7 @@
   .monthsGrid {
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(6, 1fr);
-    gap: var(--spacing-sm);
+    gap: 8px;
   }
   
   .monthCard {

@@ -1,0 +1,33 @@
+export const MONTH_NAMES = [
+  'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUNE',
+  'JULY', 'AUG', 'SEPT', 'OCT', 'NOV', 'DEC'
+];
+
+export const YEAR_RANGE = {
+  START_OFFSET: -10,
+  END_OFFSET: 10
+};
+
+export const SCROLL_CONFIG = {
+  SPEED: 0.8,
+  TIMEOUT: 150,
+  BASE_THRESHOLD: 3,
+  VELOCITY_THRESHOLD: 30,
+  YEARS_TO_LOAD_FAST: 10,
+  YEARS_TO_LOAD_NORMAL: 5
+};
+
+export const NAVIGATION_STEP = {
+  SINGLE_YEAR: 1,
+  FIVE_YEARS: 5
+};
+
+export const BUFFER_YEARS = {
+  SCROLLING: 2,
+  IDLE: 1
+};
+
+export const DEFAULT_VALUES = {
+  CONTAINER_HEIGHT: 600,
+  DEFAULT_VIEW_TIMEOUT: 100
+};
