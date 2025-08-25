@@ -1,7 +1,7 @@
 import React from 'react';
 import { isToday } from '@/utils/dateHelpers';
 import { MonthEventIndicator } from '../MonthEventIndicator';
-import styles from '../MonthView.module.css';
+import styles from '../month/MonthView.module.css';
 
 interface DayCellProps {
   day: Date;

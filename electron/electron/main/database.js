@@ -32,16 +32,16 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const better_sqlite3_1 = __importDefault(require("better-sqlite3"));
 const electron_1 = require("electron");
 const path = __importStar(require("path"));
 const fs = __importStar(require("fs"));
+const initSqlJs = require('sql.js');
 class EventDatabase {
     constructor() {
+        this.dbPath = '';
+    }
+    async initialize() {
         try {
             // 确保app已经准备好
             let userDataPath;
@@ -49,6 +49,7 @@ class EventDatabase {
                 userDataPath = electron_1.app.getPath('userData');
             }
             catch (error) {
+                console.log('App not ready, using fallback path');
                 // 如果app还没准备好，使用默认路径
                 userDataPath = electron_1.app.isPackaged
                     ? path.join(process.resourcesPath, '..')
@@ -58,17 +59,39 @@ class EventDatabase {
             if (!fs.existsSync(userDataPath)) {
                 fs.mkdirSync(userDataPath, { recursive: true });
             }
-            const dbPath = path.join(userDataPath, 'events.db');
-            // 开发环境下输出数据库路径，方便调试
-            if (!electron_1.app.isPackaged) {
-                console.log('Database location:', dbPath);
+            this.dbPath = path.join(userDataPath, 'events.db');
+            // 输出数据库路径用于调试
+            console.log('Database location:', this.dbPath);
+            console.log('Database directory exists:', fs.existsSync(path.dirname(this.dbPath)));
+            // 初始化sql.js
+            const SQL = await initSqlJs({
+                locateFile: (file) => path.join(__dirname, '../../../node_modules/sql.js/dist', file)
+            });
+            // 尝试加载现有数据库
+            if (fs.existsSync(this.dbPath)) {
+                const data = fs.readFileSync(this.dbPath);
+                this.db = new SQL.Database(data);
             }
-            this.db = new better_sqlite3_1.default(dbPath);
+            else {
+                this.db = new SQL.Database();
+            }
             this.initDatabase();
+            this.saveDatabase();
+            console.log('Database initialized successfully');
         }
         catch (error) {
-            console.error('Error in EventDatabase constructor:', error);
+            console.error('Error in EventDatabase initialization:', error);
             throw error;
+        }
+    }
+    saveDatabase() {
+        try {
+            const data = this.db.export();
+            const buffer = Buffer.from(data);
+            fs.writeFileSync(this.dbPath, buffer);
+        }
+        catch (error) {
+            console.error('Error saving database:', error);
         }
     }
     initDatabase() {
@@ -97,72 +120,90 @@ class EventDatabase {
     // 获取所有事件（只返回SE和RP）
     getAllEvents() {
         const stmt = this.db.prepare('SELECT * FROM events');
-        const rows = stmt.all();
-        return rows.map(this.rowToEvent);
+        const rows = [];
+        while (stmt.step()) {
+            rows.push(stmt.getAsObject());
+        }
+        stmt.free();
+        return rows.map(row => this.rowToEvent(row));
     }
     // 添加事件
     addEvent(event) {
+        const row = this.eventToRow(event);
         const stmt = this.db.prepare(`
       INSERT INTO events (
         id, title, description, date, timeSlot, tag, customTag,
         recurrence, customRecurrence, createdAt, updatedAt,
         excludedDates, recurrenceEndDate
       ) VALUES (
-        @id, @title, @description, @date, @timeSlot, @tag, @customTag,
-        @recurrence, @customRecurrence, @createdAt, @updatedAt,
-        @excludedDates, @recurrenceEndDate
+        $id, $title, $description, $date, $timeSlot, $tag, $customTag,
+        $recurrence, $customRecurrence, $createdAt, $updatedAt,
+        $excludedDates, $recurrenceEndDate
       )
     `);
-        stmt.run(this.eventToRow(event));
+        stmt.bind(row);
+        stmt.step();
+        stmt.free();
+        this.saveDatabase();
     }
     // 更新事件
     updateEvent(event) {
+        const row = this.eventToRow(event);
         const stmt = this.db.prepare(`
       UPDATE events SET
-        title = @title,
-        description = @description,
-        date = @date,
-        timeSlot = @timeSlot,
-        tag = @tag,
-        customTag = @customTag,
-        recurrence = @recurrence,
-        customRecurrence = @customRecurrence,
-        updatedAt = @updatedAt,
-        excludedDates = @excludedDates,
-        recurrenceEndDate = @recurrenceEndDate
-      WHERE id = @id
+        title = $title,
+        description = $description,
+        date = $date,
+        timeSlot = $timeSlot,
+        tag = $tag,
+        customTag = $customTag,
+        recurrence = $recurrence,
+        customRecurrence = $customRecurrence,
+        updatedAt = $updatedAt,
+        excludedDates = $excludedDates,
+        recurrenceEndDate = $recurrenceEndDate
+      WHERE id = $id
     `);
-        stmt.run(this.eventToRow(event));
+        stmt.bind(row);
+        stmt.step();
+        stmt.free();
+        this.saveDatabase();
     }
     // 删除事件
     deleteEvent(id) {
-        const stmt = this.db.prepare('DELETE FROM events WHERE id = ?');
-        stmt.run(id);
+        const stmt = this.db.prepare('DELETE FROM events WHERE id = $id');
+        stmt.bind({ $id: id });
+        stmt.step();
+        stmt.free();
+        this.saveDatabase();
     }
     // 批量更新事件（用于同步）
     syncEvents(events) {
-        const deleteAll = this.db.prepare('DELETE FROM events');
-        const insert = this.db.prepare(`
+        // 删除所有事件
+        this.db.run('DELETE FROM events');
+        // 插入新事件
+        const stmt = this.db.prepare(`
       INSERT INTO events (
         id, title, description, date, timeSlot, tag, customTag,
         recurrence, customRecurrence, createdAt, updatedAt,
         excludedDates, recurrenceEndDate
       ) VALUES (
-        @id, @title, @description, @date, @timeSlot, @tag, @customTag,
-        @recurrence, @customRecurrence, @createdAt, @updatedAt,
-        @excludedDates, @recurrenceEndDate
+        $id, $title, $description, $date, $timeSlot, $tag, $customTag,
+        $recurrence, $customRecurrence, $createdAt, $updatedAt,
+        $excludedDates, $recurrenceEndDate
       )
     `);
-        const syncTransaction = this.db.transaction((events) => {
-            deleteAll.run();
-            for (const event of events) {
-                // 只存储SE和RP，跳过VI
-                if (!event.parentId) {
-                    insert.run(this.eventToRow(event));
-                }
+        for (const event of events) {
+            // 只存储SE和RP，跳过VI
+            if (!event.parentId) {
+                const row = this.eventToRow(event);
+                stmt.bind(row);
+                stmt.step();
+                stmt.reset();
             }
-        });
-        syncTransaction(events);
+        }
+        stmt.free();
+        this.saveDatabase();
     }
     // 转换行数据为Event对象
     rowToEvent(row) {
@@ -193,22 +234,23 @@ class EventDatabase {
             return new Date();
         };
         return {
-            id: event.id,
-            title: event.title,
-            description: event.description || null,
-            date: ensureDate(event.date).getTime(),
-            timeSlot: event.timeSlot,
-            tag: event.tag,
-            customTag: event.customTag || null,
-            recurrence: event.recurrence,
-            customRecurrence: event.customRecurrence || null,
-            createdAt: ensureDate(event.createdAt).getTime(),
-            updatedAt: ensureDate(event.updatedAt).getTime(),
-            excludedDates: event.excludedDates ? JSON.stringify(event.excludedDates.map(d => ensureDate(d).getTime())) : null,
-            recurrenceEndDate: event.recurrenceEndDate ? ensureDate(event.recurrenceEndDate).getTime() : null
+            $id: event.id,
+            $title: event.title,
+            $description: event.description || null,
+            $date: ensureDate(event.date).getTime(),
+            $timeSlot: event.timeSlot,
+            $tag: event.tag,
+            $customTag: event.customTag || null,
+            $recurrence: event.recurrence,
+            $customRecurrence: event.customRecurrence || null,
+            $createdAt: ensureDate(event.createdAt).getTime(),
+            $updatedAt: ensureDate(event.updatedAt).getTime(),
+            $excludedDates: event.excludedDates ? JSON.stringify(event.excludedDates.map(d => ensureDate(d).getTime())) : null,
+            $recurrenceEndDate: event.recurrenceEndDate ? ensureDate(event.recurrenceEndDate).getTime() : null
         };
     }
     close() {
+        this.saveDatabase();
         this.db.close();
     }
 }

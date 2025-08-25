@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../MonthView.module.css';
+import styles from '../month/MonthView.module.css';
 import sharedStyles from '../shared.module.css';
 
 interface MonthHeaderProps {

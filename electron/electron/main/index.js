@@ -30,6 +30,7 @@ const checkUpdates_1 = require("../utils/checkUpdates");
 const database_1 = __importDefault(require("./database"));
 let mainWindow = null;
 let eventDb = null;
+let dbInitPromise = null;
 // 确保只有一个实例运行
 const gotTheLock = electron_1.app.requestSingleInstanceLock();
 if (!gotTheLock) {
@@ -109,14 +110,34 @@ function createWindow() {
         console.error('Failed to create window:', error);
     }
 }
+// 初始化数据库的异步函数
+async function initDatabase() {
+    if (eventDb)
+        return eventDb;
+    if (dbInitPromise)
+        return dbInitPromise;
+    dbInitPromise = new Promise(async (resolve) => {
+        try {
+            // 等待app准备好
+            if (!electron_1.app.isReady()) {
+                await electron_1.app.whenReady();
+            }
+            eventDb = new database_1.default();
+            await eventDb.initialize();
+            console.log('Database initialized successfully');
+            resolve(eventDb);
+        }
+        catch (error) {
+            console.error('Failed to initialize database:', error);
+            // 即使失败也要resolve，避免promise永远pending
+            resolve(null);
+        }
+    });
+    return dbInitPromise;
+}
 electron_1.app.whenReady().then(async () => {
     // 应用准备好后初始化数据库
-    try {
-        eventDb = new database_1.default();
-    }
-    catch (error) {
-        console.error('Failed to initialize database after app ready:', error);
-    }
+    await initDatabase();
     createWindow();
     // 延迟5秒后检查更新，避免影响启动速度
     setTimeout(async () => {
@@ -133,7 +154,7 @@ electron_1.app.whenReady().then(async () => {
             });
             if (result.response === 1) {
                 // 用户选择更新
-                const updating = electron_1.dialog.showMessageBox(mainWindow, {
+                await electron_1.dialog.showMessageBox(mainWindow, {
                     type: 'info',
                     title: '正在更新',
                     message: '正在更新节假日数据库...',
@@ -155,7 +176,7 @@ electron_1.app.whenReady().then(async () => {
                     }
                 }
                 else {
-                    electron_1.dialog.showMessageBox(mainWindow, {
+                    await electron_1.dialog.showMessageBox(mainWindow, {
                         type: 'error',
                         title: '更新失败',
                         message: '节假日数据更新失败',
@@ -187,19 +208,13 @@ electron_1.app.on('before-quit', () => {
 // IPC通信处理
 electron_1.ipcMain.handle('db:getAllEvents', async () => {
     // 确保数据库已初始化
-    if (!eventDb) {
-        // 尝试初始化数据库
-        try {
-            eventDb = new database_1.default();
-        }
-        catch (error) {
-            console.error('Failed to initialize database on demand:', error);
-            // 返回空数组而不是抛出错误，避免阻塞应用
-            return [];
-        }
+    const db = await initDatabase();
+    if (!db) {
+        console.error('Database not available');
+        return [];
     }
     try {
-        return eventDb.getAllEvents();
+        return db.getAllEvents();
     }
     catch (error) {
         console.error('Error getting events from database:', error);
@@ -207,47 +222,31 @@ electron_1.ipcMain.handle('db:getAllEvents', async () => {
     }
 });
 electron_1.ipcMain.handle('db:addEvent', async (_, event) => {
-    if (!eventDb) {
-        try {
-            eventDb = new database_1.default();
-        }
-        catch (error) {
-            throw new Error('Database not initialized');
-        }
+    const db = await initDatabase();
+    if (!db) {
+        throw new Error('Database not available');
     }
-    return eventDb.addEvent(event);
+    return db.addEvent(event);
 });
 electron_1.ipcMain.handle('db:updateEvent', async (_, event) => {
-    if (!eventDb) {
-        try {
-            eventDb = new database_1.default();
-        }
-        catch (error) {
-            throw new Error('Database not initialized');
-        }
+    const db = await initDatabase();
+    if (!db) {
+        throw new Error('Database not available');
     }
-    return eventDb.updateEvent(event);
+    return db.updateEvent(event);
 });
 electron_1.ipcMain.handle('db:deleteEvent', async (_, id) => {
-    if (!eventDb) {
-        try {
-            eventDb = new database_1.default();
-        }
-        catch (error) {
-            throw new Error('Database not initialized');
-        }
+    const db = await initDatabase();
+    if (!db) {
+        throw new Error('Database not available');
     }
-    return eventDb.deleteEvent(id);
+    return db.deleteEvent(id);
 });
 electron_1.ipcMain.handle('db:syncEvents', async (_, events) => {
-    if (!eventDb) {
-        try {
-            eventDb = new database_1.default();
-        }
-        catch (error) {
-            throw new Error('Database not initialized');
-        }
+    const db = await initDatabase();
+    if (!db) {
+        throw new Error('Database not available');
     }
-    return eventDb.syncEvents(events);
+    return db.syncEvents(events);
 });
 //# sourceMappingURL=index.js.map

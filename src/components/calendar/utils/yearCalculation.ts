@@ -43,16 +43,6 @@ export function calculateVisibleYearRange(
     end: Math.min(totalYears, visibleEndIndex)
   };
 }
-
-export function isCurrentMonth(year: number, monthIndex: number): boolean {
-  const today = new Date();
-  return year === today.getFullYear() && monthIndex === today.getMonth();
-}
-
-export function isTodayMonth(year: number, monthIndex: number): boolean {
-  return isCurrentMonth(year, monthIndex);
-}
-
 export function calculateYearSectionPosition(
   yearIndex: number,
   yearHeight: number,

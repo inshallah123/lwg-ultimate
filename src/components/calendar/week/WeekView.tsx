@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { useCalendarStore } from './store';
-import { useSidebarStore } from '../Sidebar/store';
+import { useCalendarStore } from '../store';
+import { useSidebarStore } from '../../Sidebar/store';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { isToday, WEEKDAY_NAMES, TIME_SLOTS } from '@/utils/dateHelpers';
-import { WeekEventIndicator } from './WeekEventIndicator';
-import { LunarInfo } from './components/LunarInfo';
+import { WeekEventIndicator } from '../WeekEventIndicator';
+import { LunarInfo } from '../components/LunarInfo';
 import styles from './WeekView.module.css';
-import sharedStyles from './shared.module.css';
+import sharedStyles from '../shared.module.css';
 
 
 interface WeekViewProps {

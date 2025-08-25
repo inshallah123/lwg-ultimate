@@ -27,6 +27,7 @@ import { Event } from '../../src/types/event';
 
 let mainWindow: BrowserWindow | null = null;
 let eventDb: EventDatabase | null = null;
+let dbInitPromise: Promise<EventDatabase | null> | null = null;
 
 // 确保只有一个实例运行
 const gotTheLock = app.requestSingleInstanceLock();
@@ -110,14 +111,34 @@ function createWindow() {
   }
 }
 
+// 初始化数据库的异步函数
+async function initDatabase(): Promise<EventDatabase | null> {
+  if (eventDb) return eventDb;
+  if (dbInitPromise) return dbInitPromise;
+  
+  dbInitPromise = new Promise(async (resolve) => {
+    try {
+      // 等待app准备好
+      if (!app.isReady()) {
+        await app.whenReady();
+      }
+      eventDb = new EventDatabase();
+      await eventDb.initialize();
+      console.log('Database initialized successfully');
+      resolve(eventDb);
+    } catch (error) {
+      console.error('Failed to initialize database:', error);
+      // 即使失败也要resolve，避免promise永远pending
+      resolve(null);
+    }
+  });
+  
+  return dbInitPromise;
+}
+
 app.whenReady().then(async () => {
   // 应用准备好后初始化数据库
-  try {
-    eventDb = new EventDatabase();
-  } catch (error) {
-    console.error('Failed to initialize database after app ready:', error);
-  }
-  
+  await initDatabase();
   createWindow();
   
   // 延迟5秒后检查更新，避免影响启动速度
@@ -137,38 +158,39 @@ app.whenReady().then(async () => {
       
       if (result.response === 1) {
         // 用户选择更新
-        const updating = dialog.showMessageBox(mainWindow, {
-          type: 'info',
-          title: '正在更新',
-          message: '正在更新节假日数据库...',
-          buttons: []
-        });
-        
-        const success = await updateLunarLibrary();
-        
-        if (success) {
-          const restartResult = await dialog.showMessageBox(mainWindow, {
-            type: 'info',
-            title: '更新完成',
-            message: '节假日数据已更新到最新版本',
-            detail: '需要重启应用以加载新的数据。是否现在重启？',
-            buttons: ['稍后', '立即重启'],
-            defaultId: 1
+          await dialog.showMessageBox(mainWindow, {
+              type: 'info',
+              title: '正在更新',
+              message: '正在更新节假日数据库...',
+              buttons: []
           });
-          
-          if (restartResult.response === 1) {
-            app.relaunch();
-            app.exit();
+
+          const success = await updateLunarLibrary();
+
+          if (success) {
+              const restartResult = await dialog.showMessageBox(mainWindow, {
+                  type: 'info',
+                  title: '更新完成',
+                  message: '节假日数据已更新到最新版本',
+                  detail: '需要重启应用以加载新的数据。是否现在重启？',
+                  buttons: ['稍后', '立即重启'],
+                  defaultId: 1
+              });
+
+              if (restartResult.response === 1) {
+                  app.relaunch();
+                  app.exit();
+              }
+          } else {
+              await dialog.showMessageBox(mainWindow, {
+                  type: 'error',
+                  title: '更新失败',
+                  message: '节假日数据更新失败',
+                  detail: '请检查网络连接或稍后重试'
+              });
           }
-        } else {
-          dialog.showMessageBox(mainWindow, {
-            type: 'error',
-            title: '更新失败',
-            message: '节假日数据更新失败',
-            detail: '请检查网络连接或稍后重试'
-          });
-        }
       }
+
     }
   }, 5000);
 });
@@ -197,19 +219,14 @@ app.on('before-quit', () => {
 // IPC通信处理
 ipcMain.handle('db:getAllEvents', async () => {
   // 确保数据库已初始化
-  if (!eventDb) {
-    // 尝试初始化数据库
-    try {
-      eventDb = new EventDatabase();
-    } catch (error) {
-      console.error('Failed to initialize database on demand:', error);
-      // 返回空数组而不是抛出错误，避免阻塞应用
-      return [];
-    }
+  const db = await initDatabase();
+  if (!db) {
+    console.error('Database not available');
+    return [];
   }
   
   try {
-    return eventDb.getAllEvents();
+    return db.getAllEvents();
   } catch (error) {
     console.error('Error getting events from database:', error);
     return [];
@@ -217,45 +234,33 @@ ipcMain.handle('db:getAllEvents', async () => {
 });
 
 ipcMain.handle('db:addEvent', async (_, event: Event) => {
-  if (!eventDb) {
-    try {
-      eventDb = new EventDatabase();
-    } catch (error) {
-      throw new Error('Database not initialized');
-    }
+  const db = await initDatabase();
+  if (!db) {
+    throw new Error('Database not available');
   }
-  return eventDb.addEvent(event);
+  return db.addEvent(event);
 });
 
 ipcMain.handle('db:updateEvent', async (_, event: Event) => {
-  if (!eventDb) {
-    try {
-      eventDb = new EventDatabase();
-    } catch (error) {
-      throw new Error('Database not initialized');
-    }
+  const db = await initDatabase();
+  if (!db) {
+    throw new Error('Database not available');
   }
-  return eventDb.updateEvent(event);
+  return db.updateEvent(event);
 });
 
 ipcMain.handle('db:deleteEvent', async (_, id: string) => {
-  if (!eventDb) {
-    try {
-      eventDb = new EventDatabase();
-    } catch (error) {
-      throw new Error('Database not initialized');
-    }
+  const db = await initDatabase();
+  if (!db) {
+    throw new Error('Database not available');
   }
-  return eventDb.deleteEvent(id);
+  return db.deleteEvent(id);
 });
 
 ipcMain.handle('db:syncEvents', async (_, events: Event[]) => {
-  if (!eventDb) {
-    try {
-      eventDb = new EventDatabase();
-    } catch (error) {
-      throw new Error('Database not initialized');
-    }
+  const db = await initDatabase();
+  if (!db) {
+    throw new Error('Database not available');
   }
-  return eventDb.syncEvents(events);
+  return db.syncEvents(events);
 });

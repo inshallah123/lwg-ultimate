@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
-import { MonthView } from './components/calendar/MonthView';
-import { WeekView } from './components/calendar/WeekView';
+import { MonthView } from './components/calendar/month/MonthView';
+import { WeekView } from './components/calendar/week/WeekView';
 import { YearView } from './components/calendar/year/YearView';
 import { SearchBox } from '@/components/search/SearchBox';
 import { Sidebar } from './components/Sidebar/sidebar';

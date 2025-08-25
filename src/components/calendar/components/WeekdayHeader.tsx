@@ -1,6 +1,6 @@
 import React from 'react';
 import { WEEKDAY_NAMES_SHORT } from '@/utils/dateHelpers';
-import styles from '../MonthView.module.css';
+import styles from '../month/MonthView.module.css';
 
 export function WeekdayHeader() {
   return (

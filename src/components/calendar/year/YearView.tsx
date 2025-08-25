@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState, useMemo} from 'react';
 import {useCalendarStore} from '../store';
 import {useYearScroll} from '../hooks/useYearScroll';
-import {useYearKeyboardNavigation} from '../hooks/useYearKeyboardNavigation';
+import {useYearKeyboardNavigation} from '@/components/calendar/hooks';
 import { YearSection } from './YearSection';
 import { 
   calculateYearSectionPosition, 
@@ -184,21 +184,7 @@ export function YearView(props: YearViewProps = {}) {
         >
           «
         </button>
-        <button 
-          className={sharedStyles.navButton} 
-          onClick={() => navigateYear(-NAVIGATION_STEP.SINGLE_YEAR)}
-          title="上一年"
-        >
-          ‹
-        </button>
         <h2 className={styles.yearHeader}>{currentDate.getFullYear()}年</h2>
-        <button 
-          className={sharedStyles.navButton} 
-          onClick={() => navigateYear(NAVIGATION_STEP.SINGLE_YEAR)}
-          title="下一年"
-        >
-          ›
-        </button>
         <button 
           className={sharedStyles.navButton} 
           onClick={() => navigateYear(NAVIGATION_STEP.FIVE_YEARS)}
