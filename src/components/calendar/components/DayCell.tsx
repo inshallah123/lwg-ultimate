@@ -28,31 +28,18 @@ export const DayCell = React.memo(function DayCell({
   onClick,
   style
 }: DayCellProps) {
-  // 根据滚动状态决定样式
+  // 简化的涂灰逻辑：任何时候都是第1行和第6行涂灰
   let useCurrentStyle: boolean;
   
-  if (isDefaultView && !isScrolling) {
-    // 默认视图（按空格后）：固定显示6行，第1行和第6行涂灰，第2-5行正常
-    // 计算单元格在视口中的相对位置
+  if (isDefaultView || isScrolling) {
+    // 计算单元格在视口中的行位置
     const cellTop = row * rowHeight - scrollPosition;
-    const relativeRow = Math.floor(cellTop / rowHeight);
-    // 第1行（索引0）和第6行（索引5）涂灰
-    useCurrentStyle = relativeRow >= 1 && relativeRow <= 4; // 第2-5行为正常样式
-  } else if (isScrolling) {
-    // 滚动时：滑动窗口效果，缩小涂灰范围
-    const cellTop = row * rowHeight - scrollPosition;
-    const cellBottom = cellTop + rowHeight;
-    // 如果单元格在视口内（0到containerHeight之间）
-    if (cellTop < containerHeight && cellBottom > 0) {
-      // 计算单元格在视口中的行位置
-      const visibleRow = Math.floor(cellTop / rowHeight);
-      // 扩大正常显示范围：只有最顶部和最底部的行涂灰
-      useCurrentStyle = visibleRow >= 0.5 && visibleRow <= 5; // 几乎所有可见行都正常显示
-    } else {
-      useCurrentStyle = false;
-    }
+    const visibleRow = Math.floor(cellTop / rowHeight);
+    
+    // 第2-5行（索引1-4）正常显示，第1行（索引0）和第6行（索引5）涂灰
+    useCurrentStyle = visibleRow >= 1 && visibleRow <= 4;
   } else {
-    // 静止时：只有当前月份用当月样式
+    // 静止且非默认视图时：只有当前月份用当月样式
     useCurrentStyle = isCurrentMonth;
   }
   
