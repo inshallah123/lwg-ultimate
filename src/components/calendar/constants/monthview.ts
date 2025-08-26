@@ -20,8 +20,8 @@ export const BUFFER_ROWS = {
 
 // 月份范围
 export const MONTH_RANGE = {
-  START_OFFSET: -6,  // 初始起始月份偏移
-  END_OFFSET: 6,     // 初始结束月份偏移
+  START_OFFSET: -3,  // 初始起始月份偏移（从当前月份往前3个月）
+  END_OFFSET: 9,     // 初始结束月份偏移（从当前月份往后9个月）
 };
 
 // 视图配置

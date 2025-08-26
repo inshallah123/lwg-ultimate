@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Event, CreateEventInput, UpdateEventInput } from '@/types/event';
 import { EditScope } from '@/stores/eventStore/types';
@@ -51,6 +51,9 @@ export function EventForm({
   const eventFormDate = useSidebarStore(state => state.eventFormDate);
   const eventFormHour = useSidebarStore(state => state.eventFormHour);
   
+  // Ref for title input to set focus
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  
   // 表单状态
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -97,6 +100,17 @@ export function EventForm({
       }
     }
   }, [isOpen, mode, event, eventFormDate, eventFormHour]);
+  
+  // 当表单打开且不是只显示recurrence时，自动聚焦到title输入框
+  useEffect(() => {
+    const onlyShowRecurrence = editScope === 'changeCycle';
+    if (isOpen && !onlyShowRecurrence && titleInputRef.current) {
+      // 使用setTimeout确保DOM已经完全渲染
+      setTimeout(() => {
+        titleInputRef.current?.focus();
+      }, 0);
+    }
+  }, [isOpen, editScope]);
   
   // 重置表单
   const resetForm = useCallback(() => {
@@ -236,6 +250,7 @@ export function EventForm({
               <div className={styles.formGroup}>
                 <label className={styles.label}>Title *</label>
                 <input
+                  ref={titleInputRef}
                   type="text"
                   className={`${styles.input} ${errors.title ? styles.inputError : ''}`}
                   value={title}
