@@ -5,15 +5,22 @@ const path = require('path');
 
 class AppUpdater {
   constructor(getMainWindow) {
-    // 重要：在任何检查之前设置这些属性
+    // 配置更新器 - 根据官方最佳实践
+    // autoDownload: false 允许用户选择是否下载更新
+    // autoInstallOnAppQuit: true 确保下载的更新在退出时安装
     autoUpdater.autoDownload = false;
     autoUpdater.autoInstallOnAppQuit = true;
     
-    // 启用日志
-    autoUpdater.logger = require('electron-log');
-    autoUpdater.logger.transports.file.level = 'info';
-    console.log('AutoUpdater initialized with autoInstallOnAppQuit:', autoUpdater.autoInstallOnAppQuit);
+    // 配置日志记录 - 官方推荐用于调试
+    const log = require('electron-log');
+    log.transports.file.level = 'info';
+    autoUpdater.logger = log;
     
+    log.info('AutoUpdater initialized');
+    log.info('autoDownload:', autoUpdater.autoDownload);
+    log.info('autoInstallOnAppQuit:', autoUpdater.autoInstallOnAppQuit);
+    
+    this.autoUpdater = autoUpdater; // 暴露autoUpdater以便外部访问
     this.isManualCheck = false;
     this.getMainWindow = getMainWindow || (() => BrowserWindow.getAllWindows()[0]);
     this.updateDownloaded = false;
@@ -101,6 +108,21 @@ class AppUpdater {
 
     autoUpdater.on('error', (err) => {
       console.error('更新出错:', err);
+      
+      // 如果是手动检查，显示错误信息
+      if (this.isManualCheck) {
+        const mainWindow = this.getMainWindow();
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          dialog.showMessageBox(mainWindow, {
+            type: 'error',
+            title: '更新错误',
+            message: '检查更新时出现错误',
+            detail: err.message || '请检查网络连接后重试',
+            buttons: ['确定']
+          });
+        }
+        this.isManualCheck = false;
+      }
     });
 
     autoUpdater.on('download-progress', (progressObj) => {
@@ -117,12 +139,15 @@ class AppUpdater {
 
     autoUpdater.on('update-downloaded', (info) => {
       console.log('更新已下载:', info);
+      console.log('更新文件版本:', info.version);
+      console.log('更新文件路径:', info.downloadedFile || '未知');
       this.updateDownloaded = true;
       
       const mainWindow = this.getMainWindow();
+      console.log('主窗口状态:', mainWindow ? '存在' : '不存在');
       
       // 通知渲染进程下载完成
-      if (mainWindow) {
+      if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send('update-downloaded');
         
         dialog.showMessageBox(mainWindow, {
@@ -136,10 +161,24 @@ class AppUpdater {
         }).then(result => {
           if (result.response === 0) {
             console.log('用户选择立即安装更新');
-            autoUpdater.quitAndInstall(false, true);
+            // 根据官方文档，直接调用 quitAndInstall 即可
+            // 此方法会关闭所有窗口并调用 app.quit()
+            try {
+              autoUpdater.quitAndInstall();
+            } catch (error) {
+              console.error('安装更新时出错:', error);
+              dialog.showMessageBox(mainWindow, {
+                type: 'error',
+                title: '安装失败',
+                message: '无法安装更新',
+                detail: '请手动重启应用以完成更新安装',
+                buttons: ['确定']
+              });
+            }
           } else {
             console.log('用户选择稍后安装，将在退出时自动安装');
             // 确保 autoInstallOnAppQuit 为 true
+            // 根据官方文档：成功下载的更新将在下次启动时自动应用
             autoUpdater.autoInstallOnAppQuit = true;
           }
         });
@@ -152,8 +191,13 @@ class AppUpdater {
   }
 
   checkForUpdates() {
+    // 只在生产环境中检查更新
     if (process.env.NODE_ENV !== 'development') {
-      autoUpdater.checkForUpdatesAndNotify();
+      // 使用 checkForUpdates 而不是 checkForUpdatesAndNotify
+      // 因为我们自定义了通知逻辑
+      autoUpdater.checkForUpdates().catch(err => {
+        console.error('自动检查更新失败:', err);
+      });
     }
   }
   
@@ -189,7 +233,8 @@ class AppUpdater {
   forceInstallUpdate() {
     if (this.updateDownloaded) {
       console.log('强制安装已下载的更新');
-      autoUpdater.quitAndInstall(false, true);
+      // 直接调用 quitAndInstall，它会处理所有必要的步骤
+      autoUpdater.quitAndInstall();
     }
   }
 }
