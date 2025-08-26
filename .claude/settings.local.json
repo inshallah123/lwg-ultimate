@@ -32,6 +32,9 @@
       "Bash(gh release create:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "C:\\Users\\yyh\\AppData\\Roaming\\littlewhitegoose\\logs"
+    ]
   }
 }

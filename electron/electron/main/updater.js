@@ -11,14 +11,25 @@ class AppUpdater {
     autoUpdater.autoDownload = false;
     autoUpdater.autoInstallOnAppQuit = true;
     
-    // 配置日志记录 - 官方推荐用于调试
+    // 关键修复：禁用差异下载，这可能导致 update-downloaded 不触发
+    autoUpdater.allowPrerelease = false;
+    autoUpdater.allowDowngrade = false;
+    
+    // Windows 特定修复
+    if (process.platform === 'win32') {
+      // 禁用差异下载 - 这是导致问题的常见原因
+      process.env.ELECTRON_UPDATER_ALLOW_DIFFERENTIAL = 'false';
+    }
+    
+    // 重要：禁用签名验证（仅用于未签名的应用）
+    // 生产环境建议使用正确的代码签名证书
+    autoUpdater.forceDevUpdateConfig = false;  // 不强制dev模式
+    autoUpdater.allowUnverifiedSignatures = true;  // 允许未验证的签名
+    
+    // 配置日志记录
     const log = require('electron-log');
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
-    
-    log.info('AutoUpdater initialized');
-    log.info('autoDownload:', autoUpdater.autoDownload);
-    log.info('autoInstallOnAppQuit:', autoUpdater.autoInstallOnAppQuit);
     
     this.autoUpdater = autoUpdater; // 暴露autoUpdater以便外部访问
     this.isManualCheck = false;
@@ -28,6 +39,7 @@ class AppUpdater {
     // 配置代理（如果有）
     this.configureProxy();
     this.setupEventListeners();
+    
   }
   
   configureProxy() {
@@ -127,7 +139,7 @@ class AppUpdater {
 
     autoUpdater.on('download-progress', (progressObj) => {
       const mainWindow = this.getMainWindow();
-      if (mainWindow) {
+      if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send('download-progress', {
           bytesPerSecond: progressObj.bytesPerSecond,
           percent: progressObj.percent,
@@ -138,9 +150,6 @@ class AppUpdater {
     });
 
     autoUpdater.on('update-downloaded', (info) => {
-      console.log('更新已下载:', info);
-      console.log('更新文件版本:', info.version);
-      console.log('更新文件路径:', info.downloadedFile || '未知');
       this.updateDownloaded = true;
       
       const mainWindow = this.getMainWindow();
@@ -165,9 +174,9 @@ class AppUpdater {
             // 此方法会关闭所有窗口并调用 app.quit()
             try {
               // 使用正确的参数调用 quitAndInstall
-              // isSilent: true - 静默安装，避免用户交互
+              // isSilent: false - 显示安装进度
               // forceRunAfter: true - 强制安装后重新启动应用
-              autoUpdater.quitAndInstall(true, true);
+              autoUpdater.quitAndInstall(false, true);
             } catch (error) {
               console.error('安装更新时出错:', error);
               dialog.showMessageBox(mainWindow, {
@@ -235,11 +244,7 @@ class AppUpdater {
   
   forceInstallUpdate() {
     if (this.updateDownloaded) {
-      console.log('强制安装已下载的更新');
-      // 使用正确的参数调用 quitAndInstall
-      // isSilent: true - 静默安装，避免用户交互
-      // forceRunAfter: true - 强制安装后重新启动应用
-      autoUpdater.quitAndInstall(true, true);
+      autoUpdater.quitAndInstall(false, true);
     }
   }
 }

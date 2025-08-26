@@ -1,6 +1,6 @@
 {
   "name": "littlewhitegoose",
-  "version": "1.0.4",
+  "version": "1.0.0",
   "description": "A beautiful desktop calendar application",
   "main": "electron/electron/main/index.js",
   "scripts": {
@@ -63,7 +63,8 @@
           ]
         }
       ],
-      "publisherName": "YYH"
+      "publisherName": "YYH",
+      "verifyUpdateCodeSignature": false
     },
     "nsis": {
       "oneClick": false,
@@ -74,14 +75,16 @@
       "allowElevation": true,
       "runAfterFinish": true,
       "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
+      "createStartMenuShortcut": true,
+      "differentialPackage": false
     },
     "publish": [
       {
         "provider": "github",
         "owner": "inshallah123",
         "repo": "lwg-ultimate",
-        "releaseType": "release"
+        "releaseType": "release",
+        "publishAutoUpdate": true
       }
     ]
   },
