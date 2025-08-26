@@ -13,11 +13,12 @@
   },
   "files": [
     "dist/**/*",
-    "electron/main/**/*",
-    "electron/preload/**/*",
-    "package.json"
+    "electron/electron/**/*",
+    "node_modules/**/*",
+    "package.json",
+    "mirror.config.json"
   ],
-  "main": "electron/main/index.js",
+  "main": "electron/electron/main/index.js",
   "win": {
     "target": [
       {

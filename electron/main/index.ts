@@ -24,6 +24,7 @@ import { platform } from 'os';
 import { checkLunarLibraryUpdate, updateLunarLibrary } from '../utils/checkUpdates';
 import EventDatabase from './database';
 import { Event } from '../../src/types/event';
+import updateConfig from '../utils/updateConfig';
 const AppUpdater = require('./updater');
 
 let mainWindow: BrowserWindow | null = null;
@@ -106,6 +107,113 @@ Life flows like water through our hands.`;
                 message: 'Time\'s White Goose',
                 detail: poem,
                 buttons: ['Close'],
+                noLink: true
+              });
+            }
+          }
+        }
+      ]
+    },
+    {
+      label: '更新',
+      submenu: [
+        {
+          label: '检查更新',
+          click: async () => {
+            if (!appUpdater) {
+              dialog.showMessageBox(mainWindow!, {
+                type: 'info',
+                title: '检查更新',
+                message: '开发模式下无法检查更新',
+                buttons: ['确定']
+              });
+              return;
+            }
+            
+            // 手动检查更新
+            const result = await appUpdater.checkForUpdatesManually();
+            if (!result || !result.updateInfo) {
+              dialog.showMessageBox(mainWindow!, {
+                type: 'info',
+                title: '检查更新',
+                message: '当前已是最新版本',
+                buttons: ['确定']
+              });
+            }
+          }
+        },
+        {
+          label: '配置代理',
+          click: async () => {
+            if (!mainWindow) return;
+            
+            const config = updateConfig.getConfig();
+            const proxyEnabled = config.proxy?.enabled || false;
+            const proxyHost = config.proxy?.host || '127.0.0.1';
+            const proxyPort = config.proxy?.port || 7890;
+            
+            const result = await dialog.showMessageBox(mainWindow, {
+              type: 'question',
+              title: '配置更新代理',
+              message: '配置GitHub更新代理',
+              detail: `当前设置:\n代理状态: ${proxyEnabled ? '已启用' : '已禁用'}\n代理地址: ${proxyHost}:${proxyPort}\n\n是否要修改代理设置？`,
+              buttons: ['取消', '禁用代理', '启用代理', '自定义设置'],
+              defaultId: 0,
+              cancelId: 0
+            });
+            
+            if (result.response === 0) {
+              return; // 用户取消
+            } else if (result.response === 1) {
+              // 禁用代理
+              updateConfig.setProxy(false);
+              dialog.showMessageBox(mainWindow, {
+                type: 'info',
+                title: '配置成功',
+                message: '代理已禁用',
+                buttons: ['确定']
+              });
+              
+              // 更新 updater 配置
+              if (appUpdater) {
+                appUpdater.setProxy(null);
+              }
+            } else if (result.response === 2) {
+              // 启用代理（使用当前设置）
+              updateConfig.setProxy(true);
+              dialog.showMessageBox(mainWindow, {
+                type: 'info',
+                title: '配置成功',
+                message: `代理已启用: ${proxyHost}:${proxyPort}`,
+                buttons: ['确定']
+              });
+              
+              // 更新 updater 配置
+              if (appUpdater) {
+                appUpdater.setProxy(updateConfig.getProxyUrl());
+              }
+            } else if (result.response === 3) {
+              // 自定义设置
+              mainWindow.webContents.send('show-proxy-config', {
+                enabled: proxyEnabled,
+                host: proxyHost,
+                port: proxyPort
+              });
+            }
+          }
+        },
+        { type: 'separator' },
+        {
+          label: '关于更新',
+          click: () => {
+            if (mainWindow) {
+              const version = app.getVersion();
+              dialog.showMessageBox(mainWindow, {
+                type: 'info',
+                title: '关于更新',
+                message: `当前版本: v${version}`,
+                detail: '本应用使用GitHub Release进行版本更新。\n\n如果您在中国大陆，可能需要配置代理以访问GitHub。\n\n更新源: github.com/inshallah123/lwg-ultimate',
+                buttons: ['确定'],
                 noLink: true
               });
             }
@@ -199,7 +307,7 @@ app.whenReady().then(async () => {
   // 初始化应用自动更新
   if (!app.isPackaged) {
     console.log('开发模式，跳过自动更新');
-    console.log('版本: 1.0.1');
+    console.log('版本:', app.getVersion());
   } else {
     appUpdater = new AppUpdater();
     // 配置GitHub更新地址
@@ -208,10 +316,20 @@ app.whenReady().then(async () => {
       owner: 'inshallah123',
       repo: 'lwg-ultimate'
     });
+    
+    // 设置代理（如果已配置）
+    const proxyUrl = updateConfig.getProxyUrl();
+    if (proxyUrl) {
+      appUpdater.setProxy(proxyUrl);
+    }
+    
     // 延迟检查应用更新
-    setTimeout(() => {
-      appUpdater.checkForUpdates();
-    }, 3000);
+    const config = updateConfig.getConfig();
+    if (config.autoCheck !== false) {
+      setTimeout(() => {
+        appUpdater.checkForUpdates();
+      }, 3000);
+    }
   }
   
   // 延迟5秒后检查更新，避免影响启动速度
@@ -336,4 +454,34 @@ ipcMain.handle('db:syncEvents', async (_, events: Event[]) => {
     throw new Error('Database not available');
   }
   return db.syncEvents(events);
+});
+
+// 更新配置相关的IPC处理
+ipcMain.handle('update:getConfig', () => {
+  return updateConfig.getConfig();
+});
+
+ipcMain.handle('update:setProxy', (_, enabled: boolean, host?: string, port?: number) => {
+  updateConfig.setProxy(enabled, host, port);
+  
+  // 更新 updater 配置
+  if (appUpdater) {
+    const proxyUrl = enabled ? updateConfig.getProxyUrl() : null;
+    appUpdater.setProxy(proxyUrl);
+  }
+  
+  return { success: true };
+});
+
+ipcMain.handle('update:checkNow', async () => {
+  if (!appUpdater) {
+    return { error: '开发模式下无法检查更新' };
+  }
+  
+  try {
+    const result = await appUpdater.checkForUpdatesManually();
+    return result;
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
 });

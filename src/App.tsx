@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { MonthView } from './components/calendar/month/MonthView';
 import { WeekView } from './components/calendar/week/WeekView';
 import { YearView } from './components/calendar/year/YearView';
@@ -7,6 +7,8 @@ import { Sidebar } from './components/Sidebar/sidebar';
 import { useSidebarStore } from './components/Sidebar/store';
 import { useCalendarStore } from './components/calendar/store';
 import { Event } from '@/types/event';
+import UpdateProgress from './components/UpdateProgress/UpdateProgress';
+import ProxyConfigDialog from './components/ProxyConfigDialog';
 import styles from './App.module.css';
 
 function App() {
@@ -17,7 +19,22 @@ function App() {
   const setDate = useCalendarStore(state => state.setDate);
   const viewContainerRef = useRef<HTMLDivElement>(null);
   const openSidebar = useSidebarStore(state => state.open);
+  const [isProxyDialogOpen, setIsProxyDialogOpen] = useState(false);
+  const [proxyConfig, setProxyConfig] = useState<any>(null);
   
+  useEffect(() => {
+    // 监听主进程发送的显示代理配置消息
+    const handleShowProxyConfig = (_event: any, config: any) => {
+      setProxyConfig(config);
+      setIsProxyDialogOpen(true);
+    };
+
+    window.electron?.ipcRenderer.on('show-proxy-config', handleShowProxyConfig);
+    
+    return () => {
+      window.electron?.ipcRenderer.removeAllListeners('show-proxy-config');
+    };
+  }, []);
   
   const handleSearch = () => {
     // 基础搜索功能（可选）
@@ -87,6 +104,12 @@ function App() {
         </div>
       </div>
       <Sidebar />
+      <UpdateProgress />
+      <ProxyConfigDialog 
+        isOpen={isProxyDialogOpen}
+        onClose={() => setIsProxyDialogOpen(false)}
+        initialConfig={proxyConfig}
+      />
     </div>
   );
 }

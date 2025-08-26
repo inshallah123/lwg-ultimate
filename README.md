@@ -38,7 +38,8 @@ littlewhitegoose/
 ├── electron/          # Electron main process
 ├── src/              # React application source
 ├── public/           # Static assets
-└── dist/            # Build output
+├── dist/            # Build output
+└── docs/            # Development documentation
 ```
 
 ## License

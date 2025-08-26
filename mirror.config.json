@@ -1,0 +1,5 @@
+{
+  "npmRegistry": "https://registry.npmmirror.com",
+  "githubProxy": "",
+  "comment": "NPM镜像源配置，可选值：https://registry.npmjs.org (官方源), https://registry.npmmirror.com (淘宝镜像), https://mirrors.cloud.tencent.com/npm (腾讯云镜像), https://mirrors.huaweicloud.com/repository/npm (华为云镜像)"
+}
