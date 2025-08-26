@@ -1,3 +1,10 @@
+@import '../../../index.css';
+
+/* NavButton 需要的 CSS 变量 */
+:root {
+  --color-border-light: #f0f1f4;
+}
+
 /* 共享的导航按钮样式 */
 .navButton {
   width: 40px;

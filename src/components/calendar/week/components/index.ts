@@ -1,0 +1,1 @@
+export { WeekEventIndicator } from './WeekEventIndicator';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { getLunarDateInfo } from '@/utils/lunarDate';
-import styles from '../month/MonthView.module.css';
+import styles from '../MonthView.module.css';
 
 interface LunarInfoProps {
   date: Date;

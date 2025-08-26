@@ -40,10 +40,10 @@ const ProxyConfigDialog: React.FC<ProxyConfigDialogProps> = ({ isOpen, onClose, 
       setPort(config.port.toString());
     };
 
-    window.electron?.ipcRenderer.on('show-proxy-config', handleShowConfig);
+    window.Electron?.ipcRenderer.on('show-proxy-config', handleShowConfig);
     
     return () => {
-      window.electron?.ipcRenderer.removeAllListeners('show-proxy-config');
+      window.Electron?.ipcRenderer.removeAllListeners('show-proxy-config');
     };
   }, []);
 
@@ -64,7 +64,7 @@ const ProxyConfigDialog: React.FC<ProxyConfigDialogProps> = ({ isOpen, onClose, 
     }
 
     try {
-      await window.electron?.ipcRenderer.invoke('update:setProxy', enabled, host, portNum);
+      await window.Electron?.ipcRenderer.invoke('update:setProxy', enabled, host, portNum);
       
       // 显示成功消息
       const message = enabled 

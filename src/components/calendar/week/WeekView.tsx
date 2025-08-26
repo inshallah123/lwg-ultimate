@@ -3,10 +3,10 @@ import { useCalendarStore } from '../store';
 import { useSidebarStore } from '../../Sidebar/store';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { isToday, WEEKDAY_NAMES, TIME_SLOTS } from '@/utils/dateHelpers';
-import { WeekEventIndicator } from '../WeekEventIndicator';
-import { LunarInfo } from '../components/LunarInfo';
+import { WeekEventIndicator } from './components/WeekEventIndicator';
+import { LunarInfo } from '../month/components/LunarInfo';
+import { NavButton } from '../shared';
 import styles from './WeekView.module.css';
-import sharedStyles from '../shared.module.css';
 
 
 interface WeekViewProps {
@@ -52,13 +52,13 @@ export function WeekView({ onOpenSideBar }: WeekViewProps = {}) {
   return (
     <div className={styles.weekContainer}>
       <div className={styles.weekHeaderContainer}>
-        <button className={sharedStyles.navButton} onClick={() => navigateWeek(-1)}>
+        <NavButton onClick={() => navigateWeek(-1)} ariaLabel="Previous week">
           ‹
-        </button>
+        </NavButton>
         <h2 className={styles.weekHeader}>{getWeekHeader()}</h2>
-        <button className={sharedStyles.navButton} onClick={() => navigateWeek(1)}>
+        <NavButton onClick={() => navigateWeek(1)} ariaLabel="Next week">
           ›
-        </button>
+        </NavButton>
       </div>
       
       <div className={styles.weekGrid}>

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useEventStore } from '@/stores/eventStore';
 import { useSidebarStore } from '@/components/Sidebar/store';
-import { LunarInfo } from './components/LunarInfo';
+import { LunarInfo } from './LunarInfo';
 import styles from './MonthEventIndicator.module.css';
 
 interface MonthEventIndicatorProps {

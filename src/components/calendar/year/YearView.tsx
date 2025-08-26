@@ -8,8 +8,8 @@ import {
   getDateComparison,
   calculateYearIndex
 } from '../utils/yearCalculation';
+import { NavButton } from '../shared';
 import styles from './YearView.module.css';
-import sharedStyles from '../shared.module.css';
 import {
   NAVIGATION_STEP,
   DEFAULT_VALUES
@@ -177,21 +177,19 @@ export function YearView(props: YearViewProps = {}) {
   return (
     <div className={styles.yearContainer}>
       <div className={styles.yearHeaderContainer}>
-        <button 
-          className={sharedStyles.navButton} 
+        <NavButton 
           onClick={() => navigateYear(-NAVIGATION_STEP.FIVE_YEARS)}
-          title="向前5年"
+          ariaLabel="向前5年"
         >
           «
-        </button>
+        </NavButton>
         <h2 className={styles.yearHeader}>{currentDate.getFullYear()}年</h2>
-        <button 
-          className={sharedStyles.navButton} 
+        <NavButton 
           onClick={() => navigateYear(NAVIGATION_STEP.FIVE_YEARS)}
-          title="向后5年"
+          ariaLabel="向后5年"
         >
           »
-        </button>
+        </NavButton>
       </div>
       
       <div 

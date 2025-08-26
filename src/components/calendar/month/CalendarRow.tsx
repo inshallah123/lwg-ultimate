@@ -1,5 +1,5 @@
 import React from 'react';
-import { DayCell } from '../components';
+import { DayCell } from './components';
 import { VIEW_CONFIG } from '../constants/monthview';
 import styles from './MonthView.module.css';
 

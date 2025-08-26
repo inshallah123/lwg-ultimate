@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { useCalendarStore } from '../store';
 import { useSidebarStore } from '../../Sidebar/store';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
-import { WeekdayHeader, MonthHeader } from '../components';
+import { WeekdayHeader, MonthHeader } from './components';
 import { useMonthScroll, useMonthKeyboardNavigation } from '../hooks';
 import { VIEW_CONFIG, BUFFER_ROWS } from '../constants/monthview';
 import { calculateVisibleContent } from '../utils/monthCalculation';

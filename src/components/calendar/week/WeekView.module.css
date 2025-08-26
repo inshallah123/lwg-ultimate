@@ -1,4 +1,10 @@
-@import '../style/index.css';
+@import '../../../index.css';
+
+/* WeekView 需要的 CSS 变量 */
+:root {
+  --color-bg-tertiary: #f3f4f7;
+  --color-border-light: #f0f1f4;
+}
 
 /* Container */
 .weekContainer {

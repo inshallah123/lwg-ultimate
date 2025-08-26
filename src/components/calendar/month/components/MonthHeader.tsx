@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from '../month/MonthView.module.css';
-import sharedStyles from '../shared.module.css';
+import styles from '../MonthView.module.css';
+import { NavButton } from '../../shared';
 
 interface MonthHeaderProps {
   monthHeader: string;
@@ -11,13 +11,13 @@ interface MonthHeaderProps {
 export function MonthHeader({ monthHeader, onPrevMonth, onNextMonth }: MonthHeaderProps) {
   return (
     <div className={styles.monthHeaderContainer}>
-      <button className={sharedStyles.navButton} onClick={onPrevMonth}>
+      <NavButton onClick={onPrevMonth} ariaLabel="Previous month">
         ‹
-      </button>
+      </NavButton>
       <h2 className={styles.monthHeader}>{monthHeader}</h2>
-      <button className={sharedStyles.navButton} onClick={onNextMonth}>
+      <NavButton onClick={onNextMonth} ariaLabel="Next month">
         ›
-      </button>
+      </NavButton>
     </div>
   );
 }
