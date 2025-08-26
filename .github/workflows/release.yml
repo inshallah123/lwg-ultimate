@@ -8,12 +8,8 @@ on:
 
 jobs:
   release:
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
-        
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,29 +26,14 @@ jobs:
         run: npm run build
         
       - name: Build and publish Windows
-        if: matrix.os == 'windows-latest'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run dist:win
-        
-      - name: Build and publish macOS
-        if: matrix.os == 'macos-latest'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_LINK: ${{ secrets.MAC_CERTS }}
-          CSC_KEY_PASSWORD: ${{ secrets.MAC_CERTS_PASSWORD }}
-        run: npm run dist:mac
-        
-      - name: Build and publish Linux
-        if: matrix.os == 'ubuntu-latest'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run dist:linux
+        run: npm run dist
         
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.os }}-dist
+          name: windows-dist
           path: release/
           
   create-release:
@@ -71,14 +52,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            windows-latest-dist/*.exe
-            windows-latest-dist/*.yml
-            ubuntu-latest-dist/*.AppImage
-            ubuntu-latest-dist/*.deb
-            ubuntu-latest-dist/*.yml
-            macos-latest-dist/*.dmg
-            macos-latest-dist/*.zip
-            macos-latest-dist/*.yml
+            windows-dist/*.exe
+            windows-dist/*.yml
           draft: false
           prerelease: false
           generate_release_notes: true

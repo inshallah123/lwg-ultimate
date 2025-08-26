@@ -20,7 +20,6 @@
 import { app, BrowserWindow, ipcMain, dialog, Menu } from 'electron';
 import { join } from 'path';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { platform } from 'os';
 import { checkLunarLibraryUpdate, updateLunarLibrary } from '../utils/checkUpdates';
 import EventDatabase from './database';
 import { Event } from '../../src/types/event';
@@ -387,16 +386,9 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
-  if (platform() !== 'darwin') {
-    app.quit();
-  }
+  app.quit();
 });
 
-app.on('activate', () => {
-  if (mainWindow === null) {
-    createWindow();
-  }
-});
 
 app.on('before-quit', () => {
   if (mainWindow) {

@@ -19,10 +19,7 @@
     "test:full": "npx tsx src/tests/fullTestSuite.ts",
     "rebuild": "electron-rebuild -f -w better-sqlite3",
     "postinstall": "electron-rebuild -f -w better-sqlite3",
-    "dist": "npm run build && electron-builder",
-    "dist:win": "npm run build && electron-builder --win",
-    "dist:mac": "npm run build && electron-builder --mac",
-    "dist:linux": "npm run build && electron-builder --linux"
+    "dist": "npm run build && electron-builder --win"
   },
   "keywords": [
     "calendar",
@@ -73,22 +70,6 @@
       "perMachine": false,
       "deleteAppDataOnUninstall": false,
       "artifactName": "littlewhitegoose-setup-${version}.${ext}"
-    },
-    "mac": {
-      "icon": "build/icons/icon.icns",
-      "category": "public.app-category.productivity",
-      "target": [
-        "dmg",
-        "zip"
-      ]
-    },
-    "linux": {
-      "icon": "build/icons",
-      "target": [
-        "AppImage",
-        "deb"
-      ],
-      "category": "Utility"
     },
     "publish": [
       {

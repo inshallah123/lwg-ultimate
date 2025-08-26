@@ -25,7 +25,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const path_1 = require("path");
 const fs_1 = require("fs");
-const os_1 = require("os");
 const checkUpdates_1 = require("../utils/checkUpdates");
 const database_1 = __importDefault(require("./database"));
 const updateConfig_1 = __importDefault(require("../utils/updateConfig"));
@@ -372,14 +371,7 @@ electron_1.app.whenReady().then(async () => {
     }, 5000);
 });
 electron_1.app.on('window-all-closed', () => {
-    if ((0, os_1.platform)() !== 'darwin') {
-        electron_1.app.quit();
-    }
-});
-electron_1.app.on('activate', () => {
-    if (mainWindow === null) {
-        createWindow();
-    }
+    electron_1.app.quit();
 });
 electron_1.app.on('before-quit', () => {
     if (mainWindow) {
