@@ -4,10 +4,19 @@ const fs = require('fs');
 const path = require('path');
 
 class AppUpdater {
-  constructor() {
+  constructor(getMainWindow) {
+    // 重要：在任何检查之前设置这些属性
     autoUpdater.autoDownload = false;
     autoUpdater.autoInstallOnAppQuit = true;
+    
+    // 启用日志
+    autoUpdater.logger = require('electron-log');
+    autoUpdater.logger.transports.file.level = 'info';
+    console.log('AutoUpdater initialized with autoInstallOnAppQuit:', autoUpdater.autoInstallOnAppQuit);
+    
     this.isManualCheck = false;
+    this.getMainWindow = getMainWindow || (() => BrowserWindow.getAllWindows()[0]);
+    this.updateDownloaded = false;
     
     // 配置代理（如果有）
     this.configureProxy();
@@ -50,7 +59,12 @@ class AppUpdater {
     });
 
     autoUpdater.on('update-available', (info) => {
-      const mainWindow = BrowserWindow.getAllWindows()[0];
+      const mainWindow = this.getMainWindow();
+      
+      if (!mainWindow) {
+        console.error('无法获取主窗口，无法显示更新提示');
+        return;
+      }
       
       dialog.showMessageBox(mainWindow, {
         type: 'info',
@@ -72,7 +86,7 @@ class AppUpdater {
       
       // 如果是手动检查，显示提示
       if (this.isManualCheck) {
-        const mainWindow = BrowserWindow.getAllWindows()[0];
+        const mainWindow = this.getMainWindow();
         if (mainWindow) {
           dialog.showMessageBox(mainWindow, {
             type: 'info',
@@ -90,7 +104,7 @@ class AppUpdater {
     });
 
     autoUpdater.on('download-progress', (progressObj) => {
-      const mainWindow = BrowserWindow.getAllWindows()[0];
+      const mainWindow = this.getMainWindow();
       if (mainWindow) {
         mainWindow.webContents.send('download-progress', {
           bytesPerSecond: progressObj.bytesPerSecond,
@@ -101,26 +115,39 @@ class AppUpdater {
       }
     });
 
-    autoUpdater.on('update-downloaded', () => {
-      const mainWindow = BrowserWindow.getAllWindows()[0];
+    autoUpdater.on('update-downloaded', (info) => {
+      console.log('更新已下载:', info);
+      this.updateDownloaded = true;
+      
+      const mainWindow = this.getMainWindow();
       
       // 通知渲染进程下载完成
       if (mainWindow) {
         mainWindow.webContents.send('update-downloaded');
+        
+        dialog.showMessageBox(mainWindow, {
+          type: 'info',
+          title: '更新已下载',
+          message: '更新已下载完成，是否立即重启应用？',
+          detail: `新版本 ${info.version} 已下载完成。选择"立即重启"将安装更新，选择"稍后重启"将在下次启动时自动安装。`,
+          buttons: ['立即重启', '稍后重启'],
+          defaultId: 0,
+          cancelId: 1
+        }).then(result => {
+          if (result.response === 0) {
+            console.log('用户选择立即安装更新');
+            autoUpdater.quitAndInstall(false, true);
+          } else {
+            console.log('用户选择稍后安装，将在退出时自动安装');
+            // 确保 autoInstallOnAppQuit 为 true
+            autoUpdater.autoInstallOnAppQuit = true;
+          }
+        });
+      } else {
+        console.error('无法获取主窗口，无法显示更新安装提示');
+        // 即使没有窗口，也确保退出时会安装
+        autoUpdater.autoInstallOnAppQuit = true;
       }
-      
-      dialog.showMessageBox(mainWindow, {
-        type: 'info',
-        title: '更新已下载',
-        message: '更新已下载完成，是否立即重启应用？',
-        buttons: ['立即重启', '稍后重启'],
-        defaultId: 0,
-        cancelId: 1
-      }).then(result => {
-        if (result.response === 0) {
-          autoUpdater.quitAndInstall();
-        }
-      });
     });
   }
 
@@ -137,7 +164,7 @@ class AppUpdater {
       return result;
     } catch (error) {
       this.isManualCheck = false;
-      const mainWindow = BrowserWindow.getAllWindows()[0];
+      const mainWindow = this.getMainWindow();
       if (mainWindow) {
         dialog.showMessageBox(mainWindow, {
           type: 'error',
@@ -153,6 +180,17 @@ class AppUpdater {
 
   setFeedURL(url) {
     autoUpdater.setFeedURL(url);
+  }
+  
+  isUpdateDownloaded() {
+    return this.updateDownloaded;
+  }
+  
+  forceInstallUpdate() {
+    if (this.updateDownloaded) {
+      console.log('强制安装已下载的更新');
+      autoUpdater.quitAndInstall(false, true);
+    }
   }
 }
 
