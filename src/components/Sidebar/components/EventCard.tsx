@@ -105,7 +105,7 @@ export function EventCard({ event }: EventCardProps) {
   
   // 处理编辑按钮点击
   const handleEditClick = useCallback(() => {
-    if (needsScopeSelection(eventType, 'edit')) {
+    if (needsScopeSelection(eventType)) {
       setShowEditModal(true);
     } else {
       // SE直接打开编辑表单

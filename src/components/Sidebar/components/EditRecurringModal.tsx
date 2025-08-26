@@ -34,7 +34,7 @@ export function EditRecurringModal({
   if (!isOpen || !event) return null;
   
   const eventType = getEventType(event);
-  const availableScopes = getAvailableScopes(eventType, 'edit');
+  const availableScopes = getAvailableScopes(eventType);
   const showChangeRecurrence = eventType === 'RP';
   const isParent = eventType === 'RP';
   

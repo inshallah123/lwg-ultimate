@@ -15,42 +15,11 @@ export function getEventType(event: Event): 'SE' | 'RP' | 'VI' {
   }
   return 'SE';
 }
-
-/**
- * 根据事件类型判断支持的操作
- * 基于scenario-matrix.md的业务逻辑矩阵
- */
-export function getSupportedOperations(eventType: 'SE' | 'RP' | 'VI') {
-  const operations = {
-    SE: {
-      edit: { single: true, future: false, all: false },
-      delete: { single: true, future: false, all: false },
-      convert: { toSimple: false, toRecurring: true },
-      changeCycle: false
-    },
-    RP: {
-      edit: { single: false, future: false, all: true },  // RP只支持all
-      delete: { single: false, future: false, all: true }, // RP只支持all
-      convert: { toSimple: false, toRecurring: false },    // RP不支持转换
-      changeCycle: true
-    },
-    VI: {
-      edit: { single: true, future: true, all: false },    // VI不直接支持all
-      delete: { single: true, future: true, all: false },  // VI不直接支持all
-      convert: { toSimple: true, toRecurring: false },
-      changeCycle: false
-    }
-  };
-  
-  return operations[eventType];
-}
-
 /**
  * 判断是否需要显示范围选择对话框
  */
 export function needsScopeSelection(
-  eventType: 'SE' | 'RP' | 'VI',
-  operation: 'edit' | 'delete'
+  eventType: 'SE' | 'RP' | 'VI'
 ): boolean {
   // SE永远不需要范围选择
   if (eventType === 'SE') return false;
@@ -63,8 +32,7 @@ export function needsScopeSelection(
  * 获取可用的范围选项
  */
 export function getAvailableScopes(
-  eventType: 'SE' | 'RP' | 'VI',
-  operation: 'edit' | 'delete'
+  eventType: 'SE' | 'RP' | 'VI'
 ): Array<'single' | 'future' | 'all'> {
   if (eventType === 'SE') {
     return ['single'];

@@ -93,38 +93,3 @@ export function getDeleteConfirmMessage(
   
   return 'Delete this event?';
 }
-
-/**
- * 获取删除操作后的提示信息
- */
-export function getDeleteSuccessMessage(
-  eventType: 'SE' | 'RP' | 'VI',
-  scope: DeleteScope
-): string {
-  if (eventType === 'SE') {
-    return 'Event deleted successfully';
-  }
-  
-  if (eventType === 'RP') {
-    if (scope === 'single') {
-      return 'Occurrence deleted, series parent transferred';
-    }
-    if (scope === 'all') {
-      return 'All events in the series have been deleted';
-    }
-  }
-  
-  if (eventType === 'VI') {
-    if (scope === 'single') {
-      return 'Occurrence deleted from the series';
-    }
-    if (scope === 'future') {
-      return 'This and future occurrences have been deleted';
-    }
-    if (scope === 'all') {
-      return 'All events in the series have been deleted';
-    }
-  }
-  
-  return 'Event deleted';
-}

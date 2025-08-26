@@ -56,8 +56,8 @@ export function DeleteConfirmModal({
   if (!isOpen || !event) return null;
   
   const eventType = getEventType(event);
-  const showScopeSelection = needsScopeSelection(eventType, 'delete');
-  const availableScopes = getAvailableScopes(eventType, 'delete');
+  const showScopeSelection = needsScopeSelection(eventType);
+  const availableScopes = getAvailableScopes(eventType);
   const message = getDeleteConfirmMessage(eventType, 'single');
   const isParent = eventType === 'RP';
   
