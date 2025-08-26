@@ -164,7 +164,10 @@ class AppUpdater {
             // 根据官方文档，直接调用 quitAndInstall 即可
             // 此方法会关闭所有窗口并调用 app.quit()
             try {
-              autoUpdater.quitAndInstall();
+              // 使用正确的参数调用 quitAndInstall
+              // isSilent: true - 静默安装，避免用户交互
+              // forceRunAfter: true - 强制安装后重新启动应用
+              autoUpdater.quitAndInstall(true, true);
             } catch (error) {
               console.error('安装更新时出错:', error);
               dialog.showMessageBox(mainWindow, {
@@ -233,8 +236,10 @@ class AppUpdater {
   forceInstallUpdate() {
     if (this.updateDownloaded) {
       console.log('强制安装已下载的更新');
-      // 直接调用 quitAndInstall，它会处理所有必要的步骤
-      autoUpdater.quitAndInstall();
+      // 使用正确的参数调用 quitAndInstall
+      // isSilent: true - 静默安装，避免用户交互
+      // forceRunAfter: true - 强制安装后重新启动应用
+      autoUpdater.quitAndInstall(true, true);
     }
   }
 }

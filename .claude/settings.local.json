@@ -25,7 +25,11 @@
       "Bash(npm version:*)",
       "Bash(mv:*)",
       "Bash(git pull:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.electronjs.org)",
+      "WebFetch(domain:www.electron.build)",
+      "Bash(gh release create:*)"
     ],
     "deny": [],
     "ask": []

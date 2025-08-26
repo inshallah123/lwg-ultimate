@@ -32,7 +32,7 @@ const AppUpdater = require('./updater');
 let mainWindow = null;
 let eventDb = null;
 let dbInitPromise = null;
-let appUpdater = null;
+let appUpdater = null; // 包含 autoUpdater, isUpdateDownloaded 等方法
 // 确保只有一个实例运行
 const gotTheLock = electron_1.app.requestSingleInstanceLock();
 if (!gotTheLock) {
@@ -302,7 +302,7 @@ electron_1.app.whenReady().then(async () => {
         console.log('版本:', electron_1.app.getVersion());
     }
     else {
-        appUpdater = new AppUpdater();
+        appUpdater = new AppUpdater(() => mainWindow);
         // 配置GitHub更新地址
         appUpdater.setFeedURL({
             provider: 'github',
@@ -373,7 +373,15 @@ electron_1.app.whenReady().then(async () => {
 electron_1.app.on('window-all-closed', () => {
     electron_1.app.quit();
 });
-electron_1.app.on('before-quit', () => {
+electron_1.app.on('before-quit', (event) => {
+    // 检查是否有已下载的更新需要安装
+    if (appUpdater && appUpdater.isUpdateDownloaded()) {
+        console.log('应用退出时检测到已下载的更新，准备安装...');
+        // 确保autoInstallOnAppQuit为true
+        if (appUpdater.autoUpdater) {
+            appUpdater.autoUpdater.autoInstallOnAppQuit = true;
+        }
+    }
     if (mainWindow) {
         mainWindow.removeAllListeners();
     }

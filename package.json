@@ -70,7 +70,11 @@
       "allowToChangeInstallationDirectory": true,
       "perMachine": false,
       "deleteAppDataOnUninstall": false,
-      "artifactName": "littlewhitegoose-setup-${version}.${ext}"
+      "artifactName": "littlewhitegoose-setup-${version}.${ext}",
+      "allowElevation": true,
+      "runAfterFinish": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     },
     "publish": [
       {
