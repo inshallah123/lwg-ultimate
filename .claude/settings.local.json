@@ -29,7 +29,8 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:www.electronjs.org)",
       "WebFetch(domain:www.electron.build)",
-      "Bash(gh release create:*)"
+      "Bash(gh release create:*)",
+      "Bash(touch:*)"
     ],
     "deny": [],
     "ask": [],
