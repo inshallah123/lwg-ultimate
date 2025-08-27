@@ -34,6 +34,7 @@ export const YearSection: React.FC<YearSectionProps> = ({
         top: `${top}px`,
         height: `${height}px`
       }}
+      data-year={year}
     >
       <div className={styles.monthsGrid}>
         {MONTH_NAMES.map((monthName, monthIndex) => {

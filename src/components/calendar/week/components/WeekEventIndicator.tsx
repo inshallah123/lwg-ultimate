@@ -8,30 +8,6 @@ interface WeekEventIndicatorProps {
   hourIndex: number;
 }
 
-// 优化的颜色系统 - 遵循 WCAG AA 标准
-const TAG_COLORS: Record<string, string> = {
-  private: '#e11d48',  // 玫瑰红 - 更高对比度
-  work: '#4f46e5',     // 靛蓝 - 更深色调
-  balance: '#059669',  // 翡翠绿 - 更饱和
-  custom: '#7c3aed'    // 紫色 - 更鲜明
-};
-
-// 渐变背景映射（用于周视图）- 增强视觉层次
-const TAG_BG_COLORS: Record<string, string> = {
-  private: 'linear-gradient(135deg, rgba(225, 29, 72, 0.06), rgba(225, 29, 72, 0.02))',
-  work: 'linear-gradient(135deg, rgba(79, 70, 229, 0.06), rgba(79, 70, 229, 0.02))',
-  balance: 'linear-gradient(135deg, rgba(5, 150, 105, 0.06), rgba(5, 150, 105, 0.02))',
-  custom: 'linear-gradient(135deg, rgba(124, 58, 237, 0.06), rgba(124, 58, 237, 0.02))'
-};
-
-// 边框颜色映射 - 用于增强轮廓
-const TAG_BORDER_COLORS: Record<string, string> = {
-  private: 'rgba(225, 29, 72, 0.2)',
-  work: 'rgba(79, 70, 229, 0.2)',
-  balance: 'rgba(5, 150, 105, 0.2)',
-  custom: 'rgba(124, 58, 237, 0.2)'
-};
-
 // 时间段列表 - 与 WeekView 保持一致
 const TIME_SLOTS = [
   '08:00-10:00', '10:00-12:00', '12:00-14:00', '14:00-16:00',
@@ -100,15 +76,11 @@ export function WeekEventIndicator({ date, hourIndex }: WeekEventIndicatorProps)
   if (events.length === 1) {
     // 单个事件：完整显示
     const event = events[0];
+    const tagClass = event.tag || 'custom';
     return (
       <div className={styles.weekEventContainer}>
         <div
-          className={styles.eventCard}
-          style={{ 
-            background: TAG_BG_COLORS[event.tag] || TAG_BG_COLORS.custom,
-            borderColor: TAG_BORDER_COLORS[event.tag] || TAG_BORDER_COLORS.custom,
-            '--accent-color': TAG_COLORS[event.tag] || TAG_COLORS.custom
-          } as React.CSSProperties}
+          className={`${styles.eventCard} ${styles[tagClass]}`}
           title={`${event.title}${event.description ? `\n${event.description}` : ''}`}
           onClick={handleChipClick}
           data-tag={event.tag}
@@ -135,17 +107,13 @@ export function WeekEventIndicator({ date, hourIndex }: WeekEventIndicatorProps)
     const primaryTag = events.find(e => e.tag === 'work')?.tag ||
                       events.find(e => e.tag === 'private')?.tag ||
                       events.find(e => e.tag === 'balance')?.tag ||
-                      events[0].tag;
+                      events[0].tag ||
+                      'custom';
     
     return (
       <div className={styles.weekEventContainer}>
         <div
-          className={styles.eventSummaryCard}
-          style={{ 
-            background: TAG_BG_COLORS[primaryTag] || TAG_BG_COLORS.custom,
-            borderColor: TAG_BORDER_COLORS[primaryTag] || TAG_BORDER_COLORS.custom,
-            '--accent-color': TAG_COLORS[primaryTag] || TAG_COLORS.custom
-          } as React.CSSProperties}
+          className={`${styles.eventSummaryCard} ${styles[primaryTag]}`}
           title={tooltip}
           onClick={handleChipClick}
           data-tag={primaryTag}
@@ -157,8 +125,7 @@ export function WeekEventIndicator({ date, hourIndex }: WeekEventIndicatorProps)
                 {events.map((e, i) => (
                   <span 
                     key={i}
-                    className={styles.tagDot}
-                    style={{ backgroundColor: TAG_COLORS[e.tag] || TAG_COLORS.custom }}
+                    className={`${styles.tagDot} ${styles[e.tag || 'custom']}`}
                   />
                 ))}
               </div>

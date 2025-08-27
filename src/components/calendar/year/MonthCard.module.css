@@ -1,15 +1,9 @@
+/* 第一部分：用户可自定义的视觉样式 */
 .monthCard {
-  aspect-ratio: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
   background: #ffffff;
   border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s;
 }
 
 .monthCard:hover {
@@ -32,7 +26,6 @@
 .monthNumber {
   font-size: 1.8em;
   font-weight: 300;
-  margin-bottom: 0.2em;
   color: #2c3e50;
 }
 
@@ -42,11 +35,81 @@
 }
 
 .todayIndicator {
+  background: #5b8dbe;
+}
+
+/* 第二部分：布局关键样式 */
+.monthCard {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.monthNumber {
+  margin-bottom: 0.2em;
+}
+
+.todayIndicator {
   position: absolute;
   top: 8px;
   right: 8px;
   width: 8px;
   height: 8px;
-  background: #5b8dbe;
   border-radius: 50%;
 }
+
+/* 第三部分：响应式布局 */
+@media (max-width: 768px) {
+  .monthNumber {
+    font-size: 1.6em;
+  }
+  
+  .monthName {
+    font-size: 0.8em;
+  }
+  
+  .todayIndicator {
+    width: 6px;
+    height: 6px;
+    top: 6px;
+    right: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .monthNumber {
+    font-size: 1.4em;
+  }
+  
+  .monthName {
+    font-size: 0.75em;
+  }
+  
+  .todayIndicator {
+    width: 5px;
+    height: 5px;
+    top: 5px;
+    right: 5px;
+  }
+}
+
+/* 第四部分：无障碍支持 */
+@media (prefers-reduced-motion: reduce) {
+  .monthCard {
+    transition: none;
+  }
+  
+  .monthCard:hover {
+    transform: none;
+  }
+}
+
+.monthCard:focus {
+  outline: 2px solid #a8c4d4;
+  outline-offset: 2px;
+}
+

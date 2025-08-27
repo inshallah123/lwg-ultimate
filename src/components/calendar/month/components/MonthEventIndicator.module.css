@@ -1,4 +1,191 @@
-/* ==================== 日期头部区域 ==================== */
+/* ====================================================================== */
+/* 第一部分：用户可安全自定义的视觉样式                                    */
+/* 包含：颜色、渐变、透明度、阴影、边框颜色、字体样式等                      */
+/* 修改这些样式不会影响布局，仅改变视觉效果                                 */
+/* ====================================================================== */
+
+/* === 颜色主题定义 === */
+:root {
+  /* 标签主色 */
+  --tag-color-private: #e11d48;
+  --tag-color-work: #4f46e5;
+  --tag-color-balance: #059669;
+  --tag-color-custom: #7c3aed;
+  
+  /* 标签背景渐变 */
+  --tag-bg-private: linear-gradient(135deg, rgba(225, 29, 72, 0.08), rgba(225, 29, 72, 0.03));
+  --tag-bg-work: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(79, 70, 229, 0.03));
+  --tag-bg-balance: linear-gradient(135deg, rgba(5, 150, 105, 0.08), rgba(5, 150, 105, 0.03));
+  --tag-bg-custom: linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(124, 58, 237, 0.03));
+  
+  /* 标签边框色 */
+  --tag-border-private: rgba(225, 29, 72, 0.15);
+  --tag-border-work: rgba(79, 70, 229, 0.15);
+  --tag-border-balance: rgba(5, 150, 105, 0.15);
+  --tag-border-custom: rgba(124, 58, 237, 0.15);
+}
+
+/* === 日期数字视觉样式 === */
+.dayNumber {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  transition: var(--transition-colors);
+}
+
+/* === 更多指示器视觉样式 === */
+.moreIndicatorCompact {
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition-transform), var(--transition-shadow);
+}
+
+.moreIndicatorCompact:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary-active);
+}
+
+.moreIndicatorCompact:hover .moreTextCompact {
+  color: white;
+}
+
+.moreTextCompact {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+/* === 事件卡片视觉样式 === */
+.eventCard {
+  border-radius: 4px;
+  border: 1px solid;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  background: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  font-weight: var(--font-weight-medium);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 根据标签类型的样式 */
+.eventCard.private {
+  background: var(--tag-bg-private);
+  border-color: var(--tag-border-private);
+}
+
+.eventCard.work {
+  background: var(--tag-bg-work);
+  border-color: var(--tag-border-work);
+}
+
+.eventCard.balance {
+  background: var(--tag-bg-balance);
+  border-color: var(--tag-border-balance);
+}
+
+.eventCard.custom {
+  background: var(--tag-bg-custom);
+  border-color: var(--tag-border-custom);
+}
+
+.eventCard:hover {
+  background: rgba(255, 255, 255, 0.95);
+  opacity: 0.9;
+}
+
+.eventCard.muted {
+  opacity: 0.6;
+  filter: saturate(0.5);
+}
+
+/* === 事件点标记视觉样式 === */
+.eventDot {
+  border-radius: 50%;
+  opacity: 1;
+}
+
+.eventDot.private {
+  background-color: var(--tag-color-private);
+}
+
+.eventDot.work {
+  background-color: var(--tag-color-work);
+}
+
+.eventDot.balance {
+  background-color: var(--tag-color-balance);
+}
+
+.eventDot.custom {
+  background-color: var(--tag-color-custom);
+}
+
+/* === 事件标题视觉样式 === */
+.eventTitle {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.95;
+}
+
+/* === 紧凑指示器视觉样式 === */
+.compactIndicator {
+  border-radius: 6px;
+  border: 1px solid;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.compactIndicator.private {
+  background: var(--tag-bg-private);
+  border-color: var(--tag-border-private);
+  color: var(--tag-color-private);
+}
+
+.compactIndicator.work {
+  background: var(--tag-bg-work);
+  border-color: var(--tag-border-work);
+  color: var(--tag-color-work);
+}
+
+.compactIndicator.balance {
+  background: var(--tag-bg-balance);
+  border-color: var(--tag-border-balance);
+  color: var(--tag-color-balance);
+}
+
+.compactIndicator.custom {
+  background: var(--tag-bg-custom);
+  border-color: var(--tag-border-custom);
+  color: var(--tag-color-custom);
+}
+
+.compactIndicator:hover {
+  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.compactCount {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.compactDot {
+  border-radius: 50%;
+  opacity: 0.8;
+}
+
+/* ====================================================================== */
+/* 第二部分：布局关键样式（不建议用户修改）                                 */
+/* 包含：尺寸、间距、布局、定位、显示方式等                                */
+/* 修改这些样式可能导致布局错乱或功能异常                                  */
+/* ====================================================================== */
+
+/* === 日期头部布局 === */
 .dayCellHeader {
   width: 100%;
   display: flex;
@@ -20,45 +207,26 @@
 .dayNumber {
   font-size: var(--font-size-base);
   line-height: 1.2;
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  transition: var(--transition-colors);
 }
 
-/* ==================== 更多指示器（紧凑版）==================== */
+/* === 更多指示器布局 === */
 .moreIndicatorCompact {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2px 5px;
-  border-radius: 10px;
-  background: var(--color-primary-light);
-  border: 1px solid var(--color-primary);
-  cursor: pointer;
-  transition: var(--transition-transform), var(--transition-shadow);
   min-height: 18px;
   height: 18px;
   flex-shrink: 0;
   margin-top: 2px;
 }
 
-.moreIndicatorCompact:hover {
-  background: var(--color-primary);
-  border-color: var(--color-primary-active);
-}
-
-.moreIndicatorCompact:hover .moreTextCompact {
-  color: white;
-}
-
 .moreTextCompact {
   font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
   line-height: 1;
 }
 
-/* ==================== 月视图事件容器 ==================== */
+/* === 事件容器布局 === */
 .monthEventContainer {
   display: flex;
   flex-direction: column;
@@ -72,113 +240,61 @@
   contain: layout style;
 }
 
-/* 事件网格 - 双列布局 */
+/* === 事件网格布局 === */
 .eventGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 3px;
   width: 100%;
   flex-shrink: 0;
-  max-height: 50px;  /* 稍微增加高度 */
+  max-height: 50px;
 }
 
-/* 单个事件时占满宽度 */
 .eventGrid.singleEvent {
   grid-template-columns: 1fr;
 }
 
-/* ==================== 事件卡片样式 ==================== */
+/* === 事件卡片布局 === */
 .eventCard {
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 3px 6px;
-  border-radius: 4px;
   font-size: var(--font-size-xs);
   line-height: 1.3;
-  border: 1px solid;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
   min-height: 18px;
   max-height: 20px;
   position: relative;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.8);
-  white-space: nowrap;
-  font-weight: var(--font-weight-medium);
 }
 
-/* 事件卡片悬停 */
-.eventCard:hover {
-  background: rgba(255, 255, 255, 0.95);
-  opacity: 0.9;
-}
-
-/* 静音状态（非当前月） */
-.eventCard.muted {
-  opacity: 0.6;
-  filter: saturate(0.5);
-}
-
-/* 事件点标记 */
+/* === 事件点标记布局 === */
 .eventDot {
   width: 4px;
   height: 4px;
-  border-radius: 50%;
   flex-shrink: 0;
-  opacity: 1;
 }
 
-/* 事件标题 */
+/* === 事件标题布局 === */
 .eventTitle {
   flex: 1;
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
   font-size: var(--font-size-xs);
-  letter-spacing: -0.01em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  opacity: 0.95;
 }
 
-/* 时间标签 */
-.eventTime {
-  font-size: 9px;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-secondary);
-  opacity: 0.7;
-  flex-shrink: 0;
-  margin-left: auto;
-}
-
-/* 原有的moreIndicator相关样式已被移除，替换为moreIndicatorCompact */
-
-/* ==================== 紧凑指示器（事件较多时） ==================== */
+/* === 紧凑指示器布局 === */
 .compactIndicator {
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 3px 5px;
-  border-radius: 6px;
   font-size: 10px;
   line-height: 1.3;
-  border: 1px solid;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
   min-height: 20px;
   justify-content: center;
 }
 
-.compactIndicator:hover {
-  opacity: 0.9;
-  background: rgba(255, 255, 255, 0.95);
-}
-
 .compactCount {
-  font-weight: 700;
   font-size: 10px;
-  letter-spacing: -0.01em;
 }
 
 .compactDots {
@@ -190,19 +306,12 @@
 .compactDot {
   width: 4px;
   height: 4px;
-  border-radius: 50%;
-  opacity: 0.8;
 }
 
-/* ==================== 动画 ==================== */
-/* 移除动画以防止闪烁 */
-.eventCard {
-  /* animation removed to prevent flickering */
-  opacity: 1;
-  transform: translateY(0);
-}
+/* ====================================================================== */
+/* 第三部分：响应式布局（核心布局调整，不建议修改）                          */
+/* ====================================================================== */
 
-/* ==================== 响应式设计 ==================== */
 @media (max-width: 1024px) {
   .eventCard {
     font-size: 9px;
@@ -212,10 +321,6 @@
   
   .eventTitle {
     font-size: 9px;
-  }
-  
-  .eventTime {
-    display: none;
   }
   
   .eventDot {
@@ -235,17 +340,21 @@
     gap: 2px;
   }
   
-  .moreIndicator {
+  .moreIndicatorCompact {
     padding: 1px 3px;
     min-height: 12px;
   }
   
-  .moreText {
+  .moreTextCompact {
     font-size: 8px;
   }
 }
 
-/* ==================== 高对比度支持 ==================== */
+/* ====================================================================== */
+/* 第四部分：无障碍和特殊模式支持                                         */
+/* ====================================================================== */
+
+/* 高对比度支持 */
 @media (prefers-contrast: more) {
   .eventCard {
     border-width: 2px;
@@ -261,7 +370,7 @@
   }
 }
 
-/* ==================== 减少动画偏好 ==================== */
+/* 减少动画偏好 */
 @media (prefers-reduced-motion: reduce) {
   .eventCard {
     animation: none;
@@ -269,8 +378,7 @@
   }
   
   .eventCard:hover,
-  .moreIndicator:hover {
+  .moreIndicatorCompact:hover {
     transform: none;
   }
 }
-

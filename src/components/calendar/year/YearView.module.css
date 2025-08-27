@@ -1,79 +1,48 @@
+/* ====================================================================== */
+/* 第一部分：用户可安全自定义的视觉样式                                    */
+/* 包含：颜色、渐变、透明度、阴影、边框颜色、字体样式等                      */
+/* 修改这些样式不会影响布局，仅改变视觉效果                                 */
+/* ====================================================================== */
 
-/* Container */
+/* === 容器视觉样式 === */
 .yearContainer {
-  padding: 32px;
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  height: calc(100vh - 150px);
-  display: flex;
-  flex-direction: column;
   border: 1px solid #f1f5f9;
-  position: relative;
-  overflow: hidden;
-  contain: layout style paint;
 }
 
 .yearContainer::before {
   content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 200px;
   background: linear-gradient(180deg, 
     rgba(168, 196, 212, 0.08) 0%, 
     rgba(224, 197, 210, 0.04) 100%
   );
   opacity: 0.9;
   pointer-events: none;
-  z-index: 0;
 }
 
-/* Header */
-.yearHeaderContainer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-  position: relative;
-  z-index: 1;
-}
-
+/* === 标题视觉样式 === */
 .yearHeader {
-  font-size: 1.5rem;
   font-weight: 400;
-  margin: 0;
   background: linear-gradient(135deg, #7a8a9a 0%, #9a8a9a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: 0.05em;
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 16px;
   font-variant-numeric: tabular-nums;
 }
 
 .yearHeader::after {
   content: '';
-  flex: 1;
-  height: 1px;
   background: linear-gradient(90deg, 
     rgba(168, 196, 212, 0.4), 
     rgba(224, 197, 210, 0.2)
   );
-  margin-left: 24px;
 }
 
-/* Scroll Container */
+/* === 滚动容器视觉样式 === */
 .scrollContainer {
-  position: relative;
-  flex: 1;
-  overflow: hidden;
-  perspective: 1000px;
   border-radius: 0 0 12px 12px;
   border: 1px solid #f1f5f9;
   border-top: none;
@@ -81,63 +50,24 @@
     rgba(255, 255, 255, 0.02),
     rgba(248, 250, 252, 0.01)
   );
+  perspective: 1000px;
 }
 
-/* Year Section */
-.yearSection {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48px;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  will-change: auto;
-}
-
-.yearSection.scrolling {
-  will-change: transform;
-}
-
-/* Months Grid */
-.monthsGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 32px;
-  width: 100%;
-  max-width: 900px;
-  padding: 24px;
-}
-
-/* Month Card */
+/* === 月份卡片视觉样式 === */
 .monthCard {
-  aspect-ratio: 4/3;
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.95),
     rgba(248, 250, 252, 0.9)
   );
   border: 1px solid #f1f5f9;
   border-radius: 12px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
   transition: all 200ms ease-in-out;
-  position: relative;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-  overflow: hidden;
 }
 
 .monthCard::before {
   content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   background: linear-gradient(135deg,
     transparent 30%,
     rgba(168, 196, 212, 0.03) 70%,
@@ -172,18 +102,15 @@
   color: rgba(74, 85, 104, 0.9);
 }
 
+/* === 月份文字视觉样式 === */
 .monthNumber {
-  font-size: 1.5rem;
   font-weight: 400;
   color: rgba(122, 138, 154, 0.5);
-  line-height: 1;
-  margin-bottom: 4px;
   font-variant-numeric: tabular-nums;
   transition: all 200ms ease-in-out;
 }
 
 .monthName {
-  font-size: 0.875rem;
   font-weight: 500;
   color: rgba(74, 85, 104, 0.6);
   letter-spacing: 0.08em;
@@ -191,7 +118,7 @@
   text-transform: uppercase;
 }
 
-/* Current Month */
+/* === 当前月份视觉样式 === */
 .currentMonth {
   background: linear-gradient(135deg,
     rgba(168, 196, 212, 0.08),
@@ -210,7 +137,7 @@
   font-weight: 700;
 }
 
-/* Today Month */
+/* === 今天月份视觉样式 === */
 .todayMonth {
   background: linear-gradient(135deg,
     rgba(168, 196, 212, 0.12),
@@ -232,18 +159,28 @@
   font-weight: 700;
 }
 
+/* === 今天指示器视觉样式 === */
 .todayIndicator {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 6px;
-  height: 6px;
   background: linear-gradient(135deg, #a8c4d4, #e0c5d2);
   border-radius: 50%;
   box-shadow: 0 0 6px rgba(168, 196, 212, 0.4);
   animation: pulse 2s ease-in-out infinite;
 }
 
+/* === 当前年份视觉样式 === */
+.currentYear .monthCard::after {
+  content: '';
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, 
+    rgba(168, 196, 212, 0.1),
+    rgba(224, 197, 210, 0.05)
+  ) border-box;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* === 动画定义 === */
 @keyframes pulse {
   0%, 100% {
     transform: scale(1);
@@ -255,31 +192,151 @@
   }
 }
 
-/* Remove the redundant year title styles */
-.yearTitle {
-  display: none;
+/* ====================================================================== */
+/* 第二部分：布局关键样式（不建议用户修改）                                 */
+/* 包含：尺寸、间距、布局、定位、显示方式等                                */
+/* 修改这些样式可能导致布局错乱或功能异常                                  */
+/* ====================================================================== */
+
+/* === 容器布局 === */
+.yearContainer {
+  padding: 32px;
+  width: 100%;
+  height: calc(100vh - 150px);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  contain: layout style paint;
 }
 
-/* Current year styles */
+.yearContainer::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  z-index: 0;
+}
+
+/* === 头部布局 === */
+.yearHeaderContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.yearHeader {
+  font-size: 1.5rem;
+  margin: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.yearHeader::after {
+  flex: 1;
+  height: 1px;
+  margin-left: 24px;
+}
+
+/* === 滚动容器布局 === */
+.scrollContainer {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* === 年份区域布局 === */
+.yearSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  will-change: auto;
+}
+
+.yearSection.scrolling {
+  will-change: transform;
+}
+
+/* === 月份网格布局 === */
+.monthsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 32px;
+  width: 100%;
+  max-width: 900px;
+  padding: 24px;
+}
+
+/* === 月份卡片布局 === */
+.monthCard {
+  aspect-ratio: 4/3;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.monthCard::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* === 月份文字布局 === */
+.monthNumber {
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.monthName {
+  font-size: 0.875rem;
+}
+
+/* === 今天指示器布局 === */
+.todayIndicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 6px;
+  height: 6px;
+}
+
+/* === 当前年份布局 === */
 .currentYear .monthCard {
   position: relative;
 }
 
 .currentYear .monthCard::after {
-  content: '';
   position: absolute;
   inset: 0;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  background: linear-gradient(135deg, 
-    rgba(168, 196, 212, 0.1),
-    rgba(224, 197, 210, 0.05)
-  ) border-box;
-  pointer-events: none;
-  opacity: 0.5;
 }
 
-/* Responsive */
+/* === 隐藏的元素 === */
+.yearTitle {
+  display: none;
+}
+
+/* ====================================================================== */
+/* 第三部分：响应式布局（核心布局调整，不建议修改）                          */
+/* ====================================================================== */
+
 @media (max-width: 1200px) {
   .monthsGrid {
     grid-template-columns: repeat(3, 1fr);
@@ -330,7 +387,10 @@
   }
 }
 
-/* 无障碍支持 */
+/* ====================================================================== */
+/* 第四部分：无障碍支持                                                   */
+/* ====================================================================== */
+
 @media (prefers-reduced-motion: reduce) {
   .monthCard,
   .todayIndicator {

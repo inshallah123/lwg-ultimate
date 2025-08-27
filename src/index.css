@@ -40,7 +40,7 @@ body {
   
   /* 背景颜色 - 简洁干净 */
   --color-bg-primary: #FFFFFF;
-  --color-bg-secondary: #F8FAFC;
+  --color-bg-secondary: #f8fcfb;
   --color-bg-tertiary: #F1F5F9;
   
   /* 玻璃效果 */
@@ -50,7 +50,7 @@ body {
   );
   
   /* 边框 - 清晰可见 */
-  --color-border: #E2E8F0;
+  --color-border: #539dd6;
   --color-border-light: #F1F5F9;
   --color-border-dark: #CBD5E1;
   --border-width: 1px;
@@ -131,7 +131,7 @@ body {
     --color-text-inverse: #111827;
     
     --color-bg-primary: #0f172a;
-    --color-bg-secondary: #1e293b;
+    --color-bg-secondary: #1e3b1f;
     --color-bg-tertiary: #334155;
     --color-bg-hover: rgba(255, 255, 255, 0.02);
     --color-bg-active: rgba(255, 255, 255, 0.03);

@@ -5,22 +5,16 @@
   --color-border-light: #f0f1f4;
 }
 
-/* 共享的导航按钮样式 */
+/* 第一部分：用户可自定义的视觉样式 */
 .navButton {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
   background: var(--color-bg-primary);
   backdrop-filter: blur(2px);
   border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
   color: var(--color-text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-base);
   font-size: var(--font-size-lg);
   box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
 }
 
 .navButton:hover {
@@ -34,4 +28,62 @@
 .navButton:active {
   transform: translateY(0);
   box-shadow: var(--shadow-sm);
+}
+
+/* 第二部分：布局关键样式 */
+.navButton {
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 第三部分：响应式布局 */
+@media (max-width: 768px) {
+  .navButton {
+    width: 36px;
+    height: 36px;
+    font-size: calc(var(--font-size-lg) * 0.9);
+  }
+}
+
+@media (max-width: 480px) {
+  .navButton {
+    width: 32px;
+    height: 32px;
+    font-size: calc(var(--font-size-lg) * 0.8);
+  }
+}
+
+/* 第四部分：无障碍支持 */
+@media (prefers-reduced-motion: reduce) {
+  .navButton {
+    transition: none;
+  }
+  
+  .navButton:hover {
+    transform: none;
+  }
+  
+  .navButton:active {
+    transform: none;
+  }
+}
+
+.navButton:focus {
+  outline: 2px solid var(--color-border);
+  outline-offset: 2px;
+}
+
+/* 触摸设备优化 */
+@media (hover: none) {
+  .navButton:hover {
+    transform: none;
+    background: var(--color-bg-primary);
+    color: var(--color-text-secondary);
+    border-color: var(--color-border-light);
+    box-shadow: var(--shadow-sm);
+  }
 }

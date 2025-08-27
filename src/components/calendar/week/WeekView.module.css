@@ -1,17 +1,173 @@
-@import '../../../index.css';
+/* ====================================================================== */
+/* 第一部分：用户可安全自定义的视觉样式                                    */
+/* 包含：颜色、渐变、透明度、阴影、边框颜色、字体样式等                      */
+/* 修改这些样式不会影响布局，仅改变视觉效果                                 */
+/* ====================================================================== */
 
-/* WeekView 需要的 CSS 变量 */
+
+/* === 颜色变量定义（补充 index.css 中未定义的） === */
 :root {
   --color-bg-tertiary: #f3f4f7;
   --color-border-light: #f0f1f4;
+  --color-festival: #d6536d;
+  --color-solarterm: #4a8a73;
 }
 
-/* Container */
+/* === 容器视觉样式 === */
 .weekContainer {
-  padding: var(--spacing-lg);
   background: var(--color-bg-primary);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
+}
+
+/* === 标题视觉样式 === */
+.weekHeader {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+/* === 网格容器视觉样式 === */
+.weekGrid {
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+/* === 时间列视觉样式 === */
+.timeColumn {
+  background: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border);
+}
+
+/* === 日期列视觉样式 === */
+.dayColumn {
+  background: var(--color-bg-primary);
+  border-right: 1px solid var(--color-border-light);
+  transition: background-color 0.15s ease;
+}
+
+.dayColumn:hover {
+  background: var(--color-bg-hover);
+}
+
+.dayColumn:last-child {
+  border-right: none;
+}
+
+/* === 角落单元格视觉样式 === */
+.cornerCell {
+  border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+  background: var(--color-bg-tertiary);
+}
+
+/* === 日期头部视觉样式 === */
+.dayHeader {
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dayHeader.today {
+  background: var(--color-primary-light);
+  border-bottom: 2px solid var(--color-primary);
+}
+
+.dayHeader.today .dayName,
+.dayHeader.today .dayDate {
+  color: var(--color-primary);
+}
+
+/* === 日期文字样式 === */
+.dayName {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.dayDate {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+/* === 农历信息视觉样式 === */
+.lunarInfo {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lunar {
+  color: var(--color-text-muted);
+  opacity: 0.9;
+  font-weight: var(--font-weight-normal);
+}
+
+.festival {
+  color: var(--color-festival);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.01em;
+}
+
+.solarTerm {
+  color: var(--color-solarterm);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.01em;
+}
+
+/* === 时间槽视觉样式 === */
+.timeSlot {
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border-light);
+  border-right: 1px solid var(--color-border);
+  font-weight: var(--font-weight-medium);
+  background: var(--color-bg-secondary);
+  white-space: nowrap;
+}
+
+.timeSlot:last-child {
+  border-bottom: none;
+}
+
+/* === 小时单元格视觉样式 === */
+.hourCell {
+  border-bottom: 1px solid var(--color-border-light);
+  cursor: pointer;
+  transition: var(--transition-colors);
+  background: var(--color-bg-primary);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.hourCell:last-child {
+  border-bottom: none;
+}
+
+.hourCell:hover {
+  background: var(--color-bg-secondary);
+  box-shadow: inset 0 0 0 1px var(--color-primary);
+}
+
+.hourCell:active {
+  background: var(--color-bg-tertiary);
+}
+
+.hourCell:focus-visible {
+  outline: 2px solid rgba(168, 196, 212, 0.3);
+  outline-offset: -2px;
+}
+
+/* ====================================================================== */
+/* 第二部分：布局关键样式（不建议用户修改）                                 */
+/* 包含：尺寸、间距、布局、定位、显示方式等                                */
+/* 修改这些样式可能导致布局错乱或功能异常                                  */
+/* ====================================================================== */
+
+/* === 容器布局 === */
+.weekContainer {
+  padding: var(--spacing-lg);
   width: 100%;
   height: calc(100vh - 150px);
   display: flex;
@@ -19,9 +175,7 @@
   overflow: hidden;
 }
 
-/* 移除装饰性渐变 */
-
-/* Header */
+/* === 头部布局 === */
 .weekHeaderContainer {
   display: flex;
   justify-content: center;
@@ -34,171 +188,103 @@
 
 .weekHeader {
   font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
   margin: 0 var(--spacing-lg);
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
 }
 
-/* weekNavButton 样式已移至 shared.module.css */
-
-/* Grid Layout */
+/* === 网格布局 === */
 .weekGrid {
   display: flex;
   flex: 1;
-  background: var(--color-bg-primary);
-  border-radius: var(--radius-md);
   overflow: auto;
-  border: 1px solid var(--color-border);
 }
 
+/* === 时间列布局 === */
 .timeColumn {
   width: 80px;
   flex-shrink: 0;
-  background: var(--color-bg-secondary);
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--color-border);
 }
 
+/* === 日期列布局 === */
 .dayColumn {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: var(--color-bg-primary);
-  border-right: 1px solid var(--color-border-light);
-  transition: background-color 0.15s ease;
-  min-width: 120px; /* 确保最小宽度 */
+  min-width: 120px;
 }
 
-.dayColumn:hover {
-  background: var(--color-bg-hover);
-}
-
-.dayColumn:last-child {
-  border-right: none;
-}
-
-/* Headers & Cells */
+/* === 角落单元格布局 === */
 .cornerCell {
   height: 72px;
-  border-bottom: 1px solid var(--color-border);
-  border-right: 1px solid var(--color-border);
-  background: var(--color-bg-tertiary);
   flex-shrink: 0;
 }
 
+/* === 日期头部布局 === */
 .dayHeader {
   height: 72px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--color-bg-secondary);
-  border-bottom: 1px solid var(--color-border);
   position: relative;
   flex-shrink: 0;
   padding: var(--spacing-sm) var(--spacing-xs);
   gap: 1px;
 }
 
-.dayHeader.today {
-  background: var(--color-primary-light);
-  border-bottom: 2px solid var(--color-primary);
-}
-
+/* === 日期文字布局 === */
 .dayName {
   font-size: 0.65rem;
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   line-height: 1;
 }
 
 .dayDate {
   font-size: 1.125rem;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
   line-height: 1.2;
 }
 
+/* === 农历信息布局 === */
 .lunarInfo {
   font-size: 0.65rem;
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   max-width: 100%;
 }
 
 .lunar {
-  color: var(--color-text-muted);
-  opacity: 0.9;
-  font-weight: var(--font-weight-normal);
   font-size: 0.60rem;
 }
 
 .festival {
-  color: #d6536d;
-  font-weight: var(--font-weight-medium);
   font-size: 0.60rem;
-  letter-spacing: 0.01em;
 }
 
 .solarTerm {
-  color: #4a8a73;
-  font-weight: var(--font-weight-medium);
   font-size: 0.60rem;
-  letter-spacing: 0.01em;
 }
 
-.workday {
-  color: #e6820c;
-  font-weight: var(--font-weight-bold);
-  font-size: 0.58rem;
-}
-
-.dayHeader.today .dayName,
-.dayHeader.today .dayDate {
-  color: var(--color-primary);
-}
-
-/* Time & Hour Cells */
+/* === 时间槽布局 === */
 .timeSlot {
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  border-bottom: 1px solid var(--color-border-light);
-  border-right: 1px solid var(--color-border);
-  font-weight: var(--font-weight-medium);
-  background: var(--color-bg-secondary);
   padding: var(--spacing-sm);
   text-align: center;
-  white-space: nowrap;
   flex: 1;
   min-height: 50px;
   box-sizing: border-box;
 }
 
-.timeSlot:last-child,
-.hourCell:last-child {
-  border-bottom: none;
-}
-
+/* === 小时单元格布局 === */
 .hourCell {
-  border-bottom: 1px solid var(--color-border-light);
   position: relative;
-  cursor: pointer;
-  transition: var(--transition-colors);
-  background: var(--color-bg-primary);
   flex: 1;
   min-height: 50px;
   height: auto;
@@ -206,52 +292,47 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
   box-sizing: border-box;
 }
 
-.hourCell:hover {
-  background: var(--color-bg-secondary);
-  box-shadow: inset 0 0 0 1px var(--color-primary);
-}
+/* ====================================================================== */
+/* 第三部分：响应式布局（核心布局调整，不建议修改）                          */
+/* ====================================================================== */
 
-/* 单元格激活状态 */
-.hourCell:active {
-  background: var(--color-bg-tertiary);
-}
-
-/* 单元格焦点状态 */
-.hourCell:focus-visible {
-  outline: 2px solid rgba(168, 196, 212, 0.3);
-  outline-offset: -2px;
-}
-
-/* 今天标识动画 */
-@keyframes todayPulse {
-  0%, 100% {
-    box-shadow: 0 -2px 8px rgba(168, 196, 212, 0.25);
-  }
-  50% {
-    box-shadow: 0 -2px 12px rgba(168, 196, 212, 0.35);
-  }
-}
-
-
-/* Mobile */
 @media (max-width: 768px) {
-  .weekContainer { padding: var(--spacing-md); }
-  .timeColumn { width: 80px; }
-  .dayName { font-size: var(--font-size-xs); }
-  .dayDate { font-size: var(--font-size-base); }
-  .timeSlot { font-size: 10px; }
-  .hourCell { min-height: 45px; }
-  .dayColumn { min-width: 100px; }
+  .weekContainer {
+    padding: var(--spacing-md);
+  }
+  
+  .timeColumn {
+    width: 80px;
+  }
+  
+  .dayName {
+    font-size: var(--font-size-xs);
+  }
+  
+  .dayDate {
+    font-size: var(--font-size-base);
+  }
+  
+  .timeSlot {
+    font-size: 10px;
+  }
+  
+  .hourCell {
+    min-height: 45px;
+  }
+  
+  .dayColumn {
+    min-width: 100px;
+  }
 }
 
-/* 无障碍支持 */
+/* ====================================================================== */
+/* 第四部分：无障碍支持                                                   */
+/* ====================================================================== */
+
 @media (prefers-reduced-motion: reduce) {
   .hourCell,
   .dayColumn {

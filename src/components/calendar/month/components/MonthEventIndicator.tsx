@@ -11,30 +11,6 @@ interface MonthEventIndicatorProps {
   dayNumber: number;
 }
 
-// 优化的颜色系统 - 高对比度
-const TAG_COLORS: Record<string, string> = {
-  private: '#e11d48',
-  work: '#4f46e5',
-  balance: '#059669',
-  custom: '#7c3aed'
-};
-
-// 淡色背景 - 用于卡片
-const TAG_BG_COLORS: Record<string, string> = {
-  private: 'linear-gradient(135deg, rgba(225, 29, 72, 0.08), rgba(225, 29, 72, 0.03))',
-  work: 'linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(79, 70, 229, 0.03))',
-  balance: 'linear-gradient(135deg, rgba(5, 150, 105, 0.08), rgba(5, 150, 105, 0.03))',
-  custom: 'linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(124, 58, 237, 0.03))'
-};
-
-// 边框颜色
-const TAG_BORDER_COLORS: Record<string, string> = {
-  private: 'rgba(225, 29, 72, 0.15)',
-  work: 'rgba(79, 70, 229, 0.15)',
-  balance: 'rgba(5, 150, 105, 0.15)',
-  custom: 'rgba(124, 58, 237, 0.15)'
-};
-
 export const MonthEventIndicator = React.memo(function MonthEventIndicator({ date, isCurrentMonth = true, dayNumber }: MonthEventIndicatorProps) {
   const allEvents = useEventStore(state => state.events);
   const getEventsInRange = useEventStore(state => state.getEventsInRange);
@@ -108,26 +84,20 @@ export const MonthEventIndicator = React.memo(function MonthEventIndicator({ dat
   
   // 对于特别多的事件（超过8个），使用紧凑指示器
   if (events.length > 8 && !isCurrentMonth) {
-    const primaryTag = getPrimaryTag();
+    const primaryTag = getPrimaryTag() || 'custom';
     return (
       <div className={styles.monthEventContainer}>
         <div 
-          className={styles.compactIndicator}
+          className={`${styles.compactIndicator} ${styles[primaryTag]}`}
           onClick={handleClick}
           title={generateTooltip()}
-          style={{
-            background: TAG_BG_COLORS[primaryTag] || TAG_BG_COLORS.custom,
-            borderColor: TAG_BORDER_COLORS[primaryTag] || TAG_BORDER_COLORS.custom,
-            color: TAG_COLORS[primaryTag] || TAG_COLORS.custom
-          } as React.CSSProperties}
         >
           <span className={styles.compactCount}>{events.length}个事件</span>
           <div className={styles.compactDots}>
             {events.slice(0, Math.min(4, events.length)).map((e, i) => (
               <span
                 key={i}
-                className={styles.compactDot}
-                style={{ backgroundColor: TAG_COLORS[e.tag] || TAG_COLORS.custom }}
+                className={`${styles.compactDot} ${styles[e.tag || 'custom']}`}
               />
             ))}
           </div>
@@ -163,29 +133,25 @@ export const MonthEventIndicator = React.memo(function MonthEventIndicator({ dat
         {/* 事件卡片网格 - 双列布局 */}
         {displayEvents.length > 0 && (
           <div className={`${styles.eventGrid} ${displayEvents.length === 1 ? styles.singleEvent : ''}`}>
-            {displayEvents.map((event, index) => (
-              <div
-                key={`${event.id}-${index}`}
-                className={`${styles.eventCard} ${!isCurrentMonth ? styles.muted : ''}`}
-                style={{
-                  background: TAG_BG_COLORS[event.tag] || TAG_BG_COLORS.custom,
-                  borderColor: TAG_BORDER_COLORS[event.tag] || TAG_BORDER_COLORS.custom,
-                  '--accent-color': TAG_COLORS[event.tag] || TAG_COLORS.custom,
-                  opacity: isCurrentMonth ? 1 : 0.7
-                } as React.CSSProperties}
-                onClick={handleClick}
-                title={`${event.title}${event.description ? `\n${event.description}` : ''}`}
-              >
-                <span className={styles.eventDot} 
-                      style={{ backgroundColor: TAG_COLORS[event.tag] || TAG_COLORS.custom }} />
-                <span className={styles.eventTitle}>
-                  {truncateTitle(event.title, 
-                    displayEvents.length === 1 ? 12 : 
-                    isCurrentMonth ? 6 : 5
-                  )}
-                </span>
-              </div>
-            ))}
+            {displayEvents.map((event, index) => {
+              const tagClass = event.tag || 'custom';
+              return (
+                <div
+                  key={`${event.id}-${index}`}
+                  className={`${styles.eventCard} ${styles[tagClass]} ${!isCurrentMonth ? styles.muted : ''}`}
+                  onClick={handleClick}
+                  title={`${event.title}${event.description ? `\n${event.description}` : ''}`}
+                >
+                  <span className={`${styles.eventDot} ${styles[tagClass]}`} />
+                  <span className={styles.eventTitle}>
+                    {truncateTitle(event.title, 
+                      displayEvents.length === 1 ? 12 : 
+                      isCurrentMonth ? 6 : 5
+                    )}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

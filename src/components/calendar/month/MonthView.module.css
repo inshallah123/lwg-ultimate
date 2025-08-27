@@ -1,141 +1,97 @@
-/* 月视图完全独立样式 - 不依赖任何外部文件 */
+/* ====================================================================== */
+/* 第一部分：用户可安全自定义的视觉样式                                    */
+/* 包含：颜色、渐变、透明度、阴影、边框颜色、字体样式等                      */
+/* 修改这些样式不会影响布局，仅改变视觉效果                                 */
+/* ====================================================================== */
 
-/* Container */
+/* === 颜色主题定义 === */
+:root {
+  /* 主题色 */
+  --primary-gradient-start: #7a8a9a;
+  --primary-gradient-end: #9a8a9a;
+  --accent-gradient-start: #a8c4d4;
+  --accent-gradient-end: #e0c5d2;
+  
+  /* 背景色 */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #fafbfc;
+  --bg-hover: rgba(168, 196, 212, 0.05);
+  
+  /* 边框色 */
+  --border-light: #f0f1f4;
+  --border-medium: #e9ecef;
+  --border-accent: rgba(168, 196, 212, 0.35);
+  
+  /* 文字颜色 */
+  --text-primary: #374151;
+  --text-secondary: #8694a4;
+  --text-muted: #9ca3af;
+  --text-disabled: #d1d5db;
+  --text-accent: #5b8dbe;
+  
+  /* 特殊颜色 */
+  --color-festival: #d6536d;
+  --color-solarterm: #4a8a73;
+  --color-weekend: rgba(212, 168, 188, 0.9);
+}
+
+/* === 容器视觉样式 === */
 .monthContainer {
-  padding: 32px;
-  background: #ffffff;
+  background: var(--bg-primary);
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  height: calc(100vh - 150px);
-  display: flex;
-  flex-direction: column;
   border: 1px solid #f1f5f9;
-  position: relative;
-  overflow: hidden;
-  contain: layout style paint;
 }
 
 /* 装饰性背景渐变 */
 .monthContainer::before {
   content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 150px;
   background: linear-gradient(180deg, 
     rgba(168, 196, 212, 0.06) 0%, 
     rgba(224, 197, 210, 0.03) 100%
   );
   opacity: 0.8;
   pointer-events: none;
-  z-index: 0;
 }
 
-/* Header Container */
-.monthHeaderContainer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  position: relative;
-  z-index: 1;
-}
-
-/* Month Header */
+/* === 标题视觉样式 === */
 .monthHeader {
-  font-size: 1.75rem;
-  font-weight: 400;
-  margin: 0;
-  background: linear-gradient(135deg, #7a8a9a 0%, #9a8a9a 100%);
+  background: linear-gradient(135deg, var(--primary-gradient-start) 0%, var(--primary-gradient-end) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: 0.03em;
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 16px;
   font-family: 'Georgia', 'Times New Roman', serif;
+  font-weight: 400;
+  letter-spacing: 0.03em;
 }
 
 .monthHeader::after {
   content: '';
-  flex: 1;
-  height: 1px;
   background: linear-gradient(90deg, 
     rgba(168, 196, 212, 0.3), 
     rgba(224, 197, 210, 0.15)
   );
-  margin-left: 20px;
 }
 
-/* Navigation Buttons */
-.monthNavButton {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  border: 1px solid rgba(168, 196, 212, 0.2);
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.9),
-    rgba(248, 250, 252, 0.8)
-  );
-  color: #7a8a9a;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 200ms ease-in-out;
-  font-size: 14px;
-}
-
-.monthNavButton:hover {
-  background: linear-gradient(135deg,
-    rgba(168, 196, 212, 0.1),
-    rgba(224, 197, 210, 0.05)
-  );
-  border-color: rgba(168, 196, 212, 0.35);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(168, 196, 212, 0.15);
-}
-
-.monthNavButton:active {
-  transform: translateY(0);
-}
-
-/* Weekday Header Row */
+/* === 星期标题视觉样式 === */
 .weekdayRow {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  background: linear-gradient(180deg, 
-    #fafbfc 0%, 
-    #f8f9fa 100%
-  );
-  border-bottom: 1px solid #e9ecef;
-  border-top: 1px solid #e9ecef;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  background: linear-gradient(180deg, #fafbfc 0%, #f8f9fa 100%);
+  border-bottom: 1px solid var(--border-medium);
+  border-top: 1px solid var(--border-medium);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .weekdayHeader {
-  padding: 12px 8px;
+  color: var(--text-secondary);
   font-weight: 500;
-  text-align: center;
-  color: #8694a4;
-  font-size: 0.75rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Scroll Container */
+/* === 滚动容器视觉样式 === */
 .scrollContainer {
-  position: relative;
-  flex: 1;
-  overflow: hidden;
   background: linear-gradient(180deg, 
     rgba(255, 255, 255, 0.02),
     rgba(248, 250, 252, 0.01)
@@ -143,34 +99,13 @@
   border-radius: 0 0 12px 12px;
 }
 
-/* Week Row */
-.weekRow {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  position: absolute;
-  left: 0;
-  right: 0;
-  will-change: auto;
-}
-
-.weekRow.scrolling {
-  will-change: transform;
-}
-
-/* Day Cell */
+/* === 日期单元格视觉样式 === */
 .dayCell {
-  padding: 12px;
-  background: #ffffff;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
   transition: all 150ms ease-in-out;
-  height: 100%;
-  box-sizing: border-box;
-  position: relative;
-  border-right: 1px solid #f0f1f4;
-  border-bottom: 1px solid #f0f1f4;
+  cursor: pointer;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -178,115 +113,72 @@
 }
 
 .dayCell:nth-child(7n+1) {
-  border-left: 1px solid #f0f1f4;
+  border-left: 1px solid var(--border-light);
 }
 
-/* Day Number */
+/* 日期数字样式 */
 .dayNumber {
-  font-size: 1.125rem;
+  color: var(--text-primary);
   font-weight: 400;
-  line-height: 1.2;
-  color: #374151;
   font-variant-numeric: tabular-nums;
   transition: all 150ms ease-in-out;
 }
 
-/* Lunar Info Container */
-.lunarInfo {
-  font-size: 0.65rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 14px;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-}
-
-/* Lunar Text */
+/* === 农历信息视觉样式 === */
 .lunar {
-  color: #9ca3af;
+  color: var(--text-muted);
   opacity: 0.85;
   font-weight: 500;
   letter-spacing: 0.01em;
-  font-size: 0.7rem;
 }
 
-/* Festival */
 .festival {
-  color: #d6536d;
+  color: var(--color-festival);
   font-weight: 600;
-  font-size: 0.7rem;
   letter-spacing: 0.02em;
 }
 
-/* Solar Term */
 .solarTerm {
-  color: #4a8a73;
+  color: var(--color-solarterm);
   font-weight: 600;
-  font-size: 0.7rem;
   letter-spacing: 0.02em;
 }
 
-/* Workday */
-.workday {
-  color: #e6820c;
-  font-weight: 600;
-  font-size: 0.7rem;
-  letter-spacing: 0.02em;
-}
-
-/* Weekend Cell */
-.weekend {
-  background: linear-gradient(135deg,
-    rgba(224, 197, 210, 0.03),
-    rgba(255, 255, 255, 0.98)
-  );
-}
-
-.weekend .dayNumber {
-  color: rgba(212, 168, 188, 0.9);
-}
-
-/* Hover State */
+/* === 状态样式 === */
+/* 悬停效果 */
 .dayCell:hover {
   background: linear-gradient(135deg,
     rgba(168, 196, 212, 0.05),
     rgba(224, 197, 210, 0.02)
   );
-  border-color: rgba(168, 196, 212, 0.3);
+  border-color: var(--border-accent);
   box-shadow: 
     inset 0 0 0 1px rgba(168, 196, 212, 0.2),
     0 2px 8px rgba(168, 196, 212, 0.08);
-  z-index: 5;
   transform: translateY(-1px);
+  z-index: 5;
 }
 
 .dayCell:hover .dayNumber {
-  color: #5b8dbe;
+  color: var(--text-accent);
   transform: scale(1.05);
 }
 
-/* Current Month */
+/* 当前月份 */
 .currentMonth {
-  color: #374151;
-  background: #ffffff;
+  color: var(--text-primary);
+  background: var(--bg-primary);
 }
 
-/* Other Month */
+/* 其他月份 */
 .otherMonth {
-  color: #d1d5db;
-  background: linear-gradient(135deg,
-    #fafbfc,
-    #f9fafb
-  );
+  color: var(--text-disabled);
+  background: linear-gradient(135deg, #fafbfc, #f9fafb);
   opacity: 0.6;
 }
 
 .otherMonth .dayNumber {
-  color: #d1d5db;
+  color: var(--text-disabled);
   font-weight: 300;
 }
 
@@ -302,13 +194,13 @@
   );
 }
 
-/* Today */
+/* 今天 */
 .today {
   background: linear-gradient(135deg,
     rgba(168, 196, 212, 0.15),
     rgba(224, 197, 210, 0.08)
   );
-  border: 2px solid rgba(168, 196, 212, 0.35);
+  border: 2px solid var(--border-accent);
   box-shadow: 
     0 3px 12px rgba(168, 196, 212, 0.15),
     inset 0 0 20px rgba(168, 196, 212, 0.05);
@@ -316,49 +208,11 @@
 }
 
 .today .dayNumber {
-  color: #5b8dbe;
+  color: var(--text-accent);
   font-weight: 600;
 }
 
-
-
-/* Selected Day */
-.selected {
-  background: linear-gradient(135deg,
-    rgba(168, 196, 212, 0.08),
-    rgba(224, 197, 210, 0.04)
-  );
-  border-color: rgba(168, 196, 212, 0.25);
-}
-
-.selected .dayNumber {
-  color: #5b8dbe;
-  font-weight: 500;
-}
-
-/* Event Indicators Container */
-.eventIndicators {
-  display: flex;
-  gap: 2px;
-  justify-content: center;
-  margin-top: 4px;
-  height: 4px;
-}
-
-.eventDot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #a8c4d4, #e0c5d2);
-  opacity: 0.7;
-}
-
-.eventDot.highPriority {
-  background: linear-gradient(135deg, #d6536d, #e0c5d2);
-  opacity: 0.9;
-}
-
-/* Scrolling Performance Optimization */
+/* 滚动优化 */
 .scrolling .dayCell {
   transition: none;
 }
@@ -367,7 +221,134 @@
   transition: none;
 }
 
-/* Responsive Design */
+/* ====================================================================== */
+/* 第二部分：布局关键样式（不建议用户修改）                                 */
+/* 包含：尺寸、间距、布局、定位、显示方式等                                */
+/* 修改这些样式可能导致布局错乱或功能异常                                  */
+/* ====================================================================== */
+
+/* === 容器布局 === */
+.monthContainer {
+  padding: 32px;
+  width: 100%;
+  height: calc(100vh - 150px);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  contain: layout style paint;
+}
+
+.monthContainer::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 150px;
+  z-index: 0;
+}
+
+/* === 头部布局 === */
+.monthHeaderContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.monthHeader {
+  font-size: 1.75rem;
+  margin: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.monthHeader::after {
+  flex: 1;
+  height: 1px;
+  margin-left: 20px;
+}
+
+/* === 星期头部布局 === */
+.weekdayRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.weekdayHeader {
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+/* === 滚动容器布局 === */
+.scrollContainer {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* === 周行布局 === */
+.weekRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  position: absolute;
+  left: 0;
+  right: 0;
+  will-change: auto;
+}
+
+.weekRow.scrolling {
+  will-change: transform;
+}
+
+/* === 日期单元格布局 === */
+.dayCell {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.dayNumber {
+  font-size: 1.125rem;
+  line-height: 1.2;
+}
+
+/* === 农历信息布局 === */
+.lunarInfo {
+  font-size: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 14px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.lunar,
+.festival,
+.solarTerm {
+  font-size: 0.7rem;
+}
+
+/* ====================================================================== */
+/* 第三部分：响应式布局（核心布局调整，不建议修改）                          */
+/* ====================================================================== */
+
 @media (max-width: 1200px) {
   .monthContainer {
     padding: 24px;
@@ -419,8 +400,7 @@
   }
   
   .festival,
-  .solarTerm,
-  .workday {
+  .solarTerm {
     font-size: 0.6rem;
   }
 }
@@ -433,12 +413,6 @@
   
   .monthHeader {
     font-size: 1.125rem;
-  }
-  
-  .monthNavButton {
-    width: 28px;
-    height: 28px;
-    font-size: 12px;
   }
   
   .weekdayHeader {
@@ -459,11 +433,14 @@
   }
 }
 
-/* Accessibility Support */
+/* ====================================================================== */
+/* 第四部分：无障碍和特殊模式支持                                         */
+/* ====================================================================== */
+
+/* 减少动画模式 */
 @media (prefers-reduced-motion: reduce) {
   .dayCell,
-  .dayNumber,
-  .monthNavButton {
+  .dayNumber {
     animation: none;
     transition: none;
   }
@@ -477,8 +454,8 @@
   }
 }
 
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
+/* 高对比度模式 */
+@media (prefers-contrast: more) {
   .monthContainer {
     border: 2px solid #000;
   }
@@ -497,7 +474,7 @@
   }
 }
 
-/* Dark Mode Support (Optional) */
+/* 深色模式 */
 @media (prefers-color-scheme: dark) {
   .monthContainer {
     background: #1f2937;

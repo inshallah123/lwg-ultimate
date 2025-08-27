@@ -1,34 +1,63 @@
-/* ==================== 周视图事件容器 ==================== */
-.weekEventContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 4px;
-  width: 100%;
-  height: 100%;
-  position: relative;
+/* ====================================================================== */
+/* 第一部分：用户可安全自定义的视觉样式                                    */
+/* 包含：颜色、渐变、透明度、阴影、边框颜色、字体样式等                      */
+/* 修改这些样式不会影响布局，仅改变视觉效果                                 */
+/* ====================================================================== */
+
+/* === 颜色主题定义 === */
+:root {
+  /* 标签主色 */
+  --tag-color-private: #e11d48;
+  --tag-color-work: #4f46e5;
+  --tag-color-balance: #059669;
+  --tag-color-custom: #7c3aed;
+  
+  /* 标签背景渐变 */
+  --tag-bg-private: linear-gradient(135deg, rgba(225, 29, 72, 0.06), rgba(225, 29, 72, 0.02));
+  --tag-bg-work: linear-gradient(135deg, rgba(79, 70, 229, 0.06), rgba(79, 70, 229, 0.02));
+  --tag-bg-balance: linear-gradient(135deg, rgba(5, 150, 105, 0.06), rgba(5, 150, 105, 0.02));
+  --tag-bg-custom: linear-gradient(135deg, rgba(124, 58, 237, 0.06), rgba(124, 58, 237, 0.02));
+  
+  /* 标签边框色 */
+  --tag-border-private: rgba(225, 29, 72, 0.2);
+  --tag-border-work: rgba(79, 70, 229, 0.2);
+  --tag-border-balance: rgba(5, 150, 105, 0.2);
+  --tag-border-custom: rgba(124, 58, 237, 0.2);
 }
 
-/* ==================== 事件卡片样式 ==================== */
+/* === 事件卡片视觉样式 === */
 .eventCard {
-  display: flex;
-  align-items: center;
-  padding: 5px 7px;
   border-radius: 6px;
-  font-size: 11px;
-  line-height: 1.4;
   border: 1px solid;
   backdrop-filter: blur(8px);
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  min-height: 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   transform-origin: left center;
+  animation: slideIn 0.15s ease-out;
 }
 
-/* 卡片悬停效果 */
+/* 根据标签类型的样式 */
+.eventCard.private {
+  background: var(--tag-bg-private);
+  border-color: var(--tag-border-private);
+}
+
+.eventCard.work {
+  background: var(--tag-bg-work);
+  border-color: var(--tag-border-work);
+}
+
+.eventCard.balance {
+  background: var(--tag-bg-balance);
+  border-color: var(--tag-border-balance);
+}
+
+.eventCard.custom {
+  background: var(--tag-bg-custom);
+  border-color: var(--tag-border-custom);
+}
+
 .eventCard:hover {
   transform: translateX(2px) scale(1.02);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -36,113 +65,57 @@
   opacity: 1;
 }
 
-/* 卡片内容区域 */
-.eventContent {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  gap: 4px;
-}
-
-/* 事件标题 */
+/* === 事件标题视觉样式 === */
 .eventTitle {
   font-weight: 500;
   color: #1e293b;
   letter-spacing: -0.01em;
-  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 11px;
 }
 
-/* 时间标签 */
+/* === 时间标签视觉样式 === */
 .eventTime {
-  font-size: 9px;
   font-weight: 600;
   color: #64748b;
   opacity: 0.7;
-  flex-shrink: 0;
-  padding: 1px 3px;
   border-radius: 3px;
   background: rgba(0, 0, 0, 0.04);
 }
 
-/* ==================== 事件概述卡片 ==================== */
+/* === 事件概述卡片视觉样式 === */
 .eventSummaryCard {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 4px 5px;
   border-radius: 6px;
-  font-size: 10px;
-  line-height: 1.2;
   border: 1px solid;
   backdrop-filter: blur(8px);
   cursor: pointer;
   transition: all 0.15s ease;
-  min-height: 32px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-  position: relative;
-  overflow: hidden;
+  animation: slideIn 0.15s ease-out;
 }
 
-/* 概述头部 */
-.summaryHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px;
-  margin-bottom: 1px;
+/* 根据标签类型的样式 */
+.eventSummaryCard.private {
+  background: var(--tag-bg-private);
+  border-color: var(--tag-border-private);
 }
 
-/* 事件数量 */
-.eventCount {
-  font-size: 9px;
-  font-weight: 700;
-  color: #64748b;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 1px 4px;
-  border-radius: 8px;
-  white-space: nowrap;
+.eventSummaryCard.work {
+  background: var(--tag-bg-work);
+  border-color: var(--tag-border-work);
 }
 
-/* 标签点 */
-.tagDots {
-  display: flex;
-  gap: 2px;
-  align-items: center;
+.eventSummaryCard.balance {
+  background: var(--tag-bg-balance);
+  border-color: var(--tag-border-balance);
 }
 
-.tagDot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  flex-shrink: 0;
+.eventSummaryCard.custom {
+  background: var(--tag-bg-custom);
+  border-color: var(--tag-border-custom);
 }
 
-/* 概述内容 */
-.summaryContent {
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-/* 事件概述文字 */
-.eventSummary {
-  font-size: 9px;
-  font-weight: 500;
-  color: #1e293b;
-  letter-spacing: -0.02em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 100%;
-  opacity: 0.9;
-}
-
-/* 概述卡片悬停效果 */
 .eventSummaryCard:hover {
   transform: translateX(2px) scale(1.02);
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
@@ -158,7 +131,49 @@
   opacity: 1;
 }
 
-/* ==================== 动画 ==================== */
+/* === 事件数量视觉样式 === */
+.eventCount {
+  font-weight: 700;
+  color: #64748b;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+/* === 标签点视觉样式 === */
+.tagDot {
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.tagDot.private {
+  background-color: var(--tag-color-private);
+}
+
+.tagDot.work {
+  background-color: var(--tag-color-work);
+}
+
+.tagDot.balance {
+  background-color: var(--tag-color-balance);
+}
+
+.tagDot.custom {
+  background-color: var(--tag-color-custom);
+}
+
+/* === 事件概述文字视觉样式 === */
+.eventSummary {
+  font-weight: 500;
+  color: #1e293b;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.9;
+}
+
+/* === 动画定义 === */
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -179,18 +194,116 @@
   }
 }
 
-.eventCard,
+/* ====================================================================== */
+/* 第二部分：布局关键样式（不建议用户修改）                                 */
+/* 包含：尺寸、间距、布局、定位、显示方式等                                */
+/* 修改这些样式可能导致布局错乱或功能异常                                  */
+/* ====================================================================== */
+
+/* === 周视图事件容器布局 === */
+.weekEventContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* === 事件卡片布局 === */
+.eventCard {
+  display: flex;
+  align-items: center;
+  padding: 5px 7px;
+  font-size: 11px;
+  line-height: 1.4;
+  position: relative;
+  overflow: hidden;
+  min-height: 24px;
+}
+
+/* === 卡片内容区域布局 === */
+.eventContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 4px;
+}
+
+/* === 事件标题布局 === */
+.eventTitle {
+  flex: 1;
+  font-size: 11px;
+}
+
+/* === 时间标签布局 === */
+.eventTime {
+  font-size: 9px;
+  flex-shrink: 0;
+  padding: 1px 3px;
+}
+
+/* === 事件概述卡片布局 === */
 .eventSummaryCard {
-  animation: slideIn 0.15s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 5px;
+  font-size: 10px;
+  line-height: 1.2;
+  min-height: 32px;
+  position: relative;
+  overflow: hidden;
 }
 
-/* 标签点动画 */
+/* === 概述头部布局 === */
+.summaryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  margin-bottom: 1px;
+}
+
+/* === 事件数量布局 === */
+.eventCount {
+  font-size: 9px;
+  padding: 1px 4px;
+}
+
+/* === 标签点容器布局 === */
+.tagDots {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+/* === 标签点布局 === */
 .tagDot {
-  animation: pulse 2s ease-in-out infinite;
-  /* animation-delay removed - not using dynamic CSS variable */
+  width: 4px;
+  height: 4px;
+  flex-shrink: 0;
 }
 
-/* ==================== 响应式调整 ==================== */
+/* === 概述内容布局 === */
+.summaryContent {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* === 事件概述文字布局 === */
+.eventSummary {
+  font-size: 9px;
+  width: 100%;
+}
+
+/* ====================================================================== */
+/* 第三部分：响应式布局（核心布局调整，不建议修改）                          */
+/* ====================================================================== */
+
 @media (max-width: 768px) {
   .eventCard,
   .eventSummaryCard {
@@ -217,8 +330,11 @@
   }
 }
 
+/* ====================================================================== */
+/* 第四部分：无障碍支持                                                   */
+/* ====================================================================== */
 
-/* ==================== 减少动画模式 ==================== */
+/* 减少动画模式 */
 @media (prefers-reduced-motion: reduce) {
   .eventCard,
   .eventSummaryCard {
