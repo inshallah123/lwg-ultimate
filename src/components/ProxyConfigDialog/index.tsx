@@ -73,7 +73,7 @@ const ProxyConfigDialog: React.FC<ProxyConfigDialogProps> = ({ isOpen, onClose, 
       
       alert(message);
       onClose();
-    } catch (err) {
+    } catch (_err) {
       setError('保存代理设置失败');
     }
   };

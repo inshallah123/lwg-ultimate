@@ -51,7 +51,8 @@ export const DayCellContent = React.memo(function DayCellContent({
     endOfDay.setHours(23, 59, 59, 999);
     
     return getEventsInRange(startOfDay, endOfDay);
-  }, [date, getEventsInRange, allEvents]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [date, getEventsInRange]);
   
   // 如果没有事件，只显示日期头部
   if (events.length === 0) {

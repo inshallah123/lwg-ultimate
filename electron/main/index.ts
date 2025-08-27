@@ -32,7 +32,19 @@ let eventDb: EventDatabase | null = null;
 let dbInitPromise: Promise<EventDatabase | null> | null = null;
 let themeDb: ThemeDatabase | null = null;
 let themeDbInitPromise: Promise<ThemeDatabase | null> | null = null;
-let appUpdater: any = null; // 包含 autoUpdater, isUpdateDownloaded 等方法
+interface AppUpdaterInterface {
+  isUpdateDownloaded: () => boolean;
+  checkForUpdates: () => void;
+  installUpdate: () => void;
+  checkForUpdatesManually: () => Promise<any>;
+  setProxy: (proxy: string | null) => void;
+  setFeedURL: (config: any) => void;
+  autoUpdater?: {
+    autoInstallOnAppQuit: boolean;
+  };
+}
+
+let appUpdater: AppUpdaterInterface | null = null; // 包含 autoUpdater, isUpdateDownloaded 等方法
 
 // 确保只有一个实例运行
 const gotTheLock = app.requestSingleInstanceLock();
@@ -134,7 +146,7 @@ Life flows like water through our hands.`;
             
             // 手动检查更新
             const result = await appUpdater.checkForUpdatesManually();
-            if (!result || !result.updateInfo) {
+            if (!result || !(result as any).updateInfo) {
               dialog.showMessageBox(mainWindow!, {
                 type: 'info',
                 title: '检查更新',
@@ -192,7 +204,7 @@ Life flows like water through our hands.`;
               
               // 更新 updater 配置
               if (appUpdater) {
-                appUpdater.setProxy(updateConfig.getProxyUrl());
+                appUpdater.setProxy(updateConfig.getProxyUrl() || null);
               }
             } else if (result.response === 3) {
               // 自定义设置
@@ -315,21 +327,23 @@ async function initDatabase(): Promise<EventDatabase | null> {
   if (eventDb) return eventDb;
   if (dbInitPromise) return dbInitPromise;
   
-  dbInitPromise = new Promise(async (resolve) => {
-    try {
-      // 等待app准备好
-      if (!app.isReady()) {
-        await app.whenReady();
+  dbInitPromise = new Promise((resolve) => {
+    (async () => {
+      try {
+        // 等待app准备好
+        if (!app.isReady()) {
+          await app.whenReady();
+        }
+        eventDb = new EventDatabase();
+        await eventDb.initialize();
+        console.log('Database initialized successfully');
+        resolve(eventDb);
+      } catch (error) {
+        console.error('Failed to initialize database:', error);
+        // 即使失败也要resolve，避免promise永远pending
+        resolve(null);
       }
-      eventDb = new EventDatabase();
-      await eventDb.initialize();
-      console.log('Database initialized successfully');
-      resolve(eventDb);
-    } catch (error) {
-      console.error('Failed to initialize database:', error);
-      // 即使失败也要resolve，避免promise永远pending
-      resolve(null);
-    }
+    })();
   });
   
   return dbInitPromise;
@@ -340,21 +354,23 @@ async function initThemeDatabase(): Promise<ThemeDatabase | null> {
   if (themeDb) return themeDb;
   if (themeDbInitPromise) return themeDbInitPromise;
   
-  themeDbInitPromise = new Promise(async (resolve) => {
-    try {
-      // 等待app准备好
-      if (!app.isReady()) {
-        await app.whenReady();
+  themeDbInitPromise = new Promise((resolve) => {
+    (async () => {
+      try {
+        // 等待app准备好
+        if (!app.isReady()) {
+          await app.whenReady();
+        }
+        themeDb = new ThemeDatabase();
+        await themeDb.initialize();
+        console.log('Theme database initialized successfully');
+        resolve(themeDb);
+      } catch (error) {
+        console.error('Failed to initialize theme database:', error);
+        // 即使失败也要resolve，避免promise永远pending
+        resolve(null);
       }
-      themeDb = new ThemeDatabase();
-      await themeDb.initialize();
-      console.log('Theme database initialized successfully');
-      resolve(themeDb);
-    } catch (error) {
-      console.error('Failed to initialize theme database:', error);
-      // 即使失败也要resolve，避免promise永远pending
-      resolve(null);
-    }
+    })();
   });
   
   return themeDbInitPromise;
@@ -374,7 +390,7 @@ app.whenReady().then(async () => {
   } else {
     appUpdater = new AppUpdater(() => mainWindow);
     // 配置GitHub更新地址
-    appUpdater.setFeedURL({
+    appUpdater!.setFeedURL({
       provider: 'github',
       owner: 'inshallah123',
       repo: 'lwg-ultimate'
@@ -382,7 +398,7 @@ app.whenReady().then(async () => {
     
     // 设置代理（如果已配置）
     const proxyUrl = updateConfig.getProxyUrl();
-    if (proxyUrl) {
+    if (proxyUrl && appUpdater) {
       appUpdater.setProxy(proxyUrl);
     }
     
@@ -390,7 +406,7 @@ app.whenReady().then(async () => {
     const config = updateConfig.getConfig();
     if (config.autoCheck !== false) {
       setTimeout(() => {
-        appUpdater.checkForUpdates();
+        appUpdater!.checkForUpdates();
       }, 3000);
     }
   }
@@ -454,7 +470,7 @@ app.on('window-all-closed', () => {
 });
 
 
-app.on('before-quit', (event) => {
+app.on('before-quit', (_event) => {
   // 检查是否有已下载的更新需要安装
   if (appUpdater && appUpdater.isUpdateDownloaded()) {
     console.log('应用退出时检测到已下载的更新，准备安装...');
@@ -534,7 +550,7 @@ ipcMain.handle('update:setProxy', (_, enabled: boolean, host?: string, port?: nu
   
   // 更新 updater 配置
   if (appUpdater) {
-    const proxyUrl = enabled ? updateConfig.getProxyUrl() : null;
+    const proxyUrl = enabled ? (updateConfig.getProxyUrl() || null) : null;
     appUpdater.setProxy(proxyUrl);
   }
   

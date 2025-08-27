@@ -4,8 +4,16 @@ import * as fs from 'fs';
 import { Event } from '../../src/types/event';
 const initSqlJs = require('sql.js');
 
+interface SQLiteDatabase {
+  run: (sql: string, params?: any[]) => void;
+  prepare: (sql: string) => any;
+  exec: (sql: string) => void;
+  export: () => Uint8Array;
+  close: () => void;
+}
+
 class EventDatabase {
-  private db: any;
+  private db: SQLiteDatabase | null = null;
   private dbPath: string = '';
 
   async initialize() {
@@ -14,7 +22,7 @@ class EventDatabase {
       let userDataPath: string;
       try {
         userDataPath = app.getPath('userData');
-      } catch (error) {
+      } catch (_error) {
         console.log('App not ready, using fallback path');
         // 如果app还没准备好，使用默认路径
         userDataPath = app.isPackaged 
@@ -57,6 +65,7 @@ class EventDatabase {
   
   private saveDatabase() {
     try {
+      if (!this.db) return;
       const data = this.db.export();
       const buffer = Buffer.from(data);
       fs.writeFileSync(this.dbPath, buffer);
@@ -66,6 +75,7 @@ class EventDatabase {
   }
 
   private initDatabase() {
+    if (!this.db) return;
     // 创建事件表（只存储SE和RP）
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS events (
@@ -91,6 +101,7 @@ class EventDatabase {
 
   // 获取所有事件（只返回SE和RP）
   getAllEvents(): Event[] {
+    if (!this.db) return [];
     const stmt = this.db.prepare('SELECT * FROM events');
     const rows = [];
     while (stmt.step()) {
@@ -102,6 +113,7 @@ class EventDatabase {
 
   // 添加事件
   addEvent(event: Event): void {
+    if (!this.db) return;
     const row = this.eventToRow(event);
     const stmt = this.db.prepare(`
       INSERT INTO events (
@@ -123,6 +135,7 @@ class EventDatabase {
 
   // 更新事件
   updateEvent(event: Event): void {
+    if (!this.db) return;
     const row = this.eventToRow(event);
     const stmt = this.db.prepare(`
       UPDATE events SET
@@ -148,6 +161,7 @@ class EventDatabase {
 
   // 删除事件
   deleteEvent(id: string): void {
+    if (!this.db) return;
     const stmt = this.db.prepare('DELETE FROM events WHERE id = $id');
     stmt.bind({ $id: id });
     stmt.step();
@@ -157,6 +171,7 @@ class EventDatabase {
 
   // 批量更新事件（用于同步）
   syncEvents(events: Event[]): void {
+    if (!this.db) return;
     // 删除所有事件
     this.db.run('DELETE FROM events');
     
@@ -233,6 +248,7 @@ class EventDatabase {
   }
 
   close(): void {
+    if (!this.db) return;
     this.saveDatabase();
     this.db.close();
   }

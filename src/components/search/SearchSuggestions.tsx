@@ -24,7 +24,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
     return (
       <div className={styles.suggestions}>
         <div className={styles.noResults}>
-          No events found for "{searchQuery}"
+          No events found for &ldquo;{searchQuery}&rdquo;
         </div>
       </div>
     );

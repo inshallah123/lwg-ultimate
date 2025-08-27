@@ -39,6 +39,7 @@ const fs = __importStar(require("fs"));
 const initSqlJs = require('sql.js');
 class ThemeDatabase {
     constructor() {
+        this.db = null;
         this.dbPath = '';
     }
     async initialize() {
@@ -47,7 +48,7 @@ class ThemeDatabase {
             try {
                 userDataPath = electron_1.app.getPath('userData');
             }
-            catch (error) {
+            catch (_error) {
                 console.log('App not ready, using fallback path for themes');
                 userDataPath = electron_1.app.isPackaged
                     ? path.join(process.resourcesPath, '..')
@@ -79,6 +80,8 @@ class ThemeDatabase {
     }
     saveDatabase() {
         try {
+            if (!this.db)
+                return;
             const data = this.db.export();
             const buffer = Buffer.from(data);
             fs.writeFileSync(this.dbPath, buffer);
@@ -88,6 +91,8 @@ class ThemeDatabase {
         }
     }
     initDatabase() {
+        if (!this.db)
+            return;
         this.db.exec(`
       CREATE TABLE IF NOT EXISTS themes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -102,6 +107,8 @@ class ThemeDatabase {
     }
     saveTheme(theme) {
         try {
+            if (!this.db)
+                return { success: false, error: 'Database not initialized' };
             // 检查是否已存在同名主题
             const checkStmt = this.db.prepare('SELECT id FROM themes WHERE name = $name');
             checkStmt.bind({ $name: theme.name });
@@ -151,6 +158,8 @@ class ThemeDatabase {
     }
     loadTheme(name) {
         try {
+            if (!this.db)
+                return { success: false, error: 'Database not initialized' };
             const stmt = this.db.prepare('SELECT * FROM themes WHERE name = $name');
             stmt.bind({ $name: name });
             if (stmt.step()) {
@@ -175,6 +184,8 @@ class ThemeDatabase {
     }
     getThemeList() {
         try {
+            if (!this.db)
+                return { success: false, error: 'Database not initialized' };
             const stmt = this.db.prepare('SELECT * FROM themes ORDER BY updatedAt DESC');
             const themes = [];
             while (stmt.step()) {
@@ -197,6 +208,8 @@ class ThemeDatabase {
     }
     deleteTheme(name) {
         try {
+            if (!this.db)
+                return { success: false, error: 'Database not initialized' };
             const stmt = this.db.prepare('DELETE FROM themes WHERE name = $name');
             stmt.bind({ $name: name });
             stmt.step();
@@ -210,6 +223,8 @@ class ThemeDatabase {
         }
     }
     close() {
+        if (!this.db)
+            return;
         this.saveDatabase();
         this.db.close();
     }

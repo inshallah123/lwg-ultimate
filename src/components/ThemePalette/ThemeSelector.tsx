@@ -259,7 +259,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose }) => {
 
           <div className={styles.info}>
             <p>选择一个主题作为默认主题，应用将在下次启动时自动加载该主题。</p>
-            <p>点击"预览"可以临时查看主题效果，点击"选择"确认使用该主题。</p>
+            <p>点击&ldquo;预览&rdquo;可以临时查看主题效果，点击&ldquo;选择&rdquo;确认使用该主题。</p>
           </div>
         </div>
       </div>

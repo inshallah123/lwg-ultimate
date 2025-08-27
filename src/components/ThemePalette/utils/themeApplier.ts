@@ -1,6 +1,444 @@
-import { ThemeConfig } from '../types';
+import { ThemeConfig, GlobalStyleConfig, YearViewConfig, MonthCardConfig, MonthViewConfig, WeekViewConfig } from '../types';
 
 const THEME_STYLE_ID = 'custom-theme-styles';
+
+interface GradientConfig {
+  enabled: boolean;
+  startColor: string;
+  endColor: string;
+  angle: number;
+}
+
+interface BackgroundImageConfig {
+  enabled: boolean;
+  url: string;
+  size?: string;
+  position?: string;
+}
+
+// 联合类型定义用于类型安全
+type ConfigValue = string | number | boolean | undefined;
+type ConfigTransform = (value: ConfigValue) => string;
+
+// 样式规则类型定义
+interface StyleRule {
+  selector: string;
+  property: string;
+  configKey: string;
+  unit?: string;
+  transform?: ConfigTransform;
+}
+
+// 特殊规则处理器类型
+interface SpecialRule {
+  section: keyof ThemeConfig;
+  handler: (config: any, cssRules: string[]) => void;
+}
+
+// 特殊处理策略
+const backgroundStrategies = {
+  gradient: (gradient: GradientConfig): string => 
+    `linear-gradient(${gradient.angle}deg, ${gradient.startColor}, ${gradient.endColor})`,
+  
+  backgroundImage: (bgImage: BackgroundImageConfig): string[] => 
+    [`background-image: url("${bgImage.url}") !important`,
+     `background-size: ${bgImage.size} !important`,
+     `background-position: ${bgImage.position} !important`,
+     `background-repeat: no-repeat !important`],
+
+  yearViewBackgroundImage: (bgImage: BackgroundImageConfig): string[] =>
+    [`background-image: url("${bgImage.url}") !important`,
+     `background-size: cover !important`,
+     `background-position: center !important`]
+};
+
+// 样式规则映射配置
+const styleRulesConfig: Record<string, StyleRule[]> = {
+  global: [
+    {
+      selector: 'body',
+      property: 'opacity',
+      configKey: 'opacity'
+    }
+  ],
+  yearView: [
+    {
+      selector: '[class*="yearContainer"]',
+      property: 'opacity',
+      configKey: 'containerOpacity'
+    },
+    {
+      selector: '[class*="yearContainer"]',
+      property: 'border-radius',
+      configKey: 'borderRadius',
+      unit: 'px'
+    },
+    {
+      selector: '[class*="yearContainer"]',
+      property: 'box-shadow',
+      configKey: 'boxShadow'
+    },
+    {
+      selector: '[class*="yearHeader"]',
+      property: 'font-size',
+      configKey: 'titleFontSize',
+      unit: 'rem'
+    },
+    {
+      selector: '[class*="yearHeader"]',
+      property: 'color',
+      configKey: 'titleColor',
+      transform: (color: ConfigValue) => `${color} !important; -webkit-text-fill-color: ${color}`
+    },
+    {
+      selector: '[class*="yearHeader"]',
+      property: 'font-weight',
+      configKey: 'titleFontWeight'
+    }
+  ],
+  monthCard: [
+    {
+      selector: '[class*="monthCard"]',
+      property: 'opacity',
+      configKey: 'opacity'
+    },
+    {
+      selector: '[class*="monthCard"]',
+      property: 'border-color',
+      configKey: 'borderColor'
+    },
+    {
+      selector: '[class*="monthCard"]',
+      property: 'border-radius',
+      configKey: 'borderRadius',
+      unit: 'px'
+    },
+    {
+      selector: '[class*="monthNumber"]',
+      property: 'font-size',
+      configKey: 'fontSize',
+      unit: 'em'
+    },
+    {
+      selector: '[class*="monthNumber"]',
+      property: 'color',
+      configKey: 'fontColor'
+    },
+    {
+      selector: '[class*="monthCard"]:hover',
+      property: 'background',
+      configKey: 'hoverBackground'
+    },
+    {
+      selector: '[class*="monthCard"][class*="todayMonth"]',
+      property: 'background',
+      configKey: 'todayMonthBackground'
+    },
+    {
+      selector: '[class*="monthCard"][class*="todayMonth"]',
+      property: 'border',
+      configKey: 'todayMonthBorderColor',
+      transform: (color: ConfigValue) => `2px solid ${color}`
+    }
+  ],
+  monthView: [
+    {
+      selector: '[class*="monthHeader"]',
+      property: 'font-size',
+      configKey: 'headerFontSize',
+      unit: 'rem'
+    },
+    {
+      selector: '[class*="monthHeader"]',
+      property: 'color',
+      configKey: 'headerColor',
+      transform: (color: ConfigValue) => `${color} !important; -webkit-text-fill-color: ${color}`
+    },
+    {
+      selector: '[class*="weekdayRow"]',
+      property: 'background',
+      configKey: 'weekdayBackground'
+    },
+    {
+      selector: '[class*="weekdayHeader"]',
+      property: 'color',
+      configKey: 'weekdayColor'
+    },
+    {
+      selector: '[class*="monthContainer"] [class*="dayCell"]',
+      property: 'background',
+      configKey: 'dayCellBackground'
+    },
+    {
+      selector: '[class*="monthContainer"] [class*="dayNumber"]',
+      property: 'font-size',
+      configKey: 'dayNumberSize',
+      unit: 'rem'
+    },
+    {
+      selector: '[class*="monthContainer"] [class*="dayNumber"]',
+      property: 'color',
+      configKey: 'dayNumberColor'
+    },
+    {
+      selector: '[class*="monthContainer"] [class*="today"]',
+      property: 'background',
+      configKey: 'todayBackground'
+    },
+    {
+      selector: '[class*="monthContainer"] [class*="today"] [class*="dayNumber"]',
+      property: 'color',
+      configKey: 'todayColor'
+    },
+    {
+      selector: '[class*="monthContainer"] [class*="lunar"]',
+      property: 'font-size',
+      configKey: 'lunarSize',
+      unit: 'rem'
+    },
+    {
+      selector: '[class*="monthContainer"] [class*="lunar"]',
+      property: 'color',
+      configKey: 'lunarColor'
+    },
+    {
+      selector: '[class*="monthContainer"] [class*="festival"]',
+      property: 'color',
+      configKey: 'festivalColor'
+    },
+    {
+      selector: '[class*="monthContainer"] [class*="solarTerm"]',
+      property: 'color',
+      configKey: 'solarTermColor'
+    }
+  ],
+  weekView: [
+    {
+      selector: '[class*="weekContainer"]',
+      property: 'background',
+      configKey: 'containerBackground'
+    },
+    {
+      selector: '[class*="weekHeader"]',
+      property: 'font-size',
+      configKey: 'headerFontSize',
+      unit: 'rem'
+    },
+    {
+      selector: '[class*="weekHeader"]',
+      property: 'color',
+      configKey: 'headerColor'
+    },
+    {
+      selector: '[class*="dayHeader"]',
+      property: 'background',
+      configKey: 'dayHeaderBackground'
+    },
+    {
+      selector: '[class*="dayName"]',
+      property: 'color',
+      configKey: 'dayNameColor'
+    },
+    {
+      selector: '[class*="dayDate"]',
+      property: 'color',
+      configKey: 'dayDateColor'
+    },
+    {
+      selector: '[class*="dayHeader"][class*="today"]',
+      property: 'background',
+      configKey: 'todayHeaderBackground'
+    },
+    {
+      selector: '[class*="timeSlot"]',
+      property: 'color',
+      configKey: 'timeSlotColor'
+    },
+    {
+      selector: '[class*="timeSlot"]',
+      property: 'font-size',
+      configKey: 'timeSlotSize',
+      unit: 'rem'
+    },
+    {
+      selector: '[class*="hourCell"]',
+      property: 'background',
+      configKey: 'hourCellBackground'
+    },
+    {
+      selector: '[class*="hourCell"]',
+      property: 'border-color',
+      configKey: 'hourCellBorderColor'
+    },
+    {
+      selector: '[class*="hourCell"]:hover',
+      property: 'background',
+      configKey: 'hourCellHoverBackground'
+    },
+    {
+      selector: '[class*="weekContainer"] [class*="lunar"]',
+      property: 'font-size',
+      configKey: 'lunarSize',
+      unit: 'rem'
+    },
+    {
+      selector: '[class*="weekContainer"] [class*="lunar"]',
+      property: 'color',
+      configKey: 'lunarColor'
+    },
+    {
+      selector: '[class*="weekContainer"] [class*="festival"]',
+      property: 'color',
+      configKey: 'festivalColor'
+    },
+    {
+      selector: '[class*="weekContainer"] [class*="solarTerm"]',
+      property: 'color',
+      configKey: 'solarTermColor'
+    }
+  ]
+};
+
+// 特殊处理规则配置
+const specialRulesConfig: SpecialRule[] = [
+  // 全局背景处理
+  {
+    section: 'global' as const,
+    handler: (config: GlobalStyleConfig, cssRules: string[]) => {
+      const { backgroundColor, backgroundGradient, backgroundImage } = config;
+      
+      if (backgroundImage?.enabled && backgroundImage.url) {
+        const bgRules = backgroundStrategies.backgroundImage(backgroundImage);
+        cssRules.push(`body { ${bgRules.join('; ')} }`);
+      } else if (backgroundGradient?.enabled) {
+        const bgValue = backgroundStrategies.gradient(backgroundGradient);
+        cssRules.push(`body { background: ${bgValue} !important; }`);
+      } else if (backgroundColor) {
+        cssRules.push(`body { background: ${backgroundColor} !important; }`);
+      }
+    }
+  },
+  // Year View 背景处理
+  {
+    section: 'yearView' as const,
+    handler: (config: YearViewConfig, cssRules: string[]) => {
+      const { containerBackground, containerGradient, backgroundImage } = config;
+      
+      if (backgroundImage?.enabled && backgroundImage.url) {
+        const bgRules = backgroundStrategies.yearViewBackgroundImage(backgroundImage);
+        cssRules.push(`[class*="yearContainer"] { ${bgRules.join('; ')} }`);
+      } else if (containerGradient?.enabled) {
+        const bgValue = backgroundStrategies.gradient(containerGradient);
+        cssRules.push(`[class*="yearContainer"] { background: ${bgValue} !important; }`);
+      } else if (containerBackground) {
+        cssRules.push(`[class*="yearContainer"] { background: ${containerBackground} !important; }`);
+      }
+    }
+  },
+  // Month Card 背景处理
+  {
+    section: 'monthCard' as const,
+    handler: (config: MonthCardConfig, cssRules: string[]) => {
+      const { background, backgroundGradient } = config;
+      
+      if (backgroundGradient?.enabled) {
+        const bgValue = backgroundStrategies.gradient(backgroundGradient);
+        cssRules.push(`[class*="monthCard"] { background: ${bgValue} !important; }`);
+      } else if (background) {
+        cssRules.push(`[class*="monthCard"] { background: ${background} !important; }`);
+      }
+    }
+  },
+  // Month View 背景和特殊悬浮处理
+  {
+    section: 'monthView' as const,
+    handler: (config: MonthViewConfig, cssRules: string[]) => {
+      const { containerBackground, containerGradient, dayCellHoverBackground } = config;
+      
+      // 容器背景
+      if (containerGradient?.enabled) {
+        const bgValue = backgroundStrategies.gradient(containerGradient);
+        cssRules.push(`[class*="monthContainer"] { background: ${bgValue} !important; }`);
+      } else if (containerBackground) {
+        cssRules.push(`[class*="monthContainer"] { background: ${containerBackground} !important; }`);
+      }
+      
+      // 日期单元格悬浮特殊处理
+      if (dayCellHoverBackground) {
+        cssRules.push(
+          `[class*="monthContainer"] [class*="dayCell"]:hover { background: ${dayCellHoverBackground} !important; }`,
+          `[class*="monthContainer"] [class*="dayCell"]:hover [class*="dayCellHeader"] { background: transparent !important; }`,
+          `[class*="monthContainer"] [class*="dayCell"]:hover [class*="dayNumber"] { background: transparent !important; }`,
+          `[class*="monthContainer"] [class*="dayCell"]:hover [class*="lunarInfo"] { background: transparent !important; }`
+        );
+      }
+    }
+  },
+  // Week View 时间列特殊处理
+  {
+    section: 'weekView' as const,
+    handler: (config: WeekViewConfig, cssRules: string[]) => {
+      const { timeColumnBackground, todayHeaderColor } = config;
+      
+      // 时间列背景特殊处理
+      if (timeColumnBackground) {
+        cssRules.push(
+          `[class*="timeColumn"] { background: ${timeColumnBackground} !important; }`,
+          `[class*="timeSlot"] { background: ${timeColumnBackground} !important; }`,
+          `[class*="cornerCell"] { background: ${timeColumnBackground} !important; }`
+        );
+      }
+      
+      // 今天标题颜色特殊处理
+      if (todayHeaderColor) {
+        cssRules.push(`[class*="dayHeader"][class*="today"] [class*="dayName"], [class*="dayHeader"][class*="today"] [class*="dayDate"] { color: ${todayHeaderColor} !important; }`);
+      }
+    }
+  }
+];
+
+// 通用样式规则生成器
+function generateStyleRule(selector: string, property: string, value: ConfigValue, unit = '', transform?: ConfigTransform): string {
+  if (value === undefined || value === null) return '';
+  
+  const finalValue = transform ? transform(value) : `${value}${unit}`;
+  return `${selector} { ${property}: ${finalValue} !important; }`;
+}
+
+// 根据配置生成CSS规则
+function generateCssRules(config: ThemeConfig): string[] {
+  const cssRules: string[] = [];
+  
+  // 处理常规样式规则
+  Object.entries(styleRulesConfig).forEach(([sectionKey, rules]) => {
+    const sectionConfig = config[sectionKey as keyof ThemeConfig];
+    if (!sectionConfig) return;
+    
+    rules.forEach(rule => {
+      const value = (sectionConfig as Record<string, ConfigValue>)[rule.configKey];
+      if (value !== undefined && value !== null) {
+        const styleRule = generateStyleRule(
+          rule.selector,
+          rule.property,
+          value,
+          rule.unit || '',
+          rule.transform
+        );
+        if (styleRule) cssRules.push(styleRule);
+      }
+    });
+  });
+  
+  // 处理特殊规则
+  specialRulesConfig.forEach(specialRule => {
+    const sectionConfig = config[specialRule.section as keyof ThemeConfig];
+    if (sectionConfig) {
+      specialRule.handler(sectionConfig, cssRules);
+    }
+  });
+  
+  return cssRules;
+}
 
 export function applyThemeToDOM(config: ThemeConfig) {
   let styleElement = document.getElementById(THEME_STYLE_ID) as HTMLStyleElement;
@@ -11,326 +449,7 @@ export function applyThemeToDOM(config: ThemeConfig) {
     document.head.appendChild(styleElement);
   }
   
-  const cssRules: string[] = [];
-  
-  // 全局样式
-  if (config.global) {
-    const { backgroundColor, backgroundGradient, opacity, backgroundImage } = config.global;
-    
-    if (backgroundColor || backgroundGradient?.enabled || backgroundImage?.enabled) {
-      let bgValue = backgroundColor || 'var(--color-bg-secondary)';
-      
-      if (backgroundGradient?.enabled) {
-        bgValue = `linear-gradient(${backgroundGradient.angle}deg, ${backgroundGradient.startColor}, ${backgroundGradient.endColor})`;
-      }
-      
-      if (backgroundImage?.enabled && backgroundImage.url) {
-        bgValue = `url("${backgroundImage.url}")`;
-        cssRules.push(`
-          body {
-            background-image: ${bgValue} !important;
-            background-size: ${backgroundImage.size} !important;
-            background-position: ${backgroundImage.position} !important;
-            background-repeat: no-repeat !important;
-          }
-        `);
-      } else {
-        cssRules.push(`body { background: ${bgValue} !important; }`);
-      }
-    }
-    
-    if (opacity !== undefined) {
-      cssRules.push(`body { opacity: ${opacity} !important; }`);
-    }
-  }
-  
-  // Year View 样式
-  if (config.yearView) {
-    const {
-      containerBackground, containerGradient, containerOpacity,
-      borderRadius, boxShadow, titleFontSize, titleColor, titleFontWeight,
-      backgroundImage
-    } = config.yearView;
-    
-    if (containerBackground || containerGradient?.enabled) {
-      let bgValue = containerBackground || '#ffffff';
-      if (containerGradient?.enabled) {
-        bgValue = `linear-gradient(${containerGradient.angle}deg, ${containerGradient.startColor}, ${containerGradient.endColor})`;
-      }
-      // 使用属性选择器匹配CSS Modules生成的类名
-      cssRules.push(`[class*="yearContainer"] { background: ${bgValue} !important; }`);
-    }
-    
-    if (backgroundImage?.enabled && backgroundImage.url) {
-      cssRules.push(`
-        [class*="yearContainer"] {
-          background-image: url("${backgroundImage.url}") !important;
-          background-size: cover !important;
-          background-position: center !important;
-        }
-      `);
-    }
-    
-    if (containerOpacity !== undefined) {
-      cssRules.push(`[class*="yearContainer"] { opacity: ${containerOpacity} !important; }`);
-    }
-    
-    if (borderRadius !== undefined) {
-      cssRules.push(`[class*="yearContainer"] { border-radius: ${borderRadius}px !important; }`);
-    }
-    
-    if (boxShadow) {
-      cssRules.push(`[class*="yearContainer"] { box-shadow: ${boxShadow} !important; }`);
-    }
-    
-    if (titleFontSize !== undefined) {
-      cssRules.push(`[class*="yearHeader"] { font-size: ${titleFontSize}rem !important; }`);
-    }
-    
-    if (titleColor) {
-      cssRules.push(`[class*="yearHeader"] { color: ${titleColor} !important; -webkit-text-fill-color: ${titleColor} !important; }`);
-    }
-    
-    if (titleFontWeight !== undefined) {
-      cssRules.push(`[class*="yearHeader"] { font-weight: ${titleFontWeight} !important; }`);
-    }
-  }
-  
-  // Month Card 样式
-  if (config.monthCard) {
-    const {
-      background, backgroundGradient, opacity, fontSize, fontColor,
-      hoverBackground, borderColor, borderRadius,
-      todayMonthBackground, todayMonthBorderColor
-    } = config.monthCard;
-    
-    if (background || backgroundGradient?.enabled) {
-      let bgValue = background || '#ffffff';
-      if (backgroundGradient?.enabled) {
-        bgValue = `linear-gradient(${backgroundGradient.angle}deg, ${backgroundGradient.startColor}, ${backgroundGradient.endColor})`;
-      }
-      cssRules.push(`[class*="monthCard"] { background: ${bgValue} !important; }`);
-    }
-    
-    if (opacity !== undefined) {
-      cssRules.push(`[class*="monthCard"] { opacity: ${opacity} !important; }`);
-    }
-    
-    if (borderColor) {
-      cssRules.push(`[class*="monthCard"] { border-color: ${borderColor} !important; }`);
-    }
-    
-    if (borderRadius !== undefined) {
-      cssRules.push(`[class*="monthCard"] { border-radius: ${borderRadius}px !important; }`);
-    }
-    
-    if (fontSize !== undefined) {
-      cssRules.push(`[class*="monthNumber"] { font-size: ${fontSize}em !important; }`);
-    }
-    
-    if (fontColor) {
-      cssRules.push(`[class*="monthNumber"] { color: ${fontColor} !important; }`);
-    }
-    
-    if (hoverBackground) {
-      cssRules.push(`[class*="monthCard"]:hover { background: ${hoverBackground} !important; }`);
-    }
-    
-    if (todayMonthBackground) {
-      cssRules.push(`[class*="monthCard"][class*="todayMonth"] { background: ${todayMonthBackground} !important; }`);
-    }
-    
-    if (todayMonthBorderColor) {
-      // 修复边框样式，需要设置border而不仅仅是border-color
-      cssRules.push(`[class*="monthCard"][class*="todayMonth"] { border: 2px solid ${todayMonthBorderColor} !important; }`);
-    }
-  }
-  
-  // Month View 样式
-  if (config.monthView) {
-    const {
-      containerBackground, containerGradient,
-      headerFontSize, headerColor,
-      weekdayBackground, weekdayColor,
-      dayCellBackground, dayCellHoverBackground,
-      dayNumberSize, dayNumberColor,
-      todayBackground, todayColor,
-      lunarSize, lunarColor, festivalColor, solarTermColor
-    } = config.monthView;
-    
-    // 月视图容器样式
-    if (containerBackground || containerGradient?.enabled) {
-      let bgValue = containerBackground || '#ffffff';
-      if (containerGradient?.enabled) {
-        bgValue = `linear-gradient(${containerGradient.angle}deg, ${containerGradient.startColor}, ${containerGradient.endColor})`;
-      }
-      cssRules.push(`[class*="monthContainer"] { background: ${bgValue} !important; }`);
-    }
-    
-    // 月视图标题样式
-    if (headerFontSize !== undefined) {
-      cssRules.push(`[class*="monthHeader"] { font-size: ${headerFontSize}rem !important; }`);
-    }
-    
-    if (headerColor) {
-      cssRules.push(`[class*="monthHeader"] { color: ${headerColor} !important; -webkit-text-fill-color: ${headerColor} !important; }`);
-    }
-    
-    // 星期标题样式
-    if (weekdayBackground) {
-      cssRules.push(`[class*="weekdayRow"] { background: ${weekdayBackground} !important; }`);
-    }
-    
-    if (weekdayColor) {
-      cssRules.push(`[class*="weekdayHeader"] { color: ${weekdayColor} !important; }`);
-    }
-    
-    // 日期单元格样式
-    if (dayCellBackground) {
-      cssRules.push(`[class*="monthContainer"] [class*="dayCell"] { background: ${dayCellBackground} !important; }`);
-    }
-    
-    if (dayCellHoverBackground) {
-      // 悬浮时设置整个单元格背景
-      cssRules.push(`[class*="monthContainer"] [class*="dayCell"]:hover { background: ${dayCellHoverBackground} !important; }`);
-      // 同时让dayNumber和lunar的背景透明，这样能看到父元素的悬浮背景
-      cssRules.push(`[class*="monthContainer"] [class*="dayCell"]:hover [class*="dayCellHeader"] { background: transparent !important; }`);
-      cssRules.push(`[class*="monthContainer"] [class*="dayCell"]:hover [class*="dayNumber"] { background: transparent !important; }`);
-      cssRules.push(`[class*="monthContainer"] [class*="dayCell"]:hover [class*="lunarInfo"] { background: transparent !important; }`);
-    }
-    
-    if (dayNumberSize !== undefined) {
-      cssRules.push(`[class*="monthContainer"] [class*="dayNumber"] { font-size: ${dayNumberSize}rem !important; }`);
-    }
-    
-    if (dayNumberColor) {
-      cssRules.push(`[class*="monthContainer"] [class*="dayNumber"] { color: ${dayNumberColor} !important; }`);
-    }
-    
-    // 今天样式  
-    if (todayBackground) {
-      cssRules.push(`[class*="monthContainer"] [class*="today"] { background: ${todayBackground} !important; }`);
-    }
-    
-    if (todayColor) {
-      cssRules.push(`[class*="monthContainer"] [class*="today"] [class*="dayNumber"] { color: ${todayColor} !important; }`);
-    }
-    
-    // 月视图农历样式
-    if (lunarSize !== undefined) {
-      cssRules.push(`[class*="monthContainer"] [class*="lunar"] { font-size: ${lunarSize}rem !important; }`);
-    }
-    
-    if (lunarColor) {
-      cssRules.push(`[class*="monthContainer"] [class*="lunar"] { color: ${lunarColor} !important; }`);
-    }
-    
-    if (festivalColor) {
-      cssRules.push(`[class*="monthContainer"] [class*="festival"] { color: ${festivalColor} !important; }`);
-    }
-    
-    if (solarTermColor) {
-      cssRules.push(`[class*="monthContainer"] [class*="solarTerm"] { color: ${solarTermColor} !important; }`);
-    }
-  }
-    
-  
-  // Week View 样式
-  if (config.weekView) {
-    const {
-      containerBackground,
-      headerFontSize, headerColor,
-      dayHeaderBackground, dayNameColor, dayDateColor,
-      todayHeaderBackground, todayHeaderColor,
-      timeColumnBackground, timeSlotColor, timeSlotSize,
-      hourCellBackground, hourCellBorderColor, hourCellHoverBackground,
-      lunarSize, lunarColor, festivalColor, solarTermColor
-    } = config.weekView;
-    
-    // 周视图容器样式
-    if (containerBackground) {
-      cssRules.push(`[class*="weekContainer"] { background: ${containerBackground} !important; }`);
-    }
-    
-    // 周视图标题样式
-    if (headerFontSize !== undefined) {
-      cssRules.push(`[class*="weekHeader"] { font-size: ${headerFontSize}rem !important; }`);
-    }
-    
-    if (headerColor) {
-      cssRules.push(`[class*="weekHeader"] { color: ${headerColor} !important; }`);
-    }
-    
-    // 日期列标题样式
-    if (dayHeaderBackground) {
-      cssRules.push(`[class*="dayHeader"] { background: ${dayHeaderBackground} !important; }`);
-    }
-    
-    if (dayNameColor) {
-      cssRules.push(`[class*="dayName"] { color: ${dayNameColor} !important; }`);
-    }
-    
-    if (dayDateColor) {
-      cssRules.push(`[class*="dayDate"] { color: ${dayDateColor} !important; }`);
-    }
-    
-    // 今天标题样式
-    if (todayHeaderBackground) {
-      cssRules.push(`[class*="dayHeader"][class*="today"] { background: ${todayHeaderBackground} !important; }`);
-    }
-    
-    if (todayHeaderColor) {
-      cssRules.push(`[class*="dayHeader"][class*="today"] [class*="dayName"], [class*="dayHeader"][class*="today"] [class*="dayDate"] { color: ${todayHeaderColor} !important; }`);
-    }
-    
-    // 时间列样式
-    if (timeColumnBackground) {
-      cssRules.push(`[class*="timeColumn"] { background: ${timeColumnBackground} !important; }`);
-      // 同时设置timeSlot背景，因为它覆盖了timeColumn的背景
-      cssRules.push(`[class*="timeSlot"] { background: ${timeColumnBackground} !important; }`);
-      // 角落单元格也需要相同背景
-      cssRules.push(`[class*="cornerCell"] { background: ${timeColumnBackground} !important; }`);
-    }
-    
-    if (timeSlotColor) {
-      cssRules.push(`[class*="timeSlot"] { color: ${timeSlotColor} !important; }`);
-    }
-    
-    if (timeSlotSize !== undefined) {
-      cssRules.push(`[class*="timeSlot"] { font-size: ${timeSlotSize}rem !important; }`);
-    }
-    
-    // 小时格子样式
-    if (hourCellBackground) {
-      cssRules.push(`[class*="hourCell"] { background: ${hourCellBackground} !important; }`);
-    }
-    
-    if (hourCellBorderColor) {
-      cssRules.push(`[class*="hourCell"] { border-color: ${hourCellBorderColor} !important; }`);
-    }
-    
-    if (hourCellHoverBackground) {
-      cssRules.push(`[class*="hourCell"]:hover { background: ${hourCellHoverBackground} !important; }`);
-    }
-    
-    // 周视图农历样式
-    if (lunarSize !== undefined) {
-      cssRules.push(`[class*="weekContainer"] [class*="lunar"] { font-size: ${lunarSize}rem !important; }`);
-    }
-    
-    if (lunarColor) {
-      cssRules.push(`[class*="weekContainer"] [class*="lunar"] { color: ${lunarColor} !important; }`);
-    }
-    
-    if (festivalColor) {
-      cssRules.push(`[class*="weekContainer"] [class*="festival"] { color: ${festivalColor} !important; }`);
-    }
-    
-    if (solarTermColor) {
-      cssRules.push(`[class*="weekContainer"] [class*="solarTerm"] { color: ${solarTermColor} !important; }`);
-    }
-  }
-  
+  const cssRules = generateCssRules(config);
   styleElement.textContent = cssRules.join('\n');
 }
 

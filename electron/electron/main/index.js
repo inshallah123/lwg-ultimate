@@ -191,7 +191,7 @@ Life flows like water through our hands.`;
                             });
                             // 更新 updater 配置
                             if (appUpdater) {
-                                appUpdater.setProxy(updateConfig_1.default.getProxyUrl());
+                                appUpdater.setProxy(updateConfig_1.default.getProxyUrl() || null);
                             }
                         }
                         else if (result.response === 3) {
@@ -310,22 +310,24 @@ async function initDatabase() {
         return eventDb;
     if (dbInitPromise)
         return dbInitPromise;
-    dbInitPromise = new Promise(async (resolve) => {
-        try {
-            // 等待app准备好
-            if (!electron_1.app.isReady()) {
-                await electron_1.app.whenReady();
+    dbInitPromise = new Promise((resolve) => {
+        (async () => {
+            try {
+                // 等待app准备好
+                if (!electron_1.app.isReady()) {
+                    await electron_1.app.whenReady();
+                }
+                eventDb = new database_1.default();
+                await eventDb.initialize();
+                console.log('Database initialized successfully');
+                resolve(eventDb);
             }
-            eventDb = new database_1.default();
-            await eventDb.initialize();
-            console.log('Database initialized successfully');
-            resolve(eventDb);
-        }
-        catch (error) {
-            console.error('Failed to initialize database:', error);
-            // 即使失败也要resolve，避免promise永远pending
-            resolve(null);
-        }
+            catch (error) {
+                console.error('Failed to initialize database:', error);
+                // 即使失败也要resolve，避免promise永远pending
+                resolve(null);
+            }
+        })();
     });
     return dbInitPromise;
 }
@@ -335,22 +337,24 @@ async function initThemeDatabase() {
         return themeDb;
     if (themeDbInitPromise)
         return themeDbInitPromise;
-    themeDbInitPromise = new Promise(async (resolve) => {
-        try {
-            // 等待app准备好
-            if (!electron_1.app.isReady()) {
-                await electron_1.app.whenReady();
+    themeDbInitPromise = new Promise((resolve) => {
+        (async () => {
+            try {
+                // 等待app准备好
+                if (!electron_1.app.isReady()) {
+                    await electron_1.app.whenReady();
+                }
+                themeDb = new themeDatabase_1.default();
+                await themeDb.initialize();
+                console.log('Theme database initialized successfully');
+                resolve(themeDb);
             }
-            themeDb = new themeDatabase_1.default();
-            await themeDb.initialize();
-            console.log('Theme database initialized successfully');
-            resolve(themeDb);
-        }
-        catch (error) {
-            console.error('Failed to initialize theme database:', error);
-            // 即使失败也要resolve，避免promise永远pending
-            resolve(null);
-        }
+            catch (error) {
+                console.error('Failed to initialize theme database:', error);
+                // 即使失败也要resolve，避免promise永远pending
+                resolve(null);
+            }
+        })();
     });
     return themeDbInitPromise;
 }
@@ -375,7 +379,7 @@ electron_1.app.whenReady().then(async () => {
         });
         // 设置代理（如果已配置）
         const proxyUrl = updateConfig_1.default.getProxyUrl();
-        if (proxyUrl) {
+        if (proxyUrl && appUpdater) {
             appUpdater.setProxy(proxyUrl);
         }
         // 延迟检查应用更新
@@ -437,7 +441,7 @@ electron_1.app.whenReady().then(async () => {
 electron_1.app.on('window-all-closed', () => {
     electron_1.app.quit();
 });
-electron_1.app.on('before-quit', (event) => {
+electron_1.app.on('before-quit', (_event) => {
     // 检查是否有已下载的更新需要安装
     if (appUpdater && appUpdater.isUpdateDownloaded()) {
         console.log('应用退出时检测到已下载的更新，准备安装...');
@@ -508,7 +512,7 @@ electron_1.ipcMain.handle('update:setProxy', (_, enabled, host, port) => {
     updateConfig_1.default.setProxy(enabled, host, port);
     // 更新 updater 配置
     if (appUpdater) {
-        const proxyUrl = enabled ? updateConfig_1.default.getProxyUrl() : null;
+        const proxyUrl = enabled ? (updateConfig_1.default.getProxyUrl() || null) : null;
         appUpdater.setProxy(proxyUrl);
     }
     return { success: true };

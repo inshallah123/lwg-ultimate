@@ -1,5 +1,5 @@
 import { Event, UpdateEventInput, isVirtualInstance } from '@/types/event';
-import { StoreSet, StoreGet } from './types';
+import { StoreSet/*, StoreGet*/ } from './types';
 import { generateEventId, calculateEndDateBeforeInstance } from '@/utils/eventHelpers';
 
 /**

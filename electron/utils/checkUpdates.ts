@@ -130,7 +130,7 @@ function getRegistry(): string {
       const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
       return config.npmRegistry || DEFAULT_REGISTRY;
     }
-  } catch (error) {
+  } catch (_error) {
     console.log('使用默认镜像源');
   }
   

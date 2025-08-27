@@ -146,7 +146,7 @@ function getRegistry() {
             return config.npmRegistry || DEFAULT_REGISTRY;
         }
     }
-    catch (error) {
+    catch (_error) {
         console.log('使用默认镜像源');
     }
     return DEFAULT_REGISTRY;

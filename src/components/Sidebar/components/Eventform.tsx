@@ -4,7 +4,6 @@ import { Event, CreateEventInput, UpdateEventInput } from '@/types/event';
 import { EditScope } from '@/stores/eventStore/types';
 import { useEventStore } from '@/stores/eventStore';
 import { useSidebarStore } from '../store';
-import { getEventType } from '../logic/eventTypeUtils';
 import { changeRecurrence } from '../logic/convertOperations';
 import styles from './Eventform.module.css';
 

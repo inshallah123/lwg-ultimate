@@ -9,7 +9,7 @@ import { EditScope, DeleteScope, StoreSet, StoreGet } from './types';
  * - CR (Convert to Recurring): 转为重复事件
  */
 
-export const createSEOperations = (set: StoreSet, get: StoreGet) => ({
+export const createSEOperations = (set: StoreSet, _get: StoreGet) => ({
   // SE-ES: 编辑简单事件
   editSimpleEvent: (event: Event, updates: UpdateEventInput, scope: EditScope) => {
     if (!isSimpleEvent(event)) {
