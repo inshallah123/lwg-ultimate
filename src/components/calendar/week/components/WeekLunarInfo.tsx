@@ -1,12 +1,12 @@
 import React from 'react';
 import { getLunarDateInfo } from '@/utils/lunarDate';
-import styles from '../MonthView.module.css';
+import styles from '../WeekView.module.css';
 
-interface LunarInfoProps {
+interface WeekLunarInfoProps {
   date: Date;
 }
 
-export function LunarInfo({ date }: LunarInfoProps) {
+export function WeekLunarInfo({ date }: WeekLunarInfoProps) {
   const lunarInfo = getLunarDateInfo(date);
   
   // 构建显示内容数组

@@ -1,6 +1,6 @@
 import React from 'react';
 import { isToday } from '@/utils/dateHelpers';
-import { MonthEventIndicator } from './MonthEventIndicator';
+import { DayCellContent } from './DayCellContent';
 import styles from '../MonthView.module.css';
 
 interface DayCellProps {
@@ -24,8 +24,7 @@ export const DayCell = React.memo(function DayCell({
   row,
   scrollPosition,
   rowHeight,
-  containerHeight,
-  onClick,
+                                                       onClick,
   style
 }: DayCellProps) {
   // 简化的涂灰逻辑：任何时候都是第1行和第6行涂灰
@@ -51,7 +50,7 @@ export const DayCell = React.memo(function DayCell({
       style={style}
       onClick={() => onClick(day)}
     >
-      <MonthEventIndicator 
+      <DayCellContent 
         date={day}
         isCurrentMonth={useCurrentStyle}
         dayNumber={day.getDate()}

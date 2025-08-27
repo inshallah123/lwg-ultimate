@@ -1,0 +1,324 @@
+/* ====================================================================== */
+/* 第一部分：用户可安全自定义的视觉样式                                    */
+/* 包含：颜色、渐变、透明度、阴影、边框颜色、字体样式等                      */
+/* 修改这些样式不会影响布局，仅改变视觉效果                                 */
+/* ====================================================================== */
+
+/* === 日期数字视觉样式 === */
+.dayNumber {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+/* === 农历信息视觉样式 === */
+.lunarInfo {
+  font-size: 10px;
+  color: var(--color-text-secondary);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lunar {
+  color: var(--color-text-tertiary);
+  font-size: 10px;
+}
+
+.festival {
+  color: var(--color-accent-red);
+  font-weight: 500;
+  font-size: 10px;
+}
+
+.solarTerm {
+  color: var(--color-accent-orange);
+  font-weight: 500;
+  font-size: 10px;
+}
+
+/* === 事件卡片视觉样式 === */
+.eventCard {
+  font-size: 11px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: var(--color-surface);
+  border: 1px solid transparent;
+  border-radius: 3px;
+}
+
+.eventCard:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.eventCard.muted {
+  opacity: 0.4;
+}
+
+.eventTitle {
+  font-size: 11px;
+  color: var(--color-text-primary);
+}
+
+/* === 事件点视觉样式 === */
+.eventDot {
+  border-radius: 50%;
+  background-color: var(--color-accent-gray);
+}
+
+/* === 事件标签颜色主题 === */
+/* Work 主题 */
+.eventCard.work {
+  background-color: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.eventCard.work:hover {
+  background-color: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.eventDot.work {
+  background-color: #3b82f6;
+}
+
+/* Private 主题 */
+.eventCard.private {
+  background-color: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.eventCard.private:hover {
+  background-color: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.eventDot.private {
+  background-color: #10b981;
+}
+
+/* Balance 主题 */
+.eventCard.balance {
+  background-color: rgba(251, 146, 60, 0.08);
+  border-color: rgba(251, 146, 60, 0.2);
+}
+
+.eventCard.balance:hover {
+  background-color: rgba(251, 146, 60, 0.12);
+  border-color: rgba(251, 146, 60, 0.3);
+}
+
+.eventDot.balance {
+  background-color: #fb923c;
+}
+
+/* Custom 主题 */
+.eventCard.custom {
+  background-color: rgba(156, 163, 175, 0.08);
+  border-color: rgba(156, 163, 175, 0.2);
+}
+
+.eventCard.custom:hover {
+  background-color: rgba(156, 163, 175, 0.12);
+  border-color: rgba(156, 163, 175, 0.3);
+}
+
+.eventDot.custom {
+  background-color: #9ca3af;
+}
+
+/* === 更多指示器视觉样式 === */
+.moreIndicatorCompact {
+  background-color: var(--color-accent-blue);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.moreIndicatorCompact:hover {
+  background-color: var(--color-accent-blue-hover);
+  transform: scale(1.05);
+}
+
+.moreTextCompact {
+  font-size: 9px;
+  font-weight: 600;
+  color: white;
+  line-height: 1;
+}
+
+/* === 紧凑指示器视觉样式 === */
+.compactIndicator {
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+}
+
+.compactIndicator:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.compactCount {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.compactDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--color-accent-gray);
+}
+
+.compactDot.work {
+  background-color: #3b82f6;
+}
+
+.compactDot.private {
+  background-color: #10b981;
+}
+
+.compactDot.balance {
+  background-color: #fb923c;
+}
+
+.compactDot.custom {
+  background-color: #9ca3af;
+}
+
+/* ====================================================================== */
+/* 第二部分：布局关键样式（不建议用户修改）                                 */
+/* 包含：尺寸、间距、布局、定位、显示方式等                                */
+/* 修改这些样式可能导致布局错乱或功能异常                                  */
+/* ====================================================================== */
+
+/* === 日期头部布局 === */
+.dayCellHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 4px 6px;
+  min-height: 20px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dayNumber {
+  flex-shrink: 0;
+}
+
+.lunarInfo {
+  display: flex;
+  align-items: baseline;
+}
+
+/* === 事件容器布局 === */
+.cellContent {
+  padding: 2px 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.eventContainer {
+  padding: 2px 4px;
+  display: flex;
+  flex-direction: column;
+  max-height: 60px;
+  overflow: hidden;
+}
+
+/* === 事件网格布局 === */
+.eventGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  width: 100%;
+}
+
+.eventGrid.singleEvent {
+  grid-template-columns: 1fr;
+}
+
+/* === 事件卡片布局 === */
+.eventCard {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 4px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* === 事件点布局 === */
+.eventDot {
+  width: 4px;
+  height: 4px;
+  flex-shrink: 0;
+}
+
+.eventTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+/* === 更多指示器布局 === */
+.moreIndicatorCompact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 4px;
+  flex-shrink: 0;
+  margin-left: 2px;
+}
+
+/* === 紧凑指示器布局 === */
+.compactIndicator {
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.compactDots {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ====================================================================== */
+/* 第三部分：响应式和媒体查询                                             */
+/* ====================================================================== */
+
+@media (max-width: 768px) {
+  .eventGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .eventCard {
+    font-size: 10px;
+  }
+  
+  .dayNumber {
+    font-size: 13px;
+  }
+}

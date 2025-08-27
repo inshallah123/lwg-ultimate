@@ -4,7 +4,7 @@ import { useSidebarStore } from '../../Sidebar/store';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
 import { isToday, WEEKDAY_NAMES, TIME_SLOTS } from '@/utils/dateHelpers';
 import { WeekEventIndicator } from './components/WeekEventIndicator';
-import { LunarInfo } from '../month/components/LunarInfo';
+import { WeekLunarInfo } from './components/WeekLunarInfo';
 import { NavButton } from '../shared';
 import styles from './WeekView.module.css';
 
@@ -77,7 +77,7 @@ export function WeekView({ onOpenSideBar }: WeekViewProps = {}) {
               <div className={`${styles.dayHeader} ${isToday(day) ? styles.today : ''}`}>
                 <div className={styles.dayName}>{WEEKDAY_NAMES[day.getDay()]}</div>
                 <div className={styles.dayDate}>{day.getDate()}</div>
-                <LunarInfo date={day} />
+                <WeekLunarInfo date={day} />
               </div>
             {TIME_SLOTS.map((_, hourIndex) => (
               <div 

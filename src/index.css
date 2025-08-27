@@ -32,9 +32,17 @@ body {
   --color-warning: #F39C4D;
   --color-error: #E15554;
   
+  /* 强调色 - 用于日历事件等 */
+  --color-accent-red: #E15554;
+  --color-accent-orange: #F39C4D;
+  --color-accent-blue: #5B8DBE;
+  --color-accent-blue-hover: #4A7CAD;
+  --color-accent-gray: #94A3B8;
+  
   /* 文本颜色 - 提升可读性 */
   --color-text-primary: #2C3E50;  /* 深色，高对比度 */
   --color-text-secondary: #5A6C7D;
+  --color-text-tertiary: #94A3B8;  /* 第三级文本色 */
   --color-text-muted: #94A3B8;
   --color-text-inverse: #FFFFFF;
   
@@ -42,6 +50,7 @@ body {
   --color-bg-primary: #FFFFFF;
   --color-bg-secondary: #f8fcfb;
   --color-bg-tertiary: #F1F5F9;
+  --color-surface: #FFFFFF;  /* 卡片表面色 */
   
   /* 玻璃效果 */
   --glass-bg: linear-gradient(135deg, 

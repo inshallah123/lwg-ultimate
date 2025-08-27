@@ -2,11 +2,12 @@ import React, { useCallback, useMemo } from 'react';
 import { useCalendarStore } from '../store';
 import { useSidebarStore } from '../../Sidebar/store';
 import { useDoubleClick } from '@/hooks/useDoubleClick';
-import { WeekdayHeader, MonthHeader } from './components';
+import { MonthHeader } from './MonthHeader';
+import { WeekdayHeader } from './WeekdayHeader';
 import { useMonthScroll, useMonthKeyboardNavigation } from '../hooks';
 import { VIEW_CONFIG, BUFFER_ROWS } from '../constants/monthview';
 import { calculateVisibleContent } from '../utils/monthCalculation';
-import { CalendarRow } from './CalendarRow';
+import { CalendarRow } from './components/CalendarRow';
 import styles from './MonthView.module.css';
 
 // 优化后的可见内容组件

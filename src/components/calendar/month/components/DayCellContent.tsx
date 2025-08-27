@@ -1,20 +1,47 @@
 import React, { useMemo } from 'react';
 import { useEventStore } from '@/stores/eventStore';
 import { useSidebarStore } from '@/components/Sidebar/store';
-import { LunarInfo } from './LunarInfo';
-import styles from './MonthEventIndicator.module.css';
+import { getLunarDateInfo } from '@/utils/lunarDate';
+import styles from './DayCellContent.module.css';
 
-interface MonthEventIndicatorProps {
+interface DayCellContentProps {
   date: Date;
-  maxDisplay?: number;
   isCurrentMonth?: boolean;
   dayNumber: number;
 }
 
-export const MonthEventIndicator = React.memo(function MonthEventIndicator({ date, isCurrentMonth = true, dayNumber }: MonthEventIndicatorProps) {
+export const DayCellContent = React.memo(function DayCellContent({ 
+  date, 
+  isCurrentMonth = true, 
+  dayNumber 
+}: DayCellContentProps) {
   const allEvents = useEventStore(state => state.events);
   const getEventsInRange = useEventStore(state => state.getEventsInRange);
   const openSidebar = useSidebarStore(state => state.open);
+  
+  // 获取农历信息
+  const lunarInfo = getLunarDateInfo(date);
+  
+  // 构建农历显示内容
+  const lunarDisplayItems: string[] = [];
+  if (lunarInfo.festival) {
+    lunarDisplayItems.push(lunarInfo.festival);
+  }
+  if (lunarInfo.solarTerm) {
+    lunarDisplayItems.push(lunarInfo.solarTerm);
+  }
+  if (!lunarInfo.festival && !lunarInfo.solarTerm && lunarInfo.lunar) {
+    lunarDisplayItems.push(lunarInfo.lunar);
+  }
+  if (lunarInfo.workday) {
+    lunarDisplayItems.push(lunarInfo.workday);
+  }
+  const lunarDisplayText = lunarDisplayItems.join(' · ');
+  
+  // 决定农历样式类
+  const lunarClass = lunarInfo.festival ? styles.festival : 
+                     lunarInfo.solarTerm ? styles.solarTerm : 
+                     styles.lunar;
   
   // 获取该日期的事件
   const events = useMemo(() => {
@@ -26,13 +53,17 @@ export const MonthEventIndicator = React.memo(function MonthEventIndicator({ dat
     return getEventsInRange(startOfDay, endOfDay);
   }, [date, getEventsInRange, allEvents]);
   
-  // 始终显示日期头部
+  // 如果没有事件，只显示日期头部
   if (events.length === 0) {
     return (
       <>
         <div className={styles.dayCellHeader}>
           <span className={styles.dayNumber}>{dayNumber}</span>
-          <LunarInfo date={date} />
+          {lunarDisplayText && (
+            <div className={styles.lunarInfo}>
+              <span className={lunarClass}>{lunarDisplayText}</span>
+            </div>
+          )}
         </div>
       </>
     );
@@ -65,7 +96,6 @@ export const MonthEventIndicator = React.memo(function MonthEventIndicator({ dat
   };
   
   // 根据事件数量和当前月份状态决定显示策略
-  // 双列布局：最多显示4个事件（两行，每行两个）
   let actualMaxDisplay: number | undefined;
   
   if (!isCurrentMonth) {
@@ -86,7 +116,7 @@ export const MonthEventIndicator = React.memo(function MonthEventIndicator({ dat
   if (events.length > 8 && !isCurrentMonth) {
     const primaryTag = getPrimaryTag() || 'custom';
     return (
-      <div className={styles.monthEventContainer}>
+      <div className={styles.cellContent}>
         <div 
           className={`${styles.compactIndicator} ${styles[primaryTag]}`}
           onClick={handleClick}
@@ -112,7 +142,11 @@ export const MonthEventIndicator = React.memo(function MonthEventIndicator({ dat
       <div className={styles.dayCellHeader}>
         <div className={styles.headerLeft}>
           <span className={styles.dayNumber}>{dayNumber}</span>
-          <LunarInfo date={date} />
+          {lunarDisplayText && (
+            <div className={styles.lunarInfo}>
+              <span className={lunarClass}>{lunarDisplayText}</span>
+            </div>
+          )}
         </div>
         {/* 更多指示器移到头部右侧 */}
         {remainingCount > 0 && (
@@ -129,7 +163,7 @@ export const MonthEventIndicator = React.memo(function MonthEventIndicator({ dat
       </div>
       
       {/* 事件容器 */}
-      <div className={styles.monthEventContainer}>
+      <div className={styles.eventContainer}>
         {/* 事件卡片网格 - 双列布局 */}
         {displayEvents.length > 0 && (
           <div className={`${styles.eventGrid} ${displayEvents.length === 1 ? styles.singleEvent : ''}`}>

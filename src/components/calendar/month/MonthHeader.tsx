@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from '../MonthView.module.css';
-import { NavButton } from '../../shared';
+import styles from './MonthView.module.css';
+import { NavButton } from '../shared';
 
 interface MonthHeaderProps {
   monthHeader: string;
