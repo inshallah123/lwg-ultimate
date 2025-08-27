@@ -50,6 +50,7 @@ body {
   --color-bg-primary: #FFFFFF;
   --color-bg-secondary: #f8fcfb;
   --color-bg-tertiary: #F1F5F9;
+  --color-bg-hover: rgba(91, 141, 190, 0.04);  /* hover背景 */
   --color-surface: #FFFFFF;  /* 卡片表面色 */
   
   /* 玻璃效果 */
@@ -61,6 +62,7 @@ body {
   /* 边框 - 清晰可见 */
   --color-border: #539dd6;
   --color-border-light: #F1F5F9;
+  --color-border-lighter: rgba(241, 245, 249, 0.6);  /* 更浅的边框色 */
   --color-border-dark: #CBD5E1;
   --border-width: 1px;
   --border-style: solid;
@@ -74,12 +76,13 @@ body {
   --spacing-xl: 32px;
   --spacing-2xl: 48px;
   
-  /* 核心字号 - 简化为5个级别 */
+  /* 核心字号 - 完整定义 */
   --font-size-xs: 0.75rem;    /* 12px - 注释 */
   --font-size-sm: 0.875rem;   /* 14px - 辅助 */
   --font-size-base: 1rem;     /* 16px - 正文 */
   --font-size-lg: 1.25rem;    /* 20px - 标题 */
   --font-size-xl: 1.5rem;     /* 24px - 大标题 */
+  --font-size-2xl: 2rem;      /* 32px - 超大标题 */
   
   /* 字重 - 简化为3个级别 */
   --font-weight-light: 300;
@@ -91,18 +94,22 @@ body {
   /* 字体 */
   --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
   
-  /* 圆角 - 简化为3个级别 */
+  /* 圆角 - 完整定义 */
+  --radius-xs: 2px;
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-full: 9999px;
   
-  /* 阴影系统 - 简化且更清晰 */
+  /* 阴影系统 - 完整定义 */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
   --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 6px 12px rgba(91, 141, 190, 0.15);
+  --shadow-primary: 0 4px 8px rgba(91, 141, 190, 0.25);
   
   /* 模糊效果 */
   --blur-sm: blur(4px);
@@ -152,6 +159,7 @@ body {
     
     --color-border: rgba(255, 255, 255, 0.08);
     --color-border-light: rgba(255, 255, 255, 0.06);
+    --color-border-lighter: rgba(255, 255, 255, 0.04);
     --color-border-dark: rgba(255, 255, 255, 0.1);
     
     --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.15);
