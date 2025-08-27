@@ -9,6 +9,10 @@ import { useCalendarStore } from './components/calendar/store';
 import { Event } from '@/types/event';
 import UpdateProgress from './components/UpdateProgress/UpdateProgress';
 import ProxyConfigDialog from './components/ProxyConfigDialog';
+import ThemePalette from './components/ThemePalette/ThemePalette';
+import ThemeSelector from './components/ThemePalette/ThemeSelector';
+import { applyThemeToDOM, removeThemeFromDOM } from './components/ThemePalette/utils/themeApplier';
+import { loadTheme } from './components/ThemePalette/utils/themeStorage';
 import styles from './App.module.css';
 
 function App() {
@@ -21,6 +25,8 @@ function App() {
   const openSidebar = useSidebarStore(state => state.open);
   const [isProxyDialogOpen, setIsProxyDialogOpen] = useState(false);
   const [proxyConfig, setProxyConfig] = useState<any>(null);
+  const [isThemePaletteOpen, setIsThemePaletteOpen] = useState(false);
+  const [isThemeSelectorOpen, setIsThemeSelectorOpen] = useState(false);
   
   useEffect(() => {
     // 监听主进程发送的显示代理配置消息
@@ -29,10 +35,88 @@ function App() {
       setIsProxyDialogOpen(true);
     };
 
+    // 监听主进程发送的打开调色板消息
+    const handleOpenThemePalette = () => {
+      setIsThemePaletteOpen(true);
+    };
+
+    // 监听主进程发送的打开主题选择器消息
+    const handleOpenThemeSelector = () => {
+      setIsThemeSelectorOpen(true);
+    };
+
     window.electron?.ipcRenderer.on('show-proxy-config', handleShowProxyConfig);
+    window.electron?.ipcRenderer.on('open-theme-palette', handleOpenThemePalette);
+    window.electron?.ipcRenderer.on('open-theme-selector', handleOpenThemeSelector);
     
     return () => {
       window.electron?.ipcRenderer.removeAllListeners('show-proxy-config');
+      window.electron?.ipcRenderer.removeAllListeners('open-theme-palette');
+      window.electron?.ipcRenderer.removeAllListeners('open-theme-selector');
+    };
+  }, []);
+
+  // 启动时加载默认主题
+  useEffect(() => {
+    const loadDefaultTheme = async (config: any) => {
+      if (config && config.themeName && config.themeName !== '默认主题') {
+        console.log('Loading theme:', config.themeName);
+        // 加载内置主题或自定义主题
+        if (['深色模式', '护眼模式'].includes(config.themeName)) {
+          // 内置主题配置
+          const builtinThemes: any = {
+            '深色模式': {
+              global: { backgroundColor: '#1a1a1a', opacity: 1 },
+              yearView: { containerBackground: '#2a2a2a', titleColor: '#e0e0e0' },
+              yearSection: { currentYearBackground: '#60a5fa', fontColor: '#e0e0e0' },
+              monthCard: { background: '#2a2a2a', fontColor: '#e0e0e0', borderColor: '#404040' },
+              monthWeekView: {
+                containerBackground: '#2a2a2a', titleColor: '#e0e0e0',
+                dayNumberColor: '#e0e0e0', dayCellBackground: '#1a1a1a',
+                dayCellBorderColor: '#404040'
+              }
+            },
+            '护眼模式': {
+              global: { backgroundColor: '#f5f3e9', opacity: 1 },
+              yearView: { containerBackground: '#faf8f0', titleColor: '#5d5347' },
+              yearSection: { currentYearBackground: '#8b7355', fontColor: '#5d5347' },
+              monthCard: { background: '#faf8f0', fontColor: '#5d5347', borderColor: '#d4c4a0' },
+              monthWeekView: {
+                containerBackground: '#faf8f0', titleColor: '#5d5347',
+                dayNumberColor: '#5d5347', dayCellBackground: '#f5f3e9',
+                dayCellBorderColor: '#d4c4a0'
+              }
+            }
+          };
+          
+          const themeConfig = builtinThemes[config.themeName];
+          if (themeConfig) {
+            applyThemeToDOM(themeConfig);
+          }
+        } else {
+          // 自定义主题
+          const customTheme = await loadTheme(config.themeName);
+          if (customTheme) {
+            applyThemeToDOM(customTheme);
+          }
+        }
+      }
+    };
+
+    // 监听主进程发送的主题配置
+    const handleApplySavedTheme = (_event: any, config: any) => {
+      loadDefaultTheme(config);
+    };
+
+    window.electron?.ipcRenderer.on('apply-saved-theme', handleApplySavedTheme);
+
+    // 也尝试主动获取一次（兼容性）
+    window.electron?.ipcRenderer.invoke('theme:getCurrentTheme').then(config => {
+      loadDefaultTheme(config);
+    }).catch(console.error);
+
+    return () => {
+      window.electron?.ipcRenderer.removeAllListeners('apply-saved-theme');
     };
   }, []);
   
@@ -109,6 +193,14 @@ function App() {
         isOpen={isProxyDialogOpen}
         onClose={() => setIsProxyDialogOpen(false)}
         initialConfig={proxyConfig}
+      />
+      <ThemePalette
+        isOpen={isThemePaletteOpen}
+        onClose={() => setIsThemePaletteOpen(false)}
+      />
+      <ThemeSelector
+        isOpen={isThemeSelectorOpen}
+        onClose={() => setIsThemeSelectorOpen(false)}
       />
     </div>
   );

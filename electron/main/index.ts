@@ -22,6 +22,7 @@ import { join } from 'path';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { checkLunarLibraryUpdate, updateLunarLibrary } from '../utils/checkUpdates';
 import EventDatabase from './database';
+import ThemeDatabase from './themeDatabase';
 import { Event } from '../../src/types/event';
 import updateConfig from '../utils/updateConfig';
 const AppUpdater = require('./updater');
@@ -29,6 +30,8 @@ const AppUpdater = require('./updater');
 let mainWindow: BrowserWindow | null = null;
 let eventDb: EventDatabase | null = null;
 let dbInitPromise: Promise<EventDatabase | null> | null = null;
+let themeDb: ThemeDatabase | null = null;
+let themeDbInitPromise: Promise<ThemeDatabase | null> | null = null;
 let appUpdater: any = null; // 包含 autoUpdater, isUpdateDownloaded 等方法
 
 // 确保只有一个实例运行
@@ -219,6 +222,28 @@ Life flows like water through our hands.`;
           }
         }
       ]
+    },
+    {
+      label: '调色',
+      submenu: [
+        {
+          label: '打开调色板',
+          click: () => {
+            if (mainWindow) {
+              mainWindow.webContents.send('open-theme-palette');
+            }
+          }
+        },
+        { type: 'separator' },
+        {
+          label: '主题选择',
+          click: async () => {
+            if (mainWindow) {
+              mainWindow.webContents.send('open-theme-selector');
+            }
+          }
+        }
+      ]
     }
   ];
   
@@ -267,6 +292,19 @@ function createWindow() {
       // 生产环境下，从app.asar包的根目录加载dist/index.html
       mainWindow.loadFile(join(__dirname, '../../../dist/index.html')).catch(console.error);
     }
+    
+    // 页面加载完成后，发送主题配置
+    mainWindow.webContents.on('did-finish-load', async () => {
+      try {
+        const configPath = join(app.getPath('userData'), 'themeConfig.json');
+        if (existsSync(configPath)) {
+          const config = JSON.parse(readFileSync(configPath, 'utf8'));
+          mainWindow?.webContents.send('apply-saved-theme', config);
+        }
+      } catch (error) {
+        console.error('Failed to send theme config:', error);
+      }
+    });
   } catch (error) {
     console.error('Failed to create window:', error);
   }
@@ -297,9 +335,35 @@ async function initDatabase(): Promise<EventDatabase | null> {
   return dbInitPromise;
 }
 
+// 初始化主题数据库的异步函数
+async function initThemeDatabase(): Promise<ThemeDatabase | null> {
+  if (themeDb) return themeDb;
+  if (themeDbInitPromise) return themeDbInitPromise;
+  
+  themeDbInitPromise = new Promise(async (resolve) => {
+    try {
+      // 等待app准备好
+      if (!app.isReady()) {
+        await app.whenReady();
+      }
+      themeDb = new ThemeDatabase();
+      await themeDb.initialize();
+      console.log('Theme database initialized successfully');
+      resolve(themeDb);
+    } catch (error) {
+      console.error('Failed to initialize theme database:', error);
+      // 即使失败也要resolve，避免promise永远pending
+      resolve(null);
+    }
+  });
+  
+  return themeDbInitPromise;
+}
+
 app.whenReady().then(async () => {
   // 应用准备好后初始化数据库
   await initDatabase();
+  await initThemeDatabase();
   createCustomMenu();
   createWindow();
   
@@ -406,6 +470,9 @@ app.on('before-quit', (event) => {
   if (eventDb) {
     eventDb.close();
   }
+  if (themeDb) {
+    themeDb.close();
+  }
 });
 
 // IPC通信处理
@@ -484,5 +551,66 @@ ipcMain.handle('update:checkNow', async () => {
     return result;
   } catch (error) {
     return { error: (error as Error).message };
+  }
+});
+
+// 主题相关的IPC处理
+ipcMain.handle('theme:save', async (_, theme) => {
+  const db = await initThemeDatabase();
+  if (!db) {
+    return { success: false, error: 'Theme database not available' };
+  }
+  return db.saveTheme(theme);
+});
+
+ipcMain.handle('theme:load', async (_, name: string) => {
+  const db = await initThemeDatabase();
+  if (!db) {
+    return { success: false, error: 'Theme database not available' };
+  }
+  return db.loadTheme(name);
+});
+
+ipcMain.handle('theme:list', async () => {
+  const db = await initThemeDatabase();
+  if (!db) {
+    return { success: false, error: 'Theme database not available' };
+  }
+  return db.getThemeList();
+});
+
+ipcMain.handle('theme:delete', async (_, name: string) => {
+  const db = await initThemeDatabase();
+  if (!db) {
+    return { success: false, error: 'Theme database not available' };
+  }
+  return db.deleteTheme(name);
+});
+
+// 获取当前选中的默认主题
+ipcMain.handle('theme:getCurrentTheme', async () => {
+  try {
+    const configPath = join(app.getPath('userData'), 'themeConfig.json');
+    if (existsSync(configPath)) {
+      const config = JSON.parse(readFileSync(configPath, 'utf8'));
+      return config;
+    }
+    return { themeName: '默认主题' };
+  } catch (error) {
+    console.error('Failed to load theme config:', error);
+    return { themeName: '默认主题' };
+  }
+});
+
+// 设置默认主题
+ipcMain.handle('theme:setDefaultTheme', async (_, themeName: string) => {
+  try {
+    const configPath = join(app.getPath('userData'), 'themeConfig.json');
+    const config = { themeName, updatedAt: new Date().toISOString() };
+    writeFileSync(configPath, JSON.stringify(config, null, 2));
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to save theme config:', error);
+    return { success: false, error: (error as Error).message };
   }
 });
