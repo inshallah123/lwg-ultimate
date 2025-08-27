@@ -88,8 +88,8 @@
 
 /* Private 主题 */
 .eventCard.private {
-  background-color: rgba(16, 185, 129, 0.08);
-  border-color: rgba(16, 185, 129, 0.2);
+  background-color: rgba(137, 16, 185, 0.08);
+  border-color: rgba(148, 16, 185, 0.2);
 }
 
 .eventCard.private:hover {
@@ -103,17 +103,13 @@
 
 /* Balance 主题 */
 .eventCard.balance {
-  background-color: rgba(251, 146, 60, 0.08);
-  border-color: rgba(251, 146, 60, 0.2);
+  background-color: rgba(187, 251, 60, 0.08);
+  border-color: rgba(152, 251, 60, 0.2);
 }
 
 .eventCard.balance:hover {
   background-color: rgba(251, 146, 60, 0.12);
   border-color: rgba(251, 146, 60, 0.3);
-}
-
-.eventDot.balance {
-  background-color: #fb923c;
 }
 
 /* Custom 主题 */
@@ -237,8 +233,7 @@
   padding: 2px 4px;
   display: flex;
   flex-direction: column;
-  max-height: 60px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* === 事件网格布局 === */
@@ -261,6 +256,7 @@
   padding: 2px 4px;
   min-width: 0;
   overflow: hidden;
+  height: 20px; /* 固定高度确保一致的行高 */
 }
 
 /* === 事件点布局 === */

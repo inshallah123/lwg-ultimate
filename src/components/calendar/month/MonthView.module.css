@@ -318,7 +318,7 @@
   min-height: 100%;
   box-sizing: border-box;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .dayNumber {
