@@ -82,7 +82,7 @@ const WeekViewPanel: React.FC<WeekViewPanelProps> = ({
       </div>
 
       <div className={styles.section}>
-        <h4>日期列标题样式</h4>
+        <h4>日期行标题样式</h4>
         <div className={styles.field}>
           <label>背景颜色</label>
           <div className={styles.colorInput}>

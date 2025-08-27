@@ -2,290 +2,194 @@
 
 本文档梳理了主题调色板系统中各个需求点对应的CSS样式位置，方便开发者快速定位和修改。
 
-## 一、全局样式 (`src/index.css`)
+## 重要说明
 
-### 1. 全局背景
-| 需求         | CSS属性位置                           | 当前值                                                                 |
-|------------|-----------------------------------|---------------------------------------------------------------------|
-| 背景颜色       | `body { background }` (第13行)      | `var(--color-bg-secondary)`                                         |
-| 背景渐变（深色模式） | `body { background }` (第172-175行) | `linear-gradient(180deg, var(--color-bg-primary) 0%, #1a202c 100%)` |
-| 透明度        | 可通过修改颜色值的alpha通道实现                | -                                                                   |
+### CSS Modules 类名映射问题
+⚠️ **关键**：项目使用CSS Modules，类名会被编译成唯一哈希值。
 
-### 2. 全局颜色变量
-| 需求    | CSS变量                      | 行号 | 说明                                        |
-|-------|----------------------------|----|-------------------------------------------|
-| 主色调   | `--color-primary`          | 23 | #5B8DBE                                   |
-| 主色调渐变 | `--color-primary-gradient` | 28 | linear-gradient(135deg, #5B8DBE, #7BA7D1) |
-| 背景主色  | `--color-bg-primary`       | 50 | #FFFFFF                                   |
-| 背景次色  | `--color-bg-secondary`     | 51 | #f8fcfb                                   |
-| 文字主色  | `--color-text-primary`     | 43 | #2C3E50                                   |
-| 边框色   | `--color-border`           | 63 | #539dd6                                   |
+**问题示例**：
+- 源代码：`.yearContainer`
+- 编译后：`.YearView_yearContainer__abc123`
 
-## 二、Calendar组件
+**解决方案**：使用属性选择器
+```css
+/* ❌ 错误 - 无法匹配CSS Modules生成的类名 */
+.yearContainer { background: red !important; }
 
-### （一）Year View 年视图 (`src/components/calendar/year/YearView.module.css`)
+/* ✅ 正确 - 使用属性选择器匹配 */
+[class*="yearContainer"] { background: red !important; }
+```
 
-#### 容器样式
-| 需求   | CSS位置                                   | 行号    | 当前值                                                                                   |
-|------|-----------------------------------------|-------|---------------------------------------------------------------------------------------|
-| 背景颜色 | `.yearContainer { background }`         | 9     | #ffffff                                                                               |
-| 背景渐变 | `.yearContainer::before { background }` | 17-20 | linear-gradient(180deg, rgba(168, 196, 212, 0.08) 0%, rgba(224, 197, 210, 0.04) 100%) |
-| 透明度  | `.yearContainer::before { opacity }`    | 21    | 0.9                                                                                   |
-| 边框圆角 | `.yearContainer { border-radius }`      | 10    | 12px                                                                                  |
-| 阴影   | `.yearContainer { box-shadow }`         | 11    | 0 4px 6px rgba(0, 0, 0, 0.1)                                                          |
+### 样式覆盖策略
 
-#### 标题样式
-| 需求   | CSS位置                         | 行号    | 当前值    |
-|------|-------------------------------|-------|--------|
-| 字体大小 | `.yearHeader { font-size }`   | 233   | 1.5rem |
-| 字体颜色 | `.yearHeader { background }`  | 28-31 | 渐变文字效果 |
-| 字体粗细 | `.yearHeader { font-weight }` | 27    | 400    |
+1. **优先级管理**
+   - 所有调色板样式必须加 `!important`
+   - 确保覆盖默认样式和CSS Modules样式
 
-### （二）Year Section (`src/components/calendar/year/YearSection.module.css`)
+2. **嵌套元素处理**
+   - 子元素可能有自己的背景色，遮挡父元素效果
+   - 解决：同时设置相关子元素背景为透明或相同颜色
+   
+3. **视图隔离**
+   - 月视图：添加 `[class*="monthContainer"]` 前缀
+   - 周视图：添加 `[class*="weekContainer"]` 前缀
+   - 年视图：使用 `[class*="monthCard"]` 确保只影响年视图的月份卡片
 
-| 需求     | CSS位置                                            | 行号 | 当前值     |
-|--------|--------------------------------------------------|----|---------|
-| 当前年份背景 | `.yearSection.currentYear::before { color }`     | 15 | #a8c4d4 |
-| 透明度    | `.yearSection.currentYear::before { opacity }`   | 16 | 0.1     |
-| 滚动时透明度 | `.yearSection.scrolling { opacity }`             | 8  | 0.7     |
-| 字体大小   | `.yearSection.currentYear::before { font-size }` | 13 | 3em     |
+## 一、全局样式
 
-### （三）Month Card 月份卡片 (`src/components/calendar/year/MonthCard.module.css`)
+### 调色板配置项 → CSS选择器映射
 
-#### 月份卡片通用样式
-| 需求   | CSS位置                             | 行号 | 当前值                          |
-|------|-----------------------------------|----|------------------------------|
-| 背景颜色 | `.monthCard { background }`       | 3  | #ffffff                      |
-| 边框颜色 | `.monthCard { border }`           | 4  | 1px solid #e2e8f0            |
-| 圆角   | `.monthCard { border-radius }`    | 5  | 8px                          |
-| 悬浮背景 | `.monthCard:hover { background }` | 10 | #f8fafc                      |
-| 悬浮阴影 | `.monthCard:hover { box-shadow }` | 12 | 0 4px 8px rgba(0, 0, 0, 0.1) |
+| 调色板选项 | 应用的CSS选择器 | 说明 |
+|---------|------------|-----|
+| 背景颜色 | `body` | 全局背景 |
+| 背景渐变 | `body` | 使用linear-gradient |
+| 透明度 | `body { opacity }` | 全局透明度 |
+| 背景图片 | `body { background-image }` | 支持上传本地图片 |
 
-#### 当前月份样式
-| 需求   | CSS位置                            | 行号 | 当前值                       |
-|------|----------------------------------|----|---------------------------|
-| 背景颜色 | `.currentMonth { background }`   | 16 | rgba(168, 196, 212, 0.15) |
-| 边框颜色 | `.currentMonth { border-color }` | 17 | #a8c4d4                   |
+## 二、年视图 (YearView)
 
-#### 今天月份样式
-| 需求   | CSS位置                          | 行号 | 当前值     |
-|------|--------------------------------|----|---------|
-| 背景颜色 | `.todayMonth { background }`   | 21 | #e8f2fa |
-| 边框颜色 | `.todayMonth { border-color }` | 22 | #a8c4d4 |
-| 字体粗细 | `.todayMonth { font-weight }`  | 23 | 600     |
+### 调色板配置项 → CSS选择器映射
 
-#### 月份文字样式
-| 需求   | CSS位置                        | 行号 | 当前值     |
-|------|------------------------------|----|---------|
-| 数字大小 | `.monthNumber { font-size }` | 27 | 1.8em   |
-| 数字颜色 | `.monthNumber { color }`     | 29 | #2c3e50 |
-| 名称大小 | `.monthName { font-size }`   | 33 | 0.9em   |
-| 名称颜色 | `.monthName { color }`       | 34 | #5a6c7d |
+| 调色板选项 | 应用的CSS选择器 | 说明 |
+|---------|------------|-----|
+| **容器样式** |
+| 背景颜色 | `[class*="yearContainer"]` | 年视图容器背景 |
+| 容器渐变 | `[class*="yearContainer"]` | 渐变背景 |
+| 透明度 | `[class*="yearContainer"] { opacity }` | 容器透明度 |
+| 圆角 | `[class*="yearContainer"] { border-radius }` | 容器圆角 |
+| 阴影 | `[class*="yearContainer"] { box-shadow }` | 容器阴影 |
+| **标题样式** |
+| 标题大小 | `[class*="yearHeader"] { font-size }` | 年份标题字体大小 |
+| 标题颜色 | `[class*="yearHeader"] { color; -webkit-text-fill-color }` | 需同时设置两个属性 |
+| 标题粗细 | `[class*="yearHeader"] { font-weight }` | 字体粗细 |
 
-### （四）Month View 月视图 (`src/components/calendar/month/MonthView.module.css`)
+## 三、年视图-月份卡片 (MonthCard)
 
-#### 容器样式
-| 需求   | CSS位置                                    | 行号    | 当前值                                                                                   |
-|------|------------------------------------------|-------|---------------------------------------------------------------------------------------|
-| 背景颜色 | `.monthContainer { background }`         | 41    | var(--bg-primary)                                                                     |
-| 背景渐变 | `.monthContainer::before { background }` | 50-53 | linear-gradient(180deg, rgba(168, 196, 212, 0.06) 0%, rgba(224, 197, 210, 0.03) 100%) |
-| 透明度  | `.monthContainer::before { opacity }`    | 54    | 0.8                                                                                   |
-| 边框圆角 | `.monthContainer { border-radius }`      | 42    | 12px                                                                                  |
-| 阴影   | `.monthContainer { box-shadow }`         | 43    | 0 4px 6px rgba(0, 0, 0, 0.1)                                                          |
+### 调色板配置项 → CSS选择器映射
 
-#### 标题样式
-| 需求   | CSS位置                          | 行号    | 当前值     |
-|------|--------------------------------|-------|---------|
-| 字体大小 | `.monthHeader { font-size }`   | 262   | 1.75rem |
-| 字体颜色 | `.monthHeader { background }`  | 60-63 | 渐变文字效果  |
-| 字体粗细 | `.monthHeader { font-weight }` | 65    | 400     |
+| 调色板选项 | 应用的CSS选择器 | 说明 |
+|---------|------------|-----|
+| **通用卡片样式** |
+| 背景颜色 | `[class*="monthCard"]` | 月份卡片背景 |
+| 背景渐变 | `[class*="monthCard"]` | 渐变背景 |
+| 透明度 | `[class*="monthCard"] { opacity }` | 卡片透明度 |
+| 边框颜色 | `[class*="monthCard"] { border-color }` | 边框颜色 |
+| 圆角 | `[class*="monthCard"] { border-radius }` | 卡片圆角 |
+| **字体样式** |
+| 字体大小 | `[class*="monthNumber"] { font-size }` | 月份数字大小 |
+| 字体颜色 | `[class*="monthNumber"] { color }` | 月份数字颜色 |
+| **交互样式** |
+| 悬浮背景 | `[class*="monthCard"]:hover` | 悬浮时背景色 |
+| ~~选中背景~~ | 已移除（点击后立即跳转） | - |
+| **特殊月份样式** |
+| ~~当前月份背景~~ | 已移除（与今天月份重复） | - |
+| ~~当前月份边框~~ | 已移除（与今天月份重复） | - |
+| 今天月份背景 | `[class*="monthCard"][class*="todayMonth"]` | 今天所在月份背景 |
+| 今天月份边框 | `[class*="monthCard"][class*="todayMonth"] { border }` | 需设置完整border属性 |
 
-#### 星期标题样式
-| 需求   | CSS位置                            | 行号  | 当前值                                               |
-|------|----------------------------------|-----|---------------------------------------------------|
-| 背景颜色 | `.weekdayRow { background }`     | 79  | linear-gradient(180deg, #fafbfc 0%, #f8f9fa 100%) |
-| 文字颜色 | `.weekdayHeader { color }`       | 86  | var(--text-secondary)                             |
-| 字体大小 | `.weekdayHeader { font-size }`   | 288 | 0.75rem                                           |
-| 字体粗细 | `.weekdayHeader { font-weight }` | 87  | 500                                               |
+## 四、月视图 (MonthView)
 
-#### 日期单元格样式
-| 需求     | CSS位置                           | 行号      | 当前值                                                                           |
-|--------|---------------------------------|---------|-------------------------------------------------------------------------------|
-| 背景颜色   | `.dayCell { background }`       | 104     | var(--bg-primary)                                                             |
-| 悬浮背景   | `.dayCell:hover { background }` | 150-153 | linear-gradient(135deg, rgba(168, 196, 212, 0.05), rgba(224, 197, 210, 0.02)) |
-| 边框颜色   | `.dayCell { border }`           | 105-106 | 1px solid var(--border-light)                                                 |
-| 日期字体大小 | `.dayNumber { font-size }`      | 325     | 1.125rem                                                                      |
-| 日期字体颜色 | `.dayNumber { color }`          | 121     | var(--text-primary)                                                           |
+### 调色板配置项 → CSS选择器映射
 
-#### 今天样式
-| 需求   | CSS位置                         | 行号      | 当前值                                                                           |
-|------|-------------------------------|---------|-------------------------------------------------------------------------------|
-| 背景颜色 | `.today { background }`       | 199-202 | linear-gradient(135deg, rgba(168, 196, 212, 0.15), rgba(224, 197, 210, 0.08)) |
-| 边框颜色 | `.today { border }`           | 203     | 2px solid var(--border-accent)                                                |
-| 阴影   | `.today { box-shadow }`       | 204-206 | 0 3px 12px rgba(168, 196, 212, 0.15)                                          |
-| 字体颜色 | `.today .dayNumber { color }` | 211     | var(--text-accent)                                                            |
+| 调色板选项 | 应用的CSS选择器 | 说明 |
+|---------|------------|-----|
+| **容器样式** |
+| 背景颜色 | `[class*="monthContainer"]` | 月视图容器背景 |
+| 容器渐变 | `[class*="monthContainer"]` | 渐变背景 |
+| **标题样式** |
+| 标题大小 | `[class*="monthHeader"] { font-size }` | 月份标题大小 |
+| 标题颜色 | `[class*="monthHeader"] { color; -webkit-text-fill-color }` | 标题颜色 |
+| **星期标题** |
+| 背景颜色 | `[class*="weekdayRow"]` | 星期行背景 |
+| 文字颜色 | `[class*="weekdayHeader"] { color }` | 星期文字颜色 |
+| **日期单元格** |
+| 单元格背景 | `[class*="monthContainer"] [class*="dayCell"]` | 需要前缀避免影响年视图 |
+| 悬浮背景 | `[class*="monthContainer"] [class*="dayCell"]:hover` | 悬浮背景 |
+| | `[class*="monthContainer"] [class*="dayCell"]:hover [class*="dayCellHeader"]` | 子元素透明化 |
+| | `[class*="monthContainer"] [class*="dayCell"]:hover [class*="dayNumber"]` | 子元素透明化 |
+| | `[class*="monthContainer"] [class*="dayCell"]:hover [class*="lunarInfo"]` | 子元素透明化 |
+| 日期大小 | `[class*="monthContainer"] [class*="dayNumber"] { font-size }` | 日期数字大小 |
+| 日期颜色 | `[class*="monthContainer"] [class*="dayNumber"] { color }` | 日期数字颜色 |
+| **今天样式** |
+| 背景颜色 | `[class*="monthContainer"] [class*="today"]` | 今天背景 |
+| 文字颜色 | `[class*="monthContainer"] [class*="today"] [class*="dayNumber"]` | 今天日期颜色 |
+| **农历样式** |
+| 农历大小 | `[class*="monthContainer"] [class*="lunar"] { font-size }` | 农历字体大小 |
+| 农历颜色 | `[class*="monthContainer"] [class*="lunar"] { color }` | 农历文字颜色 |
+| 节日颜色 | `[class*="monthContainer"] [class*="festival"] { color }` | 节日文字颜色 |
+| 节气颜色 | `[class*="monthContainer"] [class*="solarTerm"] { color }` | 节气文字颜色 |
 
-#### 农历信息样式
-| 需求   | CSS位置                  | 行号  | 当前值                              |
-|------|------------------------|-----|----------------------------------|
-| 文字颜色 | `.lunar { color }`     | 129 | var(--text-muted)                |
-| 节日颜色 | `.festival { color }`  | 136 | var(--color-festival) (#d6536d)  |
-| 节气颜色 | `.solarTerm { color }` | 142 | var(--color-solarterm) (#4a8a73) |
-| 字体大小 | `.lunar { font-size }` | 344 | 0.7rem                           |
+### ⚠️ 无法控制的样式
+- `.otherMonth` - 动态涂灰区域（基于滚动位置计算）
+- `.currentMonth` - 当前月份区域（动态判断）
 
-### （五）Week View 周视图 (`src/components/calendar/week/WeekView.module.css`)
+## 五、周视图 (WeekView)
 
-#### 容器样式
-| 需求   | CSS位置                              | 行号 | 当前值                     |
-|------|------------------------------------|----|-------------------------|
-| 背景颜色 | `.weekContainer { background }`    | 18 | var(--color-bg-primary) |
-| 边框圆角 | `.weekContainer { border-radius }` | 19 | var(--radius-lg)        |
-| 阴影   | `.weekContainer { box-shadow }`    | 20 | var(--shadow-md)        |
+### 调色板配置项 → CSS选择器映射
 
-#### 标题样式
-| 需求   | CSS位置                         | 行号  | 当前值                       |
-|------|-------------------------------|-----|---------------------------|
-| 字体大小 | `.weekHeader { font-size }`   | 189 | var(--font-size-lg)       |
-| 字体颜色 | `.weekHeader { color }`       | 26  | var(--color-text-primary) |
-| 字体粗细 | `.weekHeader { font-weight }` | 25  | var(--font-weight-medium) |
+| 调色板选项 | 应用的CSS选择器 | 说明 |
+|---------|------------|-----|
+| **容器样式** |
+| 背景颜色 | `[class*="weekContainer"]` | 周视图容器背景 |
+| **标题样式** |
+| 标题大小 | `[class*="weekHeader"] { font-size }` | 周标题大小 |
+| 标题颜色 | `[class*="weekHeader"] { color }` | 周标题颜色 |
+| **日期行标题** |
+| 背景颜色 | `[class*="dayHeader"]` | 日期行背景 |
+| 星期名称颜色 | `[class*="dayName"] { color }` | 星期名称颜色 |
+| 日期颜色 | `[class*="dayDate"] { color }` | 日期数字颜色 |
+| **今天标题** |
+| 背景颜色 | `[class*="dayHeader"][class*="today"]` | 今天标题背景 |
+| 文字颜色 | `[class*="dayHeader"][class*="today"] [class*="dayName"]` | 今天星期颜色 |
+| | `[class*="dayHeader"][class*="today"] [class*="dayDate"]` | 今天日期颜色 |
+| **时间列样式** |
+| 背景颜色 | `[class*="timeColumn"]` | 时间列背景 |
+| | `[class*="timeSlot"]` | 时间槽也需要设置 |
+| | `[class*="cornerCell"]` | 左上角也需要设置 |
+| 时间文字颜色 | `[class*="timeSlot"] { color }` | 时间文字颜色 |
+| 时间字体大小 | `[class*="timeSlot"] { font-size }` | 时间字体大小 |
+| **小时格子** |
+| 格子背景 | `[class*="hourCell"]` | 小时格子背景 |
+| 边框颜色 | `[class*="hourCell"] { border-color }` | 格子边框颜色 |
+| 悬浮背景 | `[class*="hourCell"]:hover` | 格子悬浮背景 |
+| **农历样式** |
+| 农历大小 | `[class*="weekContainer"] [class*="lunar"] { font-size }` | 需要前缀隔离 |
+| 农历颜色 | `[class*="weekContainer"] [class*="lunar"] { color }` | 农历颜色 |
+| 节日颜色 | `[class*="weekContainer"] [class*="festival"] { color }` | 节日颜色 |
+| 节气颜色 | `[class*="weekContainer"] [class*="solarTerm"] { color }` | 节气颜色 |
 
-#### 网格样式
-| 需求   | CSS位置                      | 行号 | 当前值                           |
-|------|----------------------------|----|-------------------------------|
-| 背景颜色 | `.weekGrid { background }` | 31 | var(--color-bg-primary)       |
-| 边框颜色 | `.weekGrid { border }`     | 33 | 1px solid var(--color-border) |
+## 六、开发经验总结
 
-#### 日期列样式
-| 需求     | CSS位置                             | 行号  | 当前值                        |
-|--------|-----------------------------------|-----|----------------------------|
-| 背景颜色   | `.dayColumn { background }`       | 44  | var(--color-bg-primary)    |
-| 悬浮背景   | `.dayColumn:hover { background }` | 50  | var(--color-bg-hover)      |
-| 今天背景   | `.dayHeader.today { background }` | 71  | var(--color-primary-light) |
-| 日期字体大小 | `.dayDate { font-size }`          | 245 | 1.125rem                   |
-| 日期字体颜色 | `.dayDate { color }`              | 90  | var(--color-text-primary)  |
+### 常见问题及解决方案
 
-#### 时间槽样式
-| 需求   | CSS位置                       | 行号  | 当前值                       |
-|------|-----------------------------|-----|---------------------------|
-| 背景颜色 | `.timeSlot { background }`  | 124 | var(--color-bg-secondary) |
-| 文字颜色 | `.timeSlot { color }`       | 120 | var(--color-text-muted)   |
-| 字体大小 | `.timeSlot { font-size }`   | 277 | var(--font-size-xs)       |
-| 字体粗细 | `.timeSlot { font-weight }` | 123 | var(--font-weight-medium) |
+1. **样式不生效**
+   - 检查是否使用了属性选择器
+   - 确认添加了 `!important`
+   - 验证选择器优先级
 
-#### 小时单元格样式
-| 需求   | CSS位置                            | 行号  | 当前值                                  |
-|------|----------------------------------|-----|--------------------------------------|
-| 背景颜色 | `.hourCell { background }`       | 137 | var(--color-bg-primary)              |
-| 悬浮背景 | `.hourCell:hover { background }` | 149 | var(--color-bg-secondary)            |
-| 边框颜色 | `.hourCell { border-bottom }`    | 134 | 1px solid var(--color-border-light)  |
-| 悬浮边框 | `.hourCell:hover { box-shadow }` | 150 | inset 0 0 0 1px var(--color-primary) |
+2. **悬浮效果异常**
+   - 子元素可能有独立背景
+   - 需同时设置子元素透明
 
-## 三、共享组件
+3. **样式互相影响**
+   - 使用视图前缀隔离
+   - 避免使用过于通用的选择器
 
-### NavButton 导航按钮 (`src/components/calendar/shared/NavButton.module.css`)
+4. **边框样式问题**
+   - 设置边框颜色时需要完整的border属性
+   - 例：`border: 2px solid ${color}`
 
-| 需求   | CSS位置                             | 行号 | 当前值                                 |
-|------|-----------------------------------|----|-------------------------------------|
-| 背景颜色 | `.navButton { background }`       | 10 | var(--color-bg-primary)             |
-| 悬浮背景 | `.navButton:hover { background }` | 21 | var(--color-bg-secondary)           |
-| 边框颜色 | `.navButton { border }`           | 12 | 1px solid var(--color-border-light) |
-| 文字颜色 | `.navButton { color }`            | 14 | var(--color-text-secondary)         |
-| 字体大小 | `.navButton { font-size }`        | 15 | var(--font-size-lg)                 |
-| 阴影   | `.navButton { box-shadow }`       | 16 | var(--shadow-sm)                    |
+### 调试技巧
 
-### DayCellContent 日期单元格内容 (`src/components/calendar/month/components/DayCellContent.module.css`)
+1. 使用浏览器开发者工具查看实际生成的类名
+2. 验证CSS选择器是否正确匹配元素
+3. 检查样式优先级和覆盖关系
+4. 测试不同视图切换时的样式隔离
 
-| 需求     | CSS位置                      | 行号 | 当前值                        |
-|--------|----------------------------|----|----------------------------|
-| 日期字体大小 | `.dayNumber { font-size }` | 9  | 14px                       |
-| 日期字体颜色 | `.dayNumber { color }`     | 11 | var(--color-text-primary)  |
-| 农历字体大小 | `.lunar { font-size }`     | 27 | 10px                       |
-| 农历字体颜色 | `.lunar { color }`         | 26 | var(--color-text-tertiary) |
-| 节日颜色   | `.festival { color }`      | 31 | var(--color-accent-red)    |
-| 节气颜色   | `.solarTerm { color }`     | 37 | var(--color-accent-orange) |
+## 七、版本更新记录
 
-### MonthView 事件卡片样式 (DayCellContent) (`src/components/calendar/month/components/DayCellContent.module.css`)
-
-#### 月视图事件卡片样式
-| 需求      | CSS位置                               | 行号 | 当前值                   |
-|---------|-------------------------------------|----|-----------------------|
-| 事件卡片背景  | `.eventCard { background-color }` | 48 | var(--color-surface) |
-| 事件卡片边框  | `.eventCard { border }` | 49 | 1px solid transparent |
-| 事件卡片圆角  | `.eventCard { border-radius }` | 50 | 3px |
-| 悬浮效果  | `.eventCard:hover { transform }` | 54 | translateY(-1px) |
-| 悬浮阴影  | `.eventCard:hover { box-shadow }` | 55 | 0 2px 4px rgba(0, 0, 0, 0.1) |
-| 事件标题颜色  | `.eventTitle { color }` | 64 | var(--color-text-primary) |
-| 事件标题大小  | `.eventTitle { font-size }` | 63 | 11px |
-
-#### 月视图事件标签主题
-| 需求      | CSS位置                               | 行号 | 当前值                   |
-|---------|-------------------------------------|----|-----------------------|
-| 工作事件背景  | `.eventCard.work { background-color }` | 76 | rgba(59, 130, 246, 0.08) |
-| 工作事件边框  | `.eventCard.work { border-color }` | 77 | rgba(59, 130, 246, 0.2) |
-| 私人事件背景  | `.eventCard.private { background-color }` | 91 | rgba(137, 16, 185, 0.08) |
-| 私人事件边框  | `.eventCard.private { border-color }` | 92 | rgba(148, 16, 185, 0.2) |
-| 平衡事件背景  | `.eventCard.balance { background-color }` | 106 | rgba(187, 251, 60, 0.08) |
-| 平衡事件边框  | `.eventCard.balance { border-color }` | 107 | rgba(152, 251, 60, 0.2) |
-| 自定义事件背景  | `.eventCard.custom { background-color }` | 117 | rgba(156, 163, 175, 0.08) |
-| 自定义事件边框  | `.eventCard.custom { border-color }` | 118 | rgba(156, 163, 175, 0.2) |
-
-#### 月视图事件点样式
-| 需求      | CSS位置                               | 行号 | 当前值                   |
-|---------|-------------------------------------|----|-----------------------|
-| 事件点背景  | `.eventDot { background-color }` | 69 | var(--color-accent-gray) |
-| 事件点圆角  | `.eventDot { border-radius }` | 68 | 50% |
-| 工作事件点  | `.eventDot.work { background-color }` | 86 | #3b82f6 |
-| 私人事件点  | `.eventDot.private { background-color }` | 101 | #10b981 |
-| 自定义事件点  | `.eventDot.custom { background-color }` | 127 | #9ca3af |
-
-#### 月视图更多指示器样式
-| 需求      | CSS位置                               | 行号 | 当前值                   |
-|---------|-------------------------------------|----|-----------------------|
-| 更多指示器背景  | `.moreIndicatorCompact { background-color }` | 132 | var(--color-accent-blue) |
-| 更多指示器圆角  | `.moreIndicatorCompact { border-radius }` | 133 | 8px |
-| 悬浮背景  | `.moreIndicatorCompact:hover { background-color }` | 139 | var(--color-accent-blue-hover) |
-| 更多文字颜色  | `.moreTextCompact { color }` | 146 | white |
-| 更多文字大小  | `.moreTextCompact { font-size }` | 144 | 9px |
-
-### WeekEventIndicator 周视图事件指示器 (`src/components/calendar/week/components/WeekEventIndicator.module.css`)
-
-#### 事件卡片样式
-| 需求      | CSS位置                               | 行号 | 当前值                   |
-|---------|-------------------------------------|----|-----------------------|
-| 私人事件背景  | `.eventCard.private { background }` | 42 | var(--tag-bg-private) |
-| 工作事件背景  | `.eventCard.work { background }`    | 47 | var(--tag-bg-work)    |
-| 平衡事件背景  | `.eventCard.balance { background }` | 52 | var(--tag-bg-balance) |
-| 自定义事件背景 | `.eventCard.custom { background }`  | 57 | var(--tag-bg-custom)  |
-| 事件标题颜色  | `.eventTitle { color }`             | 71 | #1e293b               |
-| 事件时间颜色  | `.eventTime { color }`              | 81 | #64748b               |
-
-## 四、使用指南
-
-### 1. 颜色修改
-- 全局颜色变量位于 `src/index.css` 的 `:root` 选择器中
-- 各组件特定颜色在对应的 `.module.css` 文件的第一部分
-- 建议通过修改CSS变量来实现主题切换
-
-### 2. 渐变效果
-- 使用 `linear-gradient()` 函数定义
-- 格式：`linear-gradient(角度, 起始颜色, 结束颜色)`
-- 示例：`linear-gradient(135deg, #5B8DBE, #7BA7D1)`
-
-### 3. 透明度调整
-- 使用 `rgba()` 函数：`rgba(红, 绿, 蓝, 透明度)`
-- 或者使用 `opacity` 属性：值范围 0-1
-
-### 4. 字体样式
-- 字体大小使用 `rem` 单位，便于响应式调整
-- 字体粗细使用数值（300-900）或关键词（normal, bold等）
-
-### 5. 阴影效果
-- 格式：`box-shadow: 水平偏移 垂直偏移 模糊半径 扩散半径 颜色`
-- 示例：`box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1)`
-
-## 五、开发建议
-
-1. 创建主题时，建议复制现有的CSS变量定义，修改值后作为新主题
-2. 使用CSS变量系统可以轻松实现主题切换功能
-3. 背景图片功能可通过添加 `background-image` 属性实现
-4. 建议将用户自定义的样式通过内联样式或动态生成的CSS类来应用，避免直接修改源文件
+### 2025-08-27
+- 完善CSS Modules兼容性说明
+- 添加选择器映射表
+- 记录已移除的功能
+- 补充开发经验和常见问题

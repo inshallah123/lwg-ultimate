@@ -191,7 +191,12 @@ export function applyThemeToDOM(config: ThemeConfig) {
     }
     
     if (dayCellHoverBackground) {
+      // 悬浮时设置整个单元格背景
       cssRules.push(`[class*="monthContainer"] [class*="dayCell"]:hover { background: ${dayCellHoverBackground} !important; }`);
+      // 同时让dayNumber和lunar的背景透明，这样能看到父元素的悬浮背景
+      cssRules.push(`[class*="monthContainer"] [class*="dayCell"]:hover [class*="dayCellHeader"] { background: transparent !important; }`);
+      cssRules.push(`[class*="monthContainer"] [class*="dayCell"]:hover [class*="dayNumber"] { background: transparent !important; }`);
+      cssRules.push(`[class*="monthContainer"] [class*="dayCell"]:hover [class*="lunarInfo"] { background: transparent !important; }`);
     }
     
     if (dayNumberSize !== undefined) {
@@ -281,6 +286,10 @@ export function applyThemeToDOM(config: ThemeConfig) {
     // 时间列样式
     if (timeColumnBackground) {
       cssRules.push(`[class*="timeColumn"] { background: ${timeColumnBackground} !important; }`);
+      // 同时设置timeSlot背景，因为它覆盖了timeColumn的背景
+      cssRules.push(`[class*="timeSlot"] { background: ${timeColumnBackground} !important; }`);
+      // 角落单元格也需要相同背景
+      cssRules.push(`[class*="cornerCell"] { background: ${timeColumnBackground} !important; }`);
     }
     
     if (timeSlotColor) {
