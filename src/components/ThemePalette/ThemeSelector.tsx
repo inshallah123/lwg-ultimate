@@ -25,9 +25,9 @@ const DEFAULT_THEME_CONFIGS: { [key: string]: ThemeConfig } = {
   '默认主题': {
     global: {},
     yearView: {},
-    yearSection: {},
+    monthView: {},
     monthCard: {},
-    monthWeekView: {}
+    weekView: {}
   },
   '深色模式': {
     global: {
@@ -38,21 +38,22 @@ const DEFAULT_THEME_CONFIGS: { [key: string]: ThemeConfig } = {
       containerBackground: '#2a2a2a',
       titleColor: '#e0e0e0'
     },
-    yearSection: {
-      currentYearBackground: '#60a5fa',
-      fontColor: '#e0e0e0'
+    monthView: {
+      containerBackground: '#3a3a3a',
+      headerColor: '#e0e0e0',
+      dayNumberColor: '#e0e0e0'
     },
     monthCard: {
       background: '#2a2a2a',
       fontColor: '#e0e0e0',
       borderColor: '#404040'
     },
-    monthWeekView: {
+    weekView: {
       containerBackground: '#2a2a2a',
-      titleColor: '#e0e0e0',
-      dayNumberColor: '#e0e0e0',
-      dayCellBackground: '#1a1a1a',
-      dayCellBorderColor: '#404040'
+      headerColor: '#e0e0e0',
+      dayNameColor: '#e0e0e0',
+      hourCellBackground: '#1a1a1a',
+      hourCellBorderColor: '#404040'
     }
   },
   '护眼模式': {
@@ -64,21 +65,22 @@ const DEFAULT_THEME_CONFIGS: { [key: string]: ThemeConfig } = {
       containerBackground: '#faf8f0',
       titleColor: '#5d5347'
     },
-    yearSection: {
-      currentYearBackground: '#8b7355',
-      fontColor: '#5d5347'
+    monthView: {
+      containerBackground: '#faf8f0',
+      headerColor: '#5d5347',
+      dayNumberColor: '#5d5347'
     },
     monthCard: {
       background: '#faf8f0',
       fontColor: '#5d5347',
       borderColor: '#d4c4a0'
     },
-    monthWeekView: {
+    weekView: {
       containerBackground: '#faf8f0',
-      titleColor: '#5d5347',
-      dayNumberColor: '#5d5347',
-      dayCellBackground: '#f5f3e9',
-      dayCellBorderColor: '#d4c4a0'
+      headerColor: '#5d5347',
+      dayNameColor: '#5d5347',
+      hourCellBackground: '#f5f3e9',
+      hourCellBorderColor: '#d4c4a0'
     }
   }
 };
