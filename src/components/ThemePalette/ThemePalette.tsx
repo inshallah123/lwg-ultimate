@@ -3,9 +3,9 @@ import { X, Save, RotateCcw, Trash2, Move } from 'lucide-react';
 import styles from './ThemePalette.module.css';
 import GlobalStylePanel from './panels/GlobalStylePanel';
 import YearViewPanel from './panels/YearViewPanel';
-import YearSectionPanel from './panels/YearSectionPanel';
 import MonthCardPanel from './panels/MonthCardPanel';
-import MonthWeekViewPanel from './panels/MonthWeekViewPanel';
+import MonthViewPanel from './panels/MonthViewPanel';
+import WeekViewPanel from './panels/WeekViewPanel';
 import { ThemeConfig, ThemeHistoryEntry } from './types';
 import { applyThemeToDOM, removeThemeFromDOM } from './utils/themeApplier';
 import { saveTheme, loadTheme, getThemeList } from './utils/themeStorage';
@@ -20,9 +20,9 @@ const ThemePalette: React.FC<ThemePaletteProps> = ({ isOpen, onClose }) => {
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>({
     global: {},
     yearView: {},
-    yearSection: {},
     monthCard: {},
-    monthWeekView: {}
+    monthView: {},
+    weekView: {}
   });
   
   const [history, setHistory] = useState<ThemeHistoryEntry[]>([]);
@@ -126,9 +126,9 @@ const ThemePalette: React.FC<ThemePaletteProps> = ({ isOpen, onClose }) => {
     const emptyConfig: ThemeConfig = {
       global: {},
       yearView: {},
-      yearSection: {},
       monthCard: {},
-      monthWeekView: {}
+      monthView: {},
+      weekView: {}
     };
     setThemeConfig(emptyConfig);
     setHistory([]);
@@ -217,22 +217,22 @@ const ThemePalette: React.FC<ThemePaletteProps> = ({ isOpen, onClose }) => {
             年视图
           </button>
           <button
-            className={`${styles.tab} ${activeTab === 'yearSection' ? styles.active : ''}`}
-            onClick={() => setActiveTab('yearSection')}
-          >
-            年份区域
-          </button>
-          <button
             className={`${styles.tab} ${activeTab === 'monthCard' ? styles.active : ''}`}
             onClick={() => setActiveTab('monthCard')}
           >
-            月份卡片
+            年视图-月份卡片
           </button>
           <button
-            className={`${styles.tab} ${activeTab === 'monthWeekView' ? styles.active : ''}`}
-            onClick={() => setActiveTab('monthWeekView')}
+            className={`${styles.tab} ${activeTab === 'monthView' ? styles.active : ''}`}
+            onClick={() => setActiveTab('monthView')}
           >
-            月/周视图
+            月视图
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'weekView' ? styles.active : ''}`}
+            onClick={() => setActiveTab('weekView')}
+          >
+            周视图
           </button>
         </div>
 
@@ -251,13 +251,6 @@ const ThemePalette: React.FC<ThemePaletteProps> = ({ isOpen, onClose }) => {
               onPreview={() => handlePreview('.yearContainer')}
             />
           )}
-          {activeTab === 'yearSection' && (
-            <YearSectionPanel
-              config={themeConfig.yearSection}
-              onChange={(config) => updateThemeConfig('yearSection', config)}
-              onPreview={() => handlePreview('.yearSection')}
-            />
-          )}
           {activeTab === 'monthCard' && (
             <MonthCardPanel
               config={themeConfig.monthCard}
@@ -265,11 +258,18 @@ const ThemePalette: React.FC<ThemePaletteProps> = ({ isOpen, onClose }) => {
               onPreview={() => handlePreview('.monthCard')}
             />
           )}
-          {activeTab === 'monthWeekView' && (
-            <MonthWeekViewPanel
-              config={themeConfig.monthWeekView}
-              onChange={(config) => updateThemeConfig('monthWeekView', config)}
-              onPreview={() => handlePreview('.monthContainer, .weekContainer')}
+          {activeTab === 'monthView' && (
+            <MonthViewPanel
+              config={themeConfig.monthView}
+              onChange={(config) => updateThemeConfig('monthView', config)}
+              onPreview={() => handlePreview('[class*="monthContainer"]')}
+            />
+          )}
+          {activeTab === 'weekView' && (
+            <WeekViewPanel
+              config={themeConfig.weekView}
+              onChange={(config) => updateThemeConfig('weekView', config)}
+              onPreview={() => handlePreview('[class*="weekContainer"]')}
             />
           )}
         </div>

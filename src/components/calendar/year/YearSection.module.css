@@ -8,14 +8,6 @@
   opacity: 0.7;
 }
 
-.yearSection.currentYear::before {
-  content: attr(data-year);
-  font-size: 3em;
-  font-weight: 100;
-  color: #a8c4d4;
-  opacity: 0.1;
-}
-
 /* 第二部分：布局关键样式 */
 .yearSection {
   position: absolute;
@@ -25,14 +17,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.yearSection.currentYear::before {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  pointer-events: none;
 }
 
 .monthsGrid {
@@ -55,10 +39,6 @@
     gap: 12px;
     max-width: 500px;
   }
-  
-  .yearSection.currentYear::before {
-    font-size: 2.5em;
-  }
 }
 
 @media (max-width: 480px) {
@@ -69,11 +49,6 @@
   .monthsGrid {
     gap: 8px;
     max-width: 400px;
-  }
-  
-  .yearSection.currentYear::before {
-    font-size: 2em;
-    top: 5px;
   }
 }
 

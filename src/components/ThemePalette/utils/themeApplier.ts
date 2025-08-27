@@ -57,12 +57,13 @@ export function applyThemeToDOM(config: ThemeConfig) {
       if (containerGradient?.enabled) {
         bgValue = `linear-gradient(${containerGradient.angle}deg, ${containerGradient.startColor}, ${containerGradient.endColor})`;
       }
-      cssRules.push(`.yearContainer { background: ${bgValue} !important; }`);
+      // 使用属性选择器匹配CSS Modules生成的类名
+      cssRules.push(`[class*="yearContainer"] { background: ${bgValue} !important; }`);
     }
     
     if (backgroundImage?.enabled && backgroundImage.url) {
       cssRules.push(`
-        .yearContainer {
+        [class*="yearContainer"] {
           background-image: url("${backgroundImage.url}") !important;
           background-size: cover !important;
           background-position: center !important;
@@ -71,60 +72,27 @@ export function applyThemeToDOM(config: ThemeConfig) {
     }
     
     if (containerOpacity !== undefined) {
-      cssRules.push(`.yearContainer { opacity: ${containerOpacity} !important; }`);
+      cssRules.push(`[class*="yearContainer"] { opacity: ${containerOpacity} !important; }`);
     }
     
     if (borderRadius !== undefined) {
-      cssRules.push(`.yearContainer { border-radius: ${borderRadius}px !important; }`);
+      cssRules.push(`[class*="yearContainer"] { border-radius: ${borderRadius}px !important; }`);
     }
     
     if (boxShadow) {
-      cssRules.push(`.yearContainer { box-shadow: ${boxShadow} !important; }`);
+      cssRules.push(`[class*="yearContainer"] { box-shadow: ${boxShadow} !important; }`);
     }
     
     if (titleFontSize !== undefined) {
-      cssRules.push(`.yearHeader { font-size: ${titleFontSize}rem !important; }`);
+      cssRules.push(`[class*="yearHeader"] { font-size: ${titleFontSize}rem !important; }`);
     }
     
     if (titleColor) {
-      cssRules.push(`.yearHeader { color: ${titleColor} !important; -webkit-text-fill-color: ${titleColor} !important; }`);
+      cssRules.push(`[class*="yearHeader"] { color: ${titleColor} !important; -webkit-text-fill-color: ${titleColor} !important; }`);
     }
     
     if (titleFontWeight !== undefined) {
-      cssRules.push(`.yearHeader { font-weight: ${titleFontWeight} !important; }`);
-    }
-  }
-  
-  // Year Section 样式
-  if (config.yearSection) {
-    const {
-      currentYearBackground, currentYearOpacity, fontSize,
-      fontColor, hoverBackground, selectedBackground
-    } = config.yearSection;
-    
-    if (currentYearBackground) {
-      // 修复：伪元素显示年份数字，应该用color属性而不是background
-      cssRules.push(`[class*="yearSection"][class*="currentYear"]::before { color: ${currentYearBackground} !important; }`);
-    }
-    
-    if (currentYearOpacity !== undefined) {
-      cssRules.push(`[class*="yearSection"][class*="currentYear"]::before { opacity: ${currentYearOpacity} !important; }`);
-    }
-    
-    if (fontSize !== undefined) {
-      cssRules.push(`[class*="yearSection"][class*="currentYear"]::before { font-size: ${fontSize}em !important; }`);
-    }
-    
-    if (fontColor) {
-      cssRules.push(`[class*="yearSection"] { color: ${fontColor} !important; }`);
-    }
-    
-    if (hoverBackground) {
-      cssRules.push(`[class*="yearSection"]:hover { background: ${hoverBackground} !important; }`);
-    }
-    
-    if (selectedBackground) {
-      cssRules.push(`[class*="yearSection"][class*="selected"] { background: ${selectedBackground} !important; }`);
+      cssRules.push(`[class*="yearHeader"] { font-weight: ${titleFontWeight} !important; }`);
     }
   }
   
@@ -132,8 +100,7 @@ export function applyThemeToDOM(config: ThemeConfig) {
   if (config.monthCard) {
     const {
       background, backgroundGradient, opacity, fontSize, fontColor,
-      hoverBackground, selectedBackground, borderColor, borderRadius,
-      currentMonthBackground, currentMonthBorderColor,
+      hoverBackground, borderColor, borderRadius,
       todayMonthBackground, todayMonthBorderColor
     } = config.monthCard;
     
@@ -142,190 +109,216 @@ export function applyThemeToDOM(config: ThemeConfig) {
       if (backgroundGradient?.enabled) {
         bgValue = `linear-gradient(${backgroundGradient.angle}deg, ${backgroundGradient.startColor}, ${backgroundGradient.endColor})`;
       }
-      cssRules.push(`.monthCard { background: ${bgValue} !important; }`);
+      cssRules.push(`[class*="monthCard"] { background: ${bgValue} !important; }`);
     }
     
     if (opacity !== undefined) {
-      cssRules.push(`.monthCard { opacity: ${opacity} !important; }`);
+      cssRules.push(`[class*="monthCard"] { opacity: ${opacity} !important; }`);
     }
     
     if (borderColor) {
-      cssRules.push(`.monthCard { border-color: ${borderColor} !important; }`);
+      cssRules.push(`[class*="monthCard"] { border-color: ${borderColor} !important; }`);
     }
     
     if (borderRadius !== undefined) {
-      cssRules.push(`.monthCard { border-radius: ${borderRadius}px !important; }`);
+      cssRules.push(`[class*="monthCard"] { border-radius: ${borderRadius}px !important; }`);
     }
     
     if (fontSize !== undefined) {
-      cssRules.push(`.monthNumber { font-size: ${fontSize}em !important; }`);
+      cssRules.push(`[class*="monthNumber"] { font-size: ${fontSize}em !important; }`);
     }
     
     if (fontColor) {
-      cssRules.push(`.monthNumber { color: ${fontColor} !important; }`);
+      cssRules.push(`[class*="monthNumber"] { color: ${fontColor} !important; }`);
     }
     
     if (hoverBackground) {
-      cssRules.push(`.monthCard:hover { background: ${hoverBackground} !important; }`);
-    }
-    
-    if (selectedBackground) {
-      cssRules.push(`.monthCard.selected { background: ${selectedBackground} !important; }`);
-    }
-    
-    if (currentMonthBackground) {
-      cssRules.push(`.currentMonth { background: ${currentMonthBackground} !important; }`);
-    }
-    
-    if (currentMonthBorderColor) {
-      cssRules.push(`.currentMonth { border-color: ${currentMonthBorderColor} !important; }`);
+      cssRules.push(`[class*="monthCard"]:hover { background: ${hoverBackground} !important; }`);
     }
     
     if (todayMonthBackground) {
-      cssRules.push(`.todayMonth { background: ${todayMonthBackground} !important; }`);
+      cssRules.push(`[class*="monthCard"][class*="todayMonth"] { background: ${todayMonthBackground} !important; }`);
     }
     
     if (todayMonthBorderColor) {
-      cssRules.push(`.todayMonth { border-color: ${todayMonthBorderColor} !important; }`);
+      // 修复边框样式，需要设置border而不仅仅是border-color
+      cssRules.push(`[class*="monthCard"][class*="todayMonth"] { border: 2px solid ${todayMonthBorderColor} !important; }`);
     }
   }
   
-  // Month/Week View 样式
-  if (config.monthWeekView) {
+  // Month View 样式
+  if (config.monthView) {
     const {
-      containerBackground, containerGradient, containerOpacity,
-      titleFontSize, titleColor, titleFontWeight,
-      weekdayBackground, weekdayFontSize, weekdayFontColor, weekdayFontWeight,
-      dayCellBackground, dayCellHoverBackground, dayCellBorderColor,
-      dayNumberFontSize, dayNumberColor,
-      todayBackground, todayBorderColor, todayFontColor,
-      lunarFontSize, lunarFontColor, festivalColor, solarTermColor,
-      timeSlotBackground, timeSlotFontSize, timeSlotFontColor,
-      eventCardBackground, eventCardBorderRadius, eventTitleFontSize, eventTitleColor
-    } = config.monthWeekView;
+      containerBackground, containerGradient,
+      headerFontSize, headerColor,
+      weekdayBackground, weekdayColor,
+      dayCellBackground, dayCellHoverBackground,
+      dayNumberSize, dayNumberColor,
+      todayBackground, todayColor,
+      lunarSize, lunarColor, festivalColor, solarTermColor
+    } = config.monthView;
     
-    // 容器样式
+    // 月视图容器样式
     if (containerBackground || containerGradient?.enabled) {
-      let bgValue = containerBackground || 'var(--bg-primary)';
+      let bgValue = containerBackground || '#ffffff';
       if (containerGradient?.enabled) {
         bgValue = `linear-gradient(${containerGradient.angle}deg, ${containerGradient.startColor}, ${containerGradient.endColor})`;
       }
-      cssRules.push(`.monthContainer, .weekContainer { background: ${bgValue} !important; }`);
+      cssRules.push(`[class*="monthContainer"] { background: ${bgValue} !important; }`);
     }
     
-    if (containerOpacity !== undefined) {
-      cssRules.push(`.monthContainer, .weekContainer { opacity: ${containerOpacity} !important; }`);
+    // 月视图标题样式
+    if (headerFontSize !== undefined) {
+      cssRules.push(`[class*="monthHeader"] { font-size: ${headerFontSize}rem !important; }`);
     }
     
-    // 标题样式
-    if (titleFontSize !== undefined) {
-      cssRules.push(`.monthHeader, .weekHeader { font-size: ${titleFontSize}rem !important; }`);
-    }
-    
-    if (titleColor) {
-      cssRules.push(`.monthHeader, .weekHeader { color: ${titleColor} !important; -webkit-text-fill-color: ${titleColor} !important; }`);
-    }
-    
-    if (titleFontWeight !== undefined) {
-      cssRules.push(`.monthHeader, .weekHeader { font-weight: ${titleFontWeight} !important; }`);
+    if (headerColor) {
+      cssRules.push(`[class*="monthHeader"] { color: ${headerColor} !important; -webkit-text-fill-color: ${headerColor} !important; }`);
     }
     
     // 星期标题样式
     if (weekdayBackground) {
-      cssRules.push(`.weekdayRow { background: ${weekdayBackground} !important; }`);
+      cssRules.push(`[class*="weekdayRow"] { background: ${weekdayBackground} !important; }`);
     }
     
-    if (weekdayFontSize !== undefined) {
-      cssRules.push(`.weekdayHeader { font-size: ${weekdayFontSize}rem !important; }`);
-    }
-    
-    if (weekdayFontColor) {
-      cssRules.push(`.weekdayHeader { color: ${weekdayFontColor} !important; }`);
-    }
-    
-    if (weekdayFontWeight !== undefined) {
-      cssRules.push(`.weekdayHeader { font-weight: ${weekdayFontWeight} !important; }`);
+    if (weekdayColor) {
+      cssRules.push(`[class*="weekdayHeader"] { color: ${weekdayColor} !important; }`);
     }
     
     // 日期单元格样式
     if (dayCellBackground) {
-      cssRules.push(`.dayCell { background: ${dayCellBackground} !important; }`);
+      cssRules.push(`[class*="monthContainer"] [class*="dayCell"] { background: ${dayCellBackground} !important; }`);
     }
     
     if (dayCellHoverBackground) {
-      cssRules.push(`.dayCell:hover { background: ${dayCellHoverBackground} !important; }`);
+      cssRules.push(`[class*="monthContainer"] [class*="dayCell"]:hover { background: ${dayCellHoverBackground} !important; }`);
     }
     
-    if (dayCellBorderColor) {
-      cssRules.push(`.dayCell { border-color: ${dayCellBorderColor} !important; }`);
-    }
-    
-    if (dayNumberFontSize !== undefined) {
-      cssRules.push(`.dayNumber { font-size: ${dayNumberFontSize}rem !important; }`);
+    if (dayNumberSize !== undefined) {
+      cssRules.push(`[class*="monthContainer"] [class*="dayNumber"] { font-size: ${dayNumberSize}rem !important; }`);
     }
     
     if (dayNumberColor) {
-      cssRules.push(`.dayNumber { color: ${dayNumberColor} !important; }`);
+      cssRules.push(`[class*="monthContainer"] [class*="dayNumber"] { color: ${dayNumberColor} !important; }`);
     }
     
-    // 今天样式
+    // 今天样式  
     if (todayBackground) {
-      cssRules.push(`.today { background: ${todayBackground} !important; }`);
+      cssRules.push(`[class*="monthContainer"] [class*="today"] { background: ${todayBackground} !important; }`);
     }
     
-    if (todayBorderColor) {
-      cssRules.push(`.today { border-color: ${todayBorderColor} !important; }`);
+    if (todayColor) {
+      cssRules.push(`[class*="monthContainer"] [class*="today"] [class*="dayNumber"] { color: ${todayColor} !important; }`);
     }
     
-    if (todayFontColor) {
-      cssRules.push(`.today .dayNumber { color: ${todayFontColor} !important; }`);
+    // 月视图农历样式
+    if (lunarSize !== undefined) {
+      cssRules.push(`[class*="monthContainer"] [class*="lunar"] { font-size: ${lunarSize}rem !important; }`);
     }
     
-    // 农历样式
-    if (lunarFontSize !== undefined) {
-      cssRules.push(`.lunar { font-size: ${lunarFontSize}rem !important; }`);
-    }
-    
-    if (lunarFontColor) {
-      cssRules.push(`.lunar { color: ${lunarFontColor} !important; }`);
+    if (lunarColor) {
+      cssRules.push(`[class*="monthContainer"] [class*="lunar"] { color: ${lunarColor} !important; }`);
     }
     
     if (festivalColor) {
-      cssRules.push(`.festival { color: ${festivalColor} !important; }`);
+      cssRules.push(`[class*="monthContainer"] [class*="festival"] { color: ${festivalColor} !important; }`);
     }
     
     if (solarTermColor) {
-      cssRules.push(`.solarTerm { color: ${solarTermColor} !important; }`);
+      cssRules.push(`[class*="monthContainer"] [class*="solarTerm"] { color: ${solarTermColor} !important; }`);
+    }
+  }
+    
+  
+  // Week View 样式
+  if (config.weekView) {
+    const {
+      containerBackground,
+      headerFontSize, headerColor,
+      dayHeaderBackground, dayNameColor, dayDateColor,
+      todayHeaderBackground, todayHeaderColor,
+      timeColumnBackground, timeSlotColor, timeSlotSize,
+      hourCellBackground, hourCellBorderColor, hourCellHoverBackground,
+      lunarSize, lunarColor, festivalColor, solarTermColor
+    } = config.weekView;
+    
+    // 周视图容器样式
+    if (containerBackground) {
+      cssRules.push(`[class*="weekContainer"] { background: ${containerBackground} !important; }`);
     }
     
-    // 周视图时间槽样式
-    if (timeSlotBackground) {
-      cssRules.push(`.timeSlot { background: ${timeSlotBackground} !important; }`);
+    // 周视图标题样式
+    if (headerFontSize !== undefined) {
+      cssRules.push(`[class*="weekHeader"] { font-size: ${headerFontSize}rem !important; }`);
     }
     
-    if (timeSlotFontSize !== undefined) {
-      cssRules.push(`.timeSlot { font-size: ${timeSlotFontSize}rem !important; }`);
+    if (headerColor) {
+      cssRules.push(`[class*="weekHeader"] { color: ${headerColor} !important; }`);
     }
     
-    if (timeSlotFontColor) {
-      cssRules.push(`.timeSlot { color: ${timeSlotFontColor} !important; }`);
+    // 日期列标题样式
+    if (dayHeaderBackground) {
+      cssRules.push(`[class*="dayHeader"] { background: ${dayHeaderBackground} !important; }`);
     }
     
-    // 事件卡片样式
-    if (eventCardBackground) {
-      cssRules.push(`.eventCard { background: ${eventCardBackground} !important; }`);
+    if (dayNameColor) {
+      cssRules.push(`[class*="dayName"] { color: ${dayNameColor} !important; }`);
     }
     
-    if (eventCardBorderRadius !== undefined) {
-      cssRules.push(`.eventCard { border-radius: ${eventCardBorderRadius}px !important; }`);
+    if (dayDateColor) {
+      cssRules.push(`[class*="dayDate"] { color: ${dayDateColor} !important; }`);
     }
     
-    if (eventTitleFontSize !== undefined) {
-      cssRules.push(`.eventTitle { font-size: ${eventTitleFontSize}px !important; }`);
+    // 今天标题样式
+    if (todayHeaderBackground) {
+      cssRules.push(`[class*="dayHeader"][class*="today"] { background: ${todayHeaderBackground} !important; }`);
     }
     
-    if (eventTitleColor) {
-      cssRules.push(`.eventTitle { color: ${eventTitleColor} !important; }`);
+    if (todayHeaderColor) {
+      cssRules.push(`[class*="dayHeader"][class*="today"] [class*="dayName"], [class*="dayHeader"][class*="today"] [class*="dayDate"] { color: ${todayHeaderColor} !important; }`);
+    }
+    
+    // 时间列样式
+    if (timeColumnBackground) {
+      cssRules.push(`[class*="timeColumn"] { background: ${timeColumnBackground} !important; }`);
+    }
+    
+    if (timeSlotColor) {
+      cssRules.push(`[class*="timeSlot"] { color: ${timeSlotColor} !important; }`);
+    }
+    
+    if (timeSlotSize !== undefined) {
+      cssRules.push(`[class*="timeSlot"] { font-size: ${timeSlotSize}rem !important; }`);
+    }
+    
+    // 小时格子样式
+    if (hourCellBackground) {
+      cssRules.push(`[class*="hourCell"] { background: ${hourCellBackground} !important; }`);
+    }
+    
+    if (hourCellBorderColor) {
+      cssRules.push(`[class*="hourCell"] { border-color: ${hourCellBorderColor} !important; }`);
+    }
+    
+    if (hourCellHoverBackground) {
+      cssRules.push(`[class*="hourCell"]:hover { background: ${hourCellHoverBackground} !important; }`);
+    }
+    
+    // 周视图农历样式
+    if (lunarSize !== undefined) {
+      cssRules.push(`[class*="weekContainer"] [class*="lunar"] { font-size: ${lunarSize}rem !important; }`);
+    }
+    
+    if (lunarColor) {
+      cssRules.push(`[class*="weekContainer"] [class*="lunar"] { color: ${lunarColor} !important; }`);
+    }
+    
+    if (festivalColor) {
+      cssRules.push(`[class*="weekContainer"] [class*="festival"] { color: ${festivalColor} !important; }`);
+    }
+    
+    if (solarTermColor) {
+      cssRules.push(`[class*="weekContainer"] [class*="solarTerm"] { color: ${solarTermColor} !important; }`);
     }
   }
   

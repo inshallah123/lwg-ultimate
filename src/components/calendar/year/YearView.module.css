@@ -44,8 +44,6 @@
 /* === 滚动容器视觉样式 === */
 .scrollContainer {
   border-radius: 0 0 12px 12px;
-  border: 1px solid #f1f5f9;
-  border-top: none;
   background: linear-gradient(180deg, 
     rgba(255, 255, 255, 0.02),
     rgba(248, 250, 252, 0.01)

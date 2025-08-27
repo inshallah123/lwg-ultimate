@@ -35,7 +35,7 @@ const MonthCardPanel: React.FC<MonthCardPanelProps> = ({
   return (
     <div className={styles.panel}>
       <div className={styles.panelHeader}>
-        <h3>月份卡片样式设置</h3>
+        <h3>年视图-月份卡片样式设置</h3>
         <button className={styles.previewBtn} onClick={onPreview}>
           <Eye size={16} />
           预览
@@ -207,44 +207,11 @@ const MonthCardPanel: React.FC<MonthCardPanelProps> = ({
       </div>
 
       <div className={styles.section}>
-        <h4>特殊月份样式</h4>
+        <h4>今天所在月份样式</h4>
         
         <div className={styles.gridSection}>
           <div className={styles.field}>
-            <label>当前月份背景</label>
-            <div className={styles.colorInput}>
-              <input
-                type="color"
-                value={config.currentMonthBackground || 'rgba(168, 196, 212, 0.15)'}
-                onChange={(e) => handleChange('currentMonthBackground', e.target.value)}
-              />
-              <input
-                type="text"
-                value={config.currentMonthBackground || 'rgba(168, 196, 212, 0.15)'}
-                onChange={(e) => handleChange('currentMonthBackground', e.target.value)}
-                style={{ width: '140px' }}
-              />
-            </div>
-          </div>
-
-          <div className={styles.field}>
-            <label>当前月份边框</label>
-            <div className={styles.colorInput}>
-              <input
-                type="color"
-                value={config.currentMonthBorderColor || '#a8c4d4'}
-                onChange={(e) => handleChange('currentMonthBorderColor', e.target.value)}
-              />
-              <input
-                type="text"
-                value={config.currentMonthBorderColor || '#a8c4d4'}
-                onChange={(e) => handleChange('currentMonthBorderColor', e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className={styles.field}>
-            <label>今天月份背景</label>
+            <label>背景颜色</label>
             <div className={styles.colorInput}>
               <input
                 type="color"
@@ -260,7 +227,7 @@ const MonthCardPanel: React.FC<MonthCardPanelProps> = ({
           </div>
 
           <div className={styles.field}>
-            <label>今天月份边框</label>
+            <label>边框颜色</label>
             <div className={styles.colorInput}>
               <input
                 type="color"
@@ -291,22 +258,6 @@ const MonthCardPanel: React.FC<MonthCardPanelProps> = ({
               type="text"
               value={config.hoverBackground || '#f8fafc'}
               onChange={(e) => handleChange('hoverBackground', e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className={styles.field}>
-          <label>选中背景</label>
-          <div className={styles.colorInput}>
-            <input
-              type="color"
-              value={config.selectedBackground || '#e0e7ff'}
-              onChange={(e) => handleChange('selectedBackground', e.target.value)}
-            />
-            <input
-              type="text"
-              value={config.selectedBackground || '#e0e7ff'}
-              onChange={(e) => handleChange('selectedBackground', e.target.value)}
             />
           </div>
         </div>

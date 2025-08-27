@@ -89,7 +89,7 @@ const GlobalStylePanel: React.FC<GlobalStylePanelProps> = ({
               max="1"
               step="0.1"
               value={config.opacity || 1}
-              onChange={(e) => handleColorChange('opacity', parseFloat(e.target.value))}
+              onChange={(e) => onChange({ ...config, opacity: parseFloat(e.target.value) })}
             />
             <span>{(config.opacity || 1).toFixed(1)}</span>
           </div>
@@ -205,6 +205,9 @@ const GlobalStylePanel: React.FC<GlobalStylePanelProps> = ({
                   onChange({
                     ...config,
                     backgroundImage: {
+                      enabled: config.backgroundImage?.enabled || false,
+                      url: config.backgroundImage?.url || '',
+                      position: config.backgroundImage?.position || 'center',
                       ...config.backgroundImage,
                       size: e.target.value as 'cover' | 'contain' | 'auto'
                     }
