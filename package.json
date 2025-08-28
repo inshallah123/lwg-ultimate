@@ -2,7 +2,7 @@
   "name": "littlewhitegoose",
   "version": "1.0.1",
   "description": "A beautiful desktop calendar application",
-  "main": "electron/electron/main/index.js",
+  "main": "dist-electron/electron/main/index.js",
   "scripts": {
     "dev": "concurrently \"npm:dev:vite\" \"npm:dev:electron\"",
     "dev:clean": "node scripts/dev.js",

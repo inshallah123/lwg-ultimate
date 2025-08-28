@@ -145,7 +145,7 @@ const ThemePalette: React.FC<ThemePaletteProps> = ({ isOpen, onClose }) => {
     try {
       await saveTheme(themeName, themeConfig);
       alert('主题保存成功');
-      loadThemeList();
+      await loadThemeList();
     } catch (error) {
       alert('保存失败: ' + error);
     }

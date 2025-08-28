@@ -4,42 +4,36 @@ const fs = require('fs');
 const path = require('path');
 
 class AppUpdater {
-  constructor(getMainWindow) {
-    // 配置更新器 - 根据官方最佳实践
-    // autoDownload: false 允许用户选择是否下载更新
-    // autoInstallOnAppQuit: true 确保下载的更新在退出时安装
+  private autoUpdater: any;
+  private isManualCheck: boolean;
+  private getMainWindow: () => any;
+  private updateDownloaded: boolean;
+
+  constructor(getMainWindow?: () => any) {
     autoUpdater.autoDownload = false;
     autoUpdater.autoInstallOnAppQuit = true;
     
-    // 关键修复：禁用差异下载，这可能导致 update-downloaded 不触发
     autoUpdater.allowPrerelease = false;
     autoUpdater.allowDowngrade = false;
     
-    // Windows 特定修复
     if (process.platform === 'win32') {
-      // 禁用差异下载 - 这是导致问题的常见原因
       process.env.ELECTRON_UPDATER_ALLOW_DIFFERENTIAL = 'false';
     }
     
-    // 重要：禁用签名验证（仅用于未签名的应用）
-    // 生产环境建议使用正确的代码签名证书
-    autoUpdater.forceDevUpdateConfig = false;  // 不强制dev模式
-    autoUpdater.allowUnverifiedSignatures = true;  // 允许未验证的签名
+    autoUpdater.forceDevUpdateConfig = false;
+    autoUpdater.allowUnverifiedSignatures = true;
     
-    // 配置日志记录
     const log = require('electron-log');
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
     
-    this.autoUpdater = autoUpdater; // 暴露autoUpdater以便外部访问
+    this.autoUpdater = autoUpdater;
     this.isManualCheck = false;
     this.getMainWindow = getMainWindow || (() => BrowserWindow.getAllWindows()[0]);
     this.updateDownloaded = false;
     
-    // 配置代理（如果有）
     this.configureProxy();
     this.setupEventListeners();
-    
   }
   
   configureProxy() {
@@ -48,7 +42,6 @@ class AppUpdater {
       if (fs.existsSync(configPath)) {
         const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
         
-        // 如果配置了 GitHub 代理
         if (config.githubProxy) {
           process.env.https_proxy = config.githubProxy;
           process.env.http_proxy = config.githubProxy;
@@ -60,7 +53,7 @@ class AppUpdater {
     }
   }
   
-  setProxy(proxyUrl) {
+  setProxy(proxyUrl: string) {
     if (proxyUrl) {
       process.env.https_proxy = proxyUrl;
       process.env.http_proxy = proxyUrl;
@@ -77,7 +70,7 @@ class AppUpdater {
       console.log('正在检查更新...');
     });
 
-    autoUpdater.on('update-available', (info) => {
+    autoUpdater.on('update-available', (info: any) => {
       const mainWindow = this.getMainWindow();
       
       if (!mainWindow) {
@@ -93,7 +86,7 @@ class AppUpdater {
         buttons: ['立即下载', '稍后提醒'],
         defaultId: 0,
         cancelId: 1
-      }).then(result => {
+      }).then((result: any) => {
         if (result.response === 0) {
           autoUpdater.downloadUpdate();
         }
@@ -103,7 +96,6 @@ class AppUpdater {
     autoUpdater.on('update-not-available', () => {
       console.log('当前版本已是最新版本');
       
-      // 如果是手动检查，显示提示
       if (this.isManualCheck) {
         const mainWindow = this.getMainWindow();
         if (mainWindow) {
@@ -118,10 +110,9 @@ class AppUpdater {
       }
     });
 
-    autoUpdater.on('error', (err) => {
+    autoUpdater.on('error', (err: Error) => {
       console.error('更新出错:', err);
       
-      // 如果是手动检查，显示错误信息
       if (this.isManualCheck) {
         const mainWindow = this.getMainWindow();
         if (mainWindow && !mainWindow.isDestroyed()) {
@@ -137,7 +128,7 @@ class AppUpdater {
       }
     });
 
-    autoUpdater.on('download-progress', (progressObj) => {
+    autoUpdater.on('download-progress', (progressObj: any) => {
       const mainWindow = this.getMainWindow();
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send('download-progress', {
@@ -149,13 +140,12 @@ class AppUpdater {
       }
     });
 
-    autoUpdater.on('update-downloaded', (info) => {
+    autoUpdater.on('update-downloaded', (info: any) => {
       this.updateDownloaded = true;
       
       const mainWindow = this.getMainWindow();
       console.log('主窗口状态:', mainWindow ? '存在' : '不存在');
       
-      // 通知渲染进程下载完成
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send('update-downloaded');
         
@@ -167,15 +157,10 @@ class AppUpdater {
           buttons: ['立即重启', '稍后重启'],
           defaultId: 0,
           cancelId: 1
-        }).then(result => {
+        }).then((result: any) => {
           if (result.response === 0) {
             console.log('用户选择立即安装更新');
-            // 根据官方文档，直接调用 quitAndInstall 即可
-            // 此方法会关闭所有窗口并调用 app.quit()
             try {
-              // 使用正确的参数调用 quitAndInstall
-              // isSilent: false - 显示安装进度
-              // forceRunAfter: true - 强制安装后重新启动应用
               autoUpdater.quitAndInstall(false, true);
             } catch (error) {
               console.error('安装更新时出错:', error);
@@ -189,25 +174,19 @@ class AppUpdater {
             }
           } else {
             console.log('用户选择稍后安装，将在退出时自动安装');
-            // 确保 autoInstallOnAppQuit 为 true
-            // 根据官方文档：成功下载的更新将在下次启动时自动应用
             autoUpdater.autoInstallOnAppQuit = true;
           }
         });
       } else {
         console.error('无法获取主窗口，无法显示更新安装提示');
-        // 即使没有窗口，也确保退出时会安装
         autoUpdater.autoInstallOnAppQuit = true;
       }
     });
   }
 
   checkForUpdates() {
-    // 只在生产环境中检查更新
     if (process.env.NODE_ENV !== 'development') {
-      // 使用 checkForUpdates 而不是 checkForUpdatesAndNotify
-      // 因为我们自定义了通知逻辑
-      autoUpdater.checkForUpdates().catch(err => {
+      autoUpdater.checkForUpdates().catch((err: Error) => {
         console.error('自动检查更新失败:', err);
       });
     }
@@ -218,7 +197,7 @@ class AppUpdater {
     try {
       const result = await autoUpdater.checkForUpdates();
       return result;
-    } catch (error) {
+    } catch (error: any) {
       this.isManualCheck = false;
       const mainWindow = this.getMainWindow();
       if (mainWindow) {
@@ -234,7 +213,7 @@ class AppUpdater {
     }
   }
 
-  setFeedURL(url) {
+  setFeedURL(url: string) {
     autoUpdater.setFeedURL(url);
   }
   
