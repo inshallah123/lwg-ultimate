@@ -4,6 +4,27 @@
 /* 修改这些样式不会影响布局，仅改变视觉效果                                 */
 /* ====================================================================== */
 
+/* DayCellContent 组件局部变量定义 */
+:root {
+  /* 颜色系统 */
+  --color-text-primary: #2C3E50;
+  --color-text-secondary: #5A6C7D;
+  --color-text-tertiary: #94A3B8;
+  --color-accent-red: #E15554;
+  --color-accent-orange: #F39C4D;
+  --color-accent-blue: #5B8DBE;
+  --color-accent-blue-hover: #4A7CAD;
+  --color-accent-gray: #94A3B8;
+  --color-surface: #FFFFFF;
+  --color-border-light: #F1F5F9;
+  
+  /* 标签颜色 */
+  --tag-color-work: #5B8DBE;
+  --tag-color-private: #52A373;
+  --tag-color-balance: #F39C4D;
+  --tag-color-custom: #E15554;
+}
+
 /* === 日期数字视觉样式 === */
 .dayNumber {
   font-size: 14px;

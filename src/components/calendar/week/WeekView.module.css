@@ -5,12 +5,30 @@
 /* ====================================================================== */
 
 
-/* === 颜色变量定义（补充 index.css 中未定义的） === */
+/* === WeekView 局部变量定义 === */
 :root {
+  /* 颜色系统 */
+  --color-primary: #5B8DBE;
+  --color-primary-light: rgba(91, 141, 190, 0.12);
+  --color-text-primary: #2C3E50;
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #f8fcfb;
   --color-bg-tertiary: #f3f4f7;
+  --color-bg-hover: rgba(91, 141, 190, 0.04);
+  --color-border: #539dd6;
   --color-border-light: #f0f1f4;
   --color-festival: #d6536d;
   --color-solarterm: #4a8a73;
+  
+  /* 字体 */
+  --font-weight-medium: 500;
+  
+  /* 圆角 */
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  
+  /* 阴影 */
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* === 容器视觉样式 === */

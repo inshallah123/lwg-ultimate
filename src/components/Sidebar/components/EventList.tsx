@@ -2,14 +2,8 @@ import React from 'react';
 import { EventCard } from './EventCard';
 import { useEventStore } from '@/stores/eventStore';
 import { useSidebarStore } from '../store';
+import { TIME_SLOTS } from '@/utils/dateHelpers';
 import styles from './EventList.module.css';
-
-// 时间段列表 - 与 WeekView 和 EventForm 保持一致
-const TIME_SLOTS = [
-  '08:00-10:00', '10:00-12:00', '12:00-14:00', '14:00-16:00',
-  '16:00-18:00', '18:00-20:00', '20:00-22:00', '22:00-00:00',
-  '00:00-02:00', '02:00-04:00', '04:00-06:00', '06:00-08:00'
-];
 
 export function EventList() {
   const selectedDate = useSidebarStore(state => state.selectedDate);

@@ -32,7 +32,12 @@
       "Bash(gh release create:*)",
       "Bash(touch:*)",
       "Bash(npm run lint)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(cmd /c:*)",
+      "Bash(for file in src/components/Sidebar/components/*.module.css)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(head:*)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": [],

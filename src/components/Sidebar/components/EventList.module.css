@@ -1,3 +1,6 @@
+/* 导入Sidebar模块的共享样式变量 */
+@import '../style/index.css';
+
 .container {
   height: 100%;
   display: flex;

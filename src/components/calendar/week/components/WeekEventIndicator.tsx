@@ -1,19 +1,13 @@
 import React, { useMemo } from 'react';
 import { useEventStore } from '@/stores/eventStore';
 import { useSidebarStore } from '@/components/Sidebar/store';
+import { TIME_SLOTS } from '@/utils/dateHelpers';
 import styles from './WeekEventIndicator.module.css';
 
 interface WeekEventIndicatorProps {
   date: Date;
   hourIndex: number;
 }
-
-// 时间段列表 - 与 WeekView 保持一致
-const TIME_SLOTS = [
-  '08:00-10:00', '10:00-12:00', '12:00-14:00', '14:00-16:00',
-  '16:00-18:00', '18:00-20:00', '20:00-22:00', '22:00-00:00',
-  '00:00-02:00', '02:00-04:00', '04:00-06:00', '06:00-08:00'
-];
 
 export function WeekEventIndicator({ date, hourIndex }: WeekEventIndicatorProps) {
   // 订阅 events 数组以触发重新渲染

@@ -1,8 +1,25 @@
-@import '../../../index.css';
-
-/* NavButton 需要的 CSS 变量 */
+/* NavButton 组件局部变量定义 */
 :root {
+  /* 颜色系统 */
+  --color-text-primary: #2C3E50;
+  --color-text-secondary: #5A6C7D;
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #f8fcfb;
+  --color-border: #539dd6;
   --color-border-light: #f0f1f4;
+  
+  /* 字体 */
+  --font-size-lg: 1.25rem;
+  
+  /* 圆角 */
+  --radius-md: 8px;
+  
+  /* 阴影 */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
+  /* 过渡 */
+  --transition-base: 200ms ease-in-out;
 }
 
 /* 第一部分：用户可自定义的视觉样式 */

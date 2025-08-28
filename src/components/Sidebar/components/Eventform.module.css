@@ -1,6 +1,16 @@
-/* CSS变量声明 - 消除IDE警告 */
+/* 导入Sidebar模块的共享样式变量 */
+@import '../style/index.css';
+
+/* CSS变量声明 - Eventform特有变量 */
 :root {
   --tag-color: #a0aec0; /* 默认颜色，会被内联样式覆盖 */
+  
+  /* Eventform特有变量（如果上级没有定义） */
+  --color-bg-tertiary: #F1F5F9;
+  --color-border: #539dd6;
+  --radius-full: 9999px;
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --color-primary-gradient: linear-gradient(135deg, #5B8DBE, #7BA7D1);
 }
 
 /* 遮罩层 */
