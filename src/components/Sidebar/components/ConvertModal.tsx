@@ -125,7 +125,7 @@ export function ConvertModal({
           <div className={styles.content}>
             <p className={styles.message}>
               This will convert the event to a recurring series. 
-              You'll be able to set the recurrence pattern in the next step.
+              You&apos;ll be able to set the recurrence pattern in the next step.
             </p>
           </div>
           

@@ -30,7 +30,9 @@
       "WebFetch(domain:www.electronjs.org)",
       "WebFetch(domain:www.electron.build)",
       "Bash(gh release create:*)",
-      "Bash(touch:*)"
+      "Bash(touch:*)",
+      "Bash(npm run lint)",
+      "Bash(npx eslint:*)"
     ],
     "deny": [],
     "ask": [],

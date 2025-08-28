@@ -14,7 +14,6 @@ const TIME_SLOTS = [
 export function EventList() {
   const selectedDate = useSidebarStore(state => state.selectedDate);
   const selectedHour = useSidebarStore(state => state.selectedHour);
-  const openEditForm = useSidebarStore(state => state.openEditForm);
   // 订阅 events 数组以触发重新渲染
   const allEvents = useEventStore(state => state.events);
   const getEventsInRange = useEventStore(state => state.getEventsInRange);
@@ -38,7 +37,8 @@ export function EventList() {
     }
     
     return dayEvents;
-  }, [allEvents, getEventsInRange, selectedDate, selectedHour]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getEventsInRange, selectedDate, selectedHour]);
   
   
   if (!selectedDate) {

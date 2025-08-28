@@ -11,7 +11,7 @@ import UpdateProgress from './components/UpdateProgress/UpdateProgress';
 import ProxyConfigDialog from './components/ProxyConfigDialog';
 import ThemePalette from './components/ThemePalette/ThemePalette';
 import ThemeSelector from './components/ThemePalette/ThemeSelector';
-import { applyThemeToDOM, removeThemeFromDOM } from './components/ThemePalette/utils/themeApplier';
+import { applyThemeToDOM } from './components/ThemePalette/utils/themeApplier';
 import { loadTheme } from './components/ThemePalette/utils/themeStorage';
 import styles from './App.module.css';
 
@@ -147,7 +147,7 @@ function App() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Goose's Calendar</h1>
+        <h1 className={styles.title}>Goose&apos;s Calendar</h1>
         <SearchBox 
           onSearch={handleSearch}
           onEventClick={handleEventClick}

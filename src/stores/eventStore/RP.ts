@@ -1,5 +1,5 @@
 import { Event, UpdateEventInput, isRecurringParent } from '@/types/event';
-import { EditScope, DeleteScope, StoreSet, StoreGet } from './types';
+import { /*EditScope, DeleteScope,*/ StoreSet, StoreGet } from './types';
 
 /**
  * RP (Recurring Parent) 母事件操作
@@ -9,7 +9,7 @@ import { EditScope, DeleteScope, StoreSet, StoreGet } from './types';
  * - CC (Change Cycle): 改变周期 -> 修改RP的recurrence
  */
 
-export const createRPOperations = (set: StoreSet, get: StoreGet) => ({
+export const createRPOperations = (set: StoreSet, _get: StoreGet) => ({
   
   // RP-EA: 编辑母事件的所有实例
   editRecurringParentAll: (event: Event, updates: UpdateEventInput) => {

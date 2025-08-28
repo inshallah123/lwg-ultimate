@@ -166,7 +166,7 @@ export function EventCard({ event }: EventCardProps) {
   }, [event]);
   
   // 处理转换确认
-  const handleConvertConfirm = useCallback((scope?: 'single' | 'all') => {
+  const handleConvertConfirm = useCallback((_scope?: 'single' | 'all') => {
     setShowConvertModal(false);
     
     if (convertOperation === 'toSimple') {

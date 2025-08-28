@@ -17,16 +17,16 @@ declare global {
         deleteEvent: (id: string) => Promise<void>;
         syncEvents: (events: Event[]) => Promise<void>;
       };
-      onUpdateProgress: (callback: (event: any, data: UpdateProgressData) => void) => void;
+      onUpdateProgress: (callback: (event: Electron.IpcRendererEvent, data: UpdateProgressData) => void) => void;
       onUpdateComplete: (callback: () => void) => void;
       removeUpdateListeners: () => void;
     };
     electron: {
       ipcRenderer: {
-        invoke: (channel: string, ...args: any[]) => Promise<any>;
-        on: (channel: string, listener: (event: any, ...args: any[]) => void) => void;
+        invoke: <T = any>(channel: string, ...args: any[]) => Promise<T>;
+        on: (channel: string, listener: (event: Electron.IpcRendererEvent, ...args: any[]) => void) => void;
         removeAllListeners: (channel: string) => void;
-        send: (channel: string, ...args: any[]) => void;
+        send: (channel: string, ...args: unknown[]) => void;
       };
     };
   }

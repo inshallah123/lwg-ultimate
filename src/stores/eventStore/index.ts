@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { persist/*, createJSONStorage*/ } from 'zustand/middleware';
 import { EventStore } from './types';
 import { createCoreOperations } from './core';
 import { Event } from '@/types/event';
