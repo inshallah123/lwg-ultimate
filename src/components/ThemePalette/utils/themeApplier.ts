@@ -56,9 +56,21 @@ const backgroundStrategies = {
 const styleRulesConfig: Record<string, StyleRule[]> = {
   global: [
     {
-      selector: 'body',
+      selector: '#root',
       property: 'opacity',
       configKey: 'opacity'
+    },
+    {
+      selector: 'h1[class*="title"]',
+      property: 'font-size',
+      configKey: 'titleFontSize',
+      unit: 'rem'
+    },
+    {
+      selector: 'h1[class*="title"]::after',
+      property: 'font-size',
+      configKey: 'subtitleFontSize',
+      unit: 'rem'
     }
   ],
   yearView: [
@@ -66,17 +78,6 @@ const styleRulesConfig: Record<string, StyleRule[]> = {
       selector: '[class*="yearContainer"]',
       property: 'opacity',
       configKey: 'containerOpacity'
-    },
-    {
-      selector: '[class*="yearContainer"]',
-      property: 'border-radius',
-      configKey: 'borderRadius',
-      unit: 'px'
-    },
-    {
-      selector: '[class*="yearContainer"]',
-      property: 'box-shadow',
-      configKey: 'boxShadow'
     },
     {
       selector: '[class*="yearHeader"]',
@@ -108,12 +109,6 @@ const styleRulesConfig: Record<string, StyleRule[]> = {
       configKey: 'borderColor'
     },
     {
-      selector: '[class*="monthCard"]',
-      property: 'border-radius',
-      configKey: 'borderRadius',
-      unit: 'px'
-    },
-    {
       selector: '[class*="monthNumber"]',
       property: 'font-size',
       configKey: 'fontSize',
@@ -142,6 +137,17 @@ const styleRulesConfig: Record<string, StyleRule[]> = {
     }
   ],
   monthView: [
+    {
+      selector: '[class*="monthContainer"]',
+      property: 'opacity',
+      configKey: 'containerOpacity'
+    },
+    {
+      selector: '[class*="monthContainer"]',
+      property: 'border-radius',
+      configKey: 'borderRadius',
+      transform: () => '0'
+    },
     {
       selector: '[class*="monthHeader"]',
       property: 'font-size',
@@ -217,6 +223,17 @@ const styleRulesConfig: Record<string, StyleRule[]> = {
       selector: '[class*="weekContainer"]',
       property: 'background',
       configKey: 'containerBackground'
+    },
+    {
+      selector: '[class*="weekContainer"]',
+      property: 'opacity',
+      configKey: 'containerOpacity'
+    },
+    {
+      selector: '[class*="weekContainer"]',
+      property: 'border-radius',
+      configKey: 'borderRadius',
+      transform: () => '0'
     },
     {
       selector: '[class*="weekHeader"]',
@@ -301,11 +318,11 @@ const styleRulesConfig: Record<string, StyleRule[]> = {
 
 // 特殊处理规则配置
 const specialRulesConfig: SpecialRule[] = [
-  // 全局背景处理
+  // 全局背景和标题处理
   {
     section: 'global' as const,
     handler: (config: GlobalStyleConfig, cssRules: string[]) => {
-      const { backgroundColor, backgroundGradient, backgroundImage } = config;
+      const { backgroundColor, backgroundGradient, backgroundImage, titleColor, subtitleColor } = config;
       
       if (backgroundImage?.enabled && backgroundImage.url) {
         const bgRules = backgroundStrategies.backgroundImage(backgroundImage);
@@ -315,6 +332,26 @@ const specialRulesConfig: SpecialRule[] = [
         cssRules.push(`body { background: ${bgValue} !important; }`);
       } else if (backgroundColor) {
         cssRules.push(`body { background: ${backgroundColor} !important; }`);
+      }
+      
+      // 标题颜色处理（需要覆盖渐变）
+      if (titleColor) {
+        cssRules.push(`h1[class*="title"] { 
+          background: ${titleColor} !important;
+          -webkit-background-clip: text !important;
+          -webkit-text-fill-color: transparent !important;
+          background-clip: text !important;
+        }`);
+      }
+      
+      // 副标题颜色处理
+      if (subtitleColor) {
+        cssRules.push(`h1[class*="title"]::after { 
+          background: ${subtitleColor} !important;
+          -webkit-background-clip: text !important;
+          -webkit-text-fill-color: transparent !important;
+          background-clip: text !important;
+        }`);
       }
     }
   },
@@ -374,11 +411,19 @@ const specialRulesConfig: SpecialRule[] = [
       }
     }
   },
-  // Week View 时间列特殊处理
+  // Week View 背景和时间列特殊处理
   {
     section: 'weekView' as const,
     handler: (config: WeekViewConfig, cssRules: string[]) => {
-      const { timeColumnBackground, todayHeaderColor } = config;
+      const { containerBackground, containerGradient, timeColumnBackground, todayHeaderColor } = config;
+      
+      // 容器背景
+      if (containerGradient?.enabled) {
+        const bgValue = backgroundStrategies.gradient(containerGradient);
+        cssRules.push(`[class*="weekContainer"] { background: ${bgValue} !important; }`);
+      } else if (containerBackground) {
+        cssRules.push(`[class*="weekContainer"] { background: ${containerBackground} !important; }`);
+      }
       
       // 时间列背景特殊处理
       if (timeColumnBackground) {

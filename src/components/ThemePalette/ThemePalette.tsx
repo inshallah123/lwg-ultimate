@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { X, Save, RotateCcw, Trash2, Move } from 'lucide-react';
 import styles from './ThemePalette.module.css';
 import GlobalStylePanel from './panels/GlobalStylePanel';
@@ -171,7 +172,7 @@ const ThemePalette: React.FC<ThemePaletteProps> = ({ isOpen, onClose }) => {
   // 如果不是打开状态，直接返回null
   if (!isOpen) return null;
 
-  return (
+  return ReactDOM.createPortal(
     <>
       {isPreviewMode && (
         <div 
@@ -316,7 +317,8 @@ const ThemePalette: React.FC<ThemePaletteProps> = ({ isOpen, onClose }) => {
         </div>
       </div>
     </div>
-    </>
+    </>,
+    document.body
   );
 };
 

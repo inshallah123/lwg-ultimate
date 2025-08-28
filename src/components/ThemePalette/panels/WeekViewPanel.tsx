@@ -18,6 +18,20 @@ const WeekViewPanel: React.FC<WeekViewPanelProps> = ({
     onChange({ ...config, [key]: value });
   };
 
+  const handleGradientChange = (field: string, value: any) => {
+    onChange({
+      ...config,
+      containerGradient: {
+        ...config.containerGradient,
+        enabled: config.containerGradient?.enabled || false,
+        startColor: config.containerGradient?.startColor || '#ffffff',
+        endColor: config.containerGradient?.endColor || '#f8fcfb',
+        angle: config.containerGradient?.angle || 180,
+        [field]: value
+      }
+    });
+  };
+
   return (
     <div className={styles.panel}>
       <div className={styles.panelHeader}>
@@ -29,7 +43,7 @@ const WeekViewPanel: React.FC<WeekViewPanelProps> = ({
       </div>
 
       <div className={styles.section}>
-        <h4>容器样式</h4>
+        <h4>背景样式</h4>
         <div className={styles.field}>
           <label>背景颜色</label>
           <div className={styles.colorInput}>
@@ -45,6 +59,97 @@ const WeekViewPanel: React.FC<WeekViewPanelProps> = ({
             />
           </div>
         </div>
+
+        <div className={styles.field}>
+          <label>透明度</label>
+          <div className={styles.rangeInput}>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={config.containerOpacity || 1}
+              onChange={(e) => handleChange('containerOpacity', parseFloat(e.target.value))}
+            />
+            <input
+              type="number"
+              className={styles.numberInput}
+              min="0"
+              max="1"
+              step="0.01"
+              value={config.containerOpacity || 1}
+              onChange={(e) => {
+                const value = Math.max(0, Math.min(1, parseFloat(e.target.value) || 0));
+                handleChange('containerOpacity', value);
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.section}>
+        <h4>背景渐变</h4>
+        <div className={styles.field}>
+          <label>
+            <input
+              type="checkbox"
+              checked={config.containerGradient?.enabled || false}
+              onChange={(e) => handleGradientChange('enabled', e.target.checked)}
+            />
+            启用渐变背景
+          </label>
+        </div>
+
+        {config.containerGradient?.enabled && (
+          <>
+            <div className={styles.field}>
+              <label>起始颜色</label>
+              <div className={styles.colorInput}>
+                <input
+                  type="color"
+                  value={config.containerGradient.startColor}
+                  onChange={(e) => handleGradientChange('startColor', e.target.value)}
+                />
+                <input
+                  type="text"
+                  value={config.containerGradient.startColor}
+                  onChange={(e) => handleGradientChange('startColor', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className={styles.field}>
+              <label>结束颜色</label>
+              <div className={styles.colorInput}>
+                <input
+                  type="color"
+                  value={config.containerGradient.endColor}
+                  onChange={(e) => handleGradientChange('endColor', e.target.value)}
+                />
+                <input
+                  type="text"
+                  value={config.containerGradient.endColor}
+                  onChange={(e) => handleGradientChange('endColor', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className={styles.field}>
+              <label>渐变角度</label>
+              <div className={styles.rangeInput}>
+                <input
+                  type="range"
+                  min="0"
+                  max="360"
+                  step="15"
+                  value={config.containerGradient.angle}
+                  onChange={(e) => handleGradientChange('angle', parseInt(e.target.value))}
+                />
+                <span>{config.containerGradient.angle}°</span>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <div className={styles.section}>

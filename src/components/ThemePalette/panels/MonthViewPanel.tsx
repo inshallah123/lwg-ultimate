@@ -43,7 +43,7 @@ const MonthViewPanel: React.FC<MonthViewPanelProps> = ({
       </div>
 
       <div className={styles.section}>
-        <h4>容器样式</h4>
+        <h4>背景样式</h4>
         <div className={styles.field}>
           <label>背景颜色</label>
           <div className={styles.colorInput}>
@@ -56,6 +56,32 @@ const MonthViewPanel: React.FC<MonthViewPanelProps> = ({
               type="text"
               value={config.containerBackground || '#ffffff'}
               onChange={(e) => handleChange('containerBackground', e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className={styles.field}>
+          <label>透明度</label>
+          <div className={styles.rangeInput}>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value={config.containerOpacity || 1}
+              onChange={(e) => handleChange('containerOpacity', parseFloat(e.target.value))}
+            />
+            <input
+              type="number"
+              className={styles.numberInput}
+              min="0"
+              max="1"
+              step="0.01"
+              value={config.containerOpacity || 1}
+              onChange={(e) => {
+                const value = Math.max(0, Math.min(1, parseFloat(e.target.value) || 0));
+                handleChange('containerOpacity', value);
+              }}
             />
           </div>
         </div>
@@ -102,6 +128,21 @@ const MonthViewPanel: React.FC<MonthViewPanelProps> = ({
                   value={config.containerGradient.endColor}
                   onChange={(e) => handleGradientChange('endColor', e.target.value)}
                 />
+              </div>
+            </div>
+
+            <div className={styles.field}>
+              <label>渐变角度</label>
+              <div className={styles.rangeInput}>
+                <input
+                  type="range"
+                  min="0"
+                  max="360"
+                  step="15"
+                  value={config.containerGradient.angle}
+                  onChange={(e) => handleGradientChange('angle', parseInt(e.target.value))}
+                />
+                <span>{config.containerGradient.angle}°</span>
               </div>
             </div>
           </>

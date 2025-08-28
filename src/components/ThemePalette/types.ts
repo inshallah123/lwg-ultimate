@@ -13,6 +13,10 @@ export interface GlobalStyleConfig {
     size: 'cover' | 'contain' | 'auto';
     position: string;
   };
+  titleColor?: string;
+  titleFontSize?: number;
+  subtitleColor?: string;
+  subtitleFontSize?: number;
 }
 
 export interface YearViewConfig {
@@ -55,6 +59,7 @@ export interface MonthCardConfig {
 
 export interface MonthViewConfig {
   containerBackground?: string;
+  containerOpacity?: number;
   containerGradient?: {
     enabled: boolean;
     startColor: string;
@@ -83,6 +88,13 @@ export interface MonthViewConfig {
 
 export interface WeekViewConfig {
   containerBackground?: string;
+  containerOpacity?: number;
+  containerGradient?: {
+    enabled: boolean;
+    startColor: string;
+    endColor: string;
+    angle: number;
+  };
   headerFontSize?: number;
   headerColor?: string;
   

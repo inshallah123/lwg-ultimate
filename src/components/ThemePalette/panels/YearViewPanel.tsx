@@ -60,7 +60,7 @@ const YearViewPanel: React.FC<YearViewPanelProps> = ({
       </div>
 
       <div className={styles.section}>
-        <h4>容器样式</h4>
+        <h4>背景样式</h4>
         <div className={styles.field}>
           <label>背景颜色</label>
           <div className={styles.colorInput}>
@@ -84,44 +84,29 @@ const YearViewPanel: React.FC<YearViewPanelProps> = ({
               type="range"
               min="0"
               max="1"
-              step="0.1"
+              step="0.01"
               value={config.containerOpacity || 1}
               onChange={(e) => handleChange('containerOpacity', parseFloat(e.target.value))}
             />
-            <span>{(config.containerOpacity || 1).toFixed(1)}</span>
-          </div>
-        </div>
-
-        <div className={styles.field}>
-          <label>圆角</label>
-          <div className={styles.rangeInput}>
             <input
-              type="range"
+              type="number"
+              className={styles.numberInput}
               min="0"
-              max="24"
-              step="2"
-              value={config.borderRadius || 12}
-              onChange={(e) => handleChange('borderRadius', parseInt(e.target.value))}
+              max="1"
+              step="0.01"
+              value={config.containerOpacity || 1}
+              onChange={(e) => {
+                const value = Math.max(0, Math.min(1, parseFloat(e.target.value) || 0));
+                handleChange('containerOpacity', value);
+              }}
             />
-            <span>{config.borderRadius || 12}px</span>
           </div>
         </div>
 
-        <div className={styles.field}>
-          <label>阴影</label>
-          <input
-            type="text"
-            className={styles.numberInput}
-            style={{ width: '200px' }}
-            value={config.boxShadow || '0 4px 6px rgba(0, 0, 0, 0.1)'}
-            onChange={(e) => handleChange('boxShadow', e.target.value)}
-            placeholder="0 4px 6px rgba(0, 0, 0, 0.1)"
-          />
-        </div>
       </div>
 
       <div className={styles.section}>
-        <h4>容器渐变</h4>
+        <h4>背景渐变</h4>
         <div className={styles.field}>
           <label>
             <input

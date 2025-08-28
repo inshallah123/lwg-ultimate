@@ -67,11 +67,22 @@ const MonthCardPanel: React.FC<MonthCardPanelProps> = ({
               type="range"
               min="0"
               max="1"
-              step="0.1"
+              step="0.01"
               value={config.opacity || 1}
               onChange={(e) => handleChange('opacity', parseFloat(e.target.value))}
             />
-            <span>{(config.opacity || 1).toFixed(1)}</span>
+            <input
+              type="number"
+              className={styles.numberInput}
+              min="0"
+              max="1"
+              step="0.01"
+              value={config.opacity || 1}
+              onChange={(e) => {
+                const value = Math.max(0, Math.min(1, parseFloat(e.target.value) || 0));
+                handleChange('opacity', value);
+              }}
+            />
           </div>
         </div>
 
@@ -91,20 +102,6 @@ const MonthCardPanel: React.FC<MonthCardPanelProps> = ({
           </div>
         </div>
 
-        <div className={styles.field}>
-          <label>圆角</label>
-          <div className={styles.rangeInput}>
-            <input
-              type="range"
-              min="0"
-              max="16"
-              step="2"
-              value={config.borderRadius || 8}
-              onChange={(e) => handleChange('borderRadius', parseInt(e.target.value))}
-            />
-            <span>{config.borderRadius || 8}px</span>
-          </div>
-        </div>
       </div>
 
       <div className={styles.section}>
