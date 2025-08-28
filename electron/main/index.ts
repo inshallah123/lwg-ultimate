@@ -21,7 +21,7 @@ import { app, BrowserWindow, ipcMain, dialog, Menu } from 'electron';
 import { join } from 'path';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { checkLunarLibraryUpdate, updateLunarLibrary } from '../utils/checkUpdates';
-import EventDatabase from './database';
+import EventDatabase from './eventDatabase';
 import ThemeDatabase from './themeDatabase';
 import { Event } from '../../src/types/event';
 import updateConfig from '../utils/updateConfig';

@@ -4,7 +4,6 @@ const fs = require('fs');
 const path = require('path');
 
 class AppUpdater {
-  private autoUpdater: any;
   private isManualCheck: boolean;
   private getMainWindow: () => any;
   private updateDownloaded: boolean;
@@ -20,14 +19,12 @@ class AppUpdater {
       process.env.ELECTRON_UPDATER_ALLOW_DIFFERENTIAL = 'false';
     }
     
-    autoUpdater.forceDevUpdateConfig = false;
     autoUpdater.allowUnverifiedSignatures = true;
     
     const log = require('electron-log');
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
     
-    this.autoUpdater = autoUpdater;
     this.isManualCheck = false;
     this.getMainWindow = getMainWindow || (() => BrowserWindow.getAllWindows()[0]);
     this.updateDownloaded = false;
@@ -174,12 +171,10 @@ class AppUpdater {
             }
           } else {
             console.log('用户选择稍后安装，将在退出时自动安装');
-            autoUpdater.autoInstallOnAppQuit = true;
           }
         });
       } else {
         console.error('无法获取主窗口，无法显示更新安装提示');
-        autoUpdater.autoInstallOnAppQuit = true;
       }
     });
   }
@@ -213,8 +208,8 @@ class AppUpdater {
     }
   }
 
-  setFeedURL(url: string) {
-    autoUpdater.setFeedURL(url);
+  setFeedURL(config: any) {
+    autoUpdater.setFeedURL(config);
   }
   
   isUpdateDownloaded() {
