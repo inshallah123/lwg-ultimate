@@ -50,9 +50,7 @@
     },
     "files": [
       "dist/**/*",
-      "electron/**/*",
-      "!electron/**/*.ts",
-      "!electron/tsconfig.json"
+      "dist-electron/**/*"
     ],
     "win": {
       "icon": "build/icons/icon.ico",
