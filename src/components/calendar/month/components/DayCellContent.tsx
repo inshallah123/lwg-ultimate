@@ -15,7 +15,7 @@ export const DayCellContent = React.memo(function DayCellContent({
   isCurrentMonth = true, 
   dayNumber 
 }: DayCellContentProps) {
-  const allEvents = useEventStore(state => state.events);
+  const events = useEventStore(state => state.events);
   const getEventsInRange = useEventStore(state => state.getEventsInRange);
   const openSidebar = useSidebarStore(state => state.open);
   
@@ -44,18 +44,17 @@ export const DayCellContent = React.memo(function DayCellContent({
                      styles.lunar;
   
   // 获取该日期的事件
-  const events = useMemo(() => {
+  const dayEvents = useMemo(() => {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
     
     return getEventsInRange(startOfDay, endOfDay);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [date, getEventsInRange]);
+  }, [date, getEventsInRange, events]);
   
   // 如果没有事件，只显示日期头部
-  if (events.length === 0) {
+  if (dayEvents.length === 0) {
     return (
       <>
         <div className={styles.dayCellHeader}>
@@ -83,17 +82,17 @@ export const DayCellContent = React.memo(function DayCellContent({
   
   // 生成详细tooltip
   const generateTooltip = () => {
-    return events.map((e, i) => 
+    return dayEvents.map((e, i) => 
       `${i + 1}. ${e.title}${e.description ? ` - ${e.description}` : ''}`
     ).join('\n');
   };
   
   // 获取主色调
   const getPrimaryTag = () => {
-    return events.find(e => e.tag === 'work')?.tag ||
-           events.find(e => e.tag === 'private')?.tag ||
-           events.find(e => e.tag === 'balance')?.tag ||
-           events[0].tag;
+    return dayEvents.find(e => e.tag === 'work')?.tag ||
+           dayEvents.find(e => e.tag === 'private')?.tag ||
+           dayEvents.find(e => e.tag === 'balance')?.tag ||
+           dayEvents[0].tag;
   };
   
   // 根据事件数量和当前月份状态决定显示策略
@@ -101,20 +100,20 @@ export const DayCellContent = React.memo(function DayCellContent({
   
   if (!isCurrentMonth) {
     // 非当前月：最多显示2个
-    actualMaxDisplay = Math.min(2, events.length);
-  } else if (events.length > 4) {
+    actualMaxDisplay = Math.min(2, dayEvents.length);
+  } else if (dayEvents.length > 4) {
     // 当前月超过4个事件：始终显示4个 + 指示器
     actualMaxDisplay = 4;
   } else {
     // 4个或更少：全部显示
-    actualMaxDisplay = events.length;
+    actualMaxDisplay = dayEvents.length;
   }
   
-  const displayEvents = events.slice(0, actualMaxDisplay);
-  const remainingCount = events.length - displayEvents.length;
+  const displayEvents = dayEvents.slice(0, actualMaxDisplay);
+  const remainingCount = dayEvents.length - displayEvents.length;
   
   // 对于特别多的事件（超过8个），使用紧凑指示器
-  if (events.length > 8 && !isCurrentMonth) {
+  if (dayEvents.length > 8 && !isCurrentMonth) {
     const primaryTag = getPrimaryTag() || 'custom';
     return (
       <div className={styles.cellContent}>
@@ -123,9 +122,9 @@ export const DayCellContent = React.memo(function DayCellContent({
           onClick={handleClick}
           title={generateTooltip()}
         >
-          <span className={styles.compactCount}>{events.length}个事件</span>
+          <span className={styles.compactCount}>{dayEvents.length}个事件</span>
           <div className={styles.compactDots}>
-            {events.slice(0, Math.min(4, events.length)).map((e, i) => (
+            {dayEvents.slice(0, Math.min(4, dayEvents.length)).map((e, i) => (
               <span
                 key={i}
                 className={`${styles.compactDot} ${styles[e.tag || 'custom']}`}

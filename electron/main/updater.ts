@@ -48,7 +48,7 @@ class AppUpdater {
           console.log(`已配置更新代理: ${config.githubProxy}`);
         }
       }
-    } catch (error) {
+    } catch (_error) {
       console.log('未配置代理，使用直连');
     }
   }

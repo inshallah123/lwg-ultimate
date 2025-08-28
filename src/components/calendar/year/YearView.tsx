@@ -167,6 +167,7 @@ export function YearView(props: YearViewProps = {}) {
     isInitialized,
     visibleYears,
     allYears,
+    scrollContainerRef,
     yearHeight,
     scrollPosition,
     currentDate,

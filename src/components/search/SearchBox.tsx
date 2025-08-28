@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {useEventStore} from '@/stores/eventStore';
 import {Event} from '@/types/event';
 import {SearchSuggestions} from './SearchSuggestions';
@@ -43,6 +43,13 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
 
   return searchEvents(searchQuery, allEventsInRange, today);
   }, [searchQuery, getEventsInRange]);
+
+  const handleEventClick = useCallback((event: Event, date: Date) => {
+    onEventClick?.(event, date);
+    setSearchQuery('');
+    setShowSuggestions(false);
+    setSelectedIndex(-1);
+  }, [onEventClick]);
   
   // 处理键盘导航
   useEffect(() => {
@@ -81,7 +88,7 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
       document.addEventListener('keydown', handleKeyDown);
       return () => document.removeEventListener('keydown', handleKeyDown);
     }
-  }, [showSuggestions, searchResults, selectedIndex]);
+  }, [showSuggestions, searchResults, selectedIndex, handleEventClick]);
   
   // 处理点击外部关闭
   useEffect(() => {
@@ -107,13 +114,6 @@ export const SearchBox: React.FC<SearchBoxProps> = ({
     setSelectedIndex(-1);
     onSearch?.('');
     inputRef.current?.focus();
-  };
-  
-  const handleEventClick = (event: Event, date: Date) => {
-    onEventClick?.(event, date);
-    setSearchQuery('');
-    setShowSuggestions(false);
-    setSelectedIndex(-1);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

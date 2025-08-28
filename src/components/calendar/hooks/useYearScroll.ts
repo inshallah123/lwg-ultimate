@@ -61,6 +61,7 @@ export function useYearScroll({
       );
       setScrollPosition(initialScroll);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 滚动到指定年份

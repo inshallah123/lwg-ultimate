@@ -39,8 +39,7 @@ export function WeekEventIndicator({ date, hourIndex }: WeekEventIndicatorProps)
     }
     
     return dayEvents;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [date, hourIndex, getEventsInRange]);
+  }, [date, hourIndex, getEventsInRange, allEvents]);
   
   if (events.length === 0) return null;
   
