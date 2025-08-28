@@ -14,7 +14,7 @@ const UpdateProgress: React.FC = () => {
 
   useEffect(() => {
     // 监听下载进度
-    const handleProgress = (_event: any, progressData: UpdateProgressData) => {
+    const handleProgress = (_event: unknown, progressData: UpdateProgressData) => {
       setProgress(progressData);
       setVisible(true);
     };

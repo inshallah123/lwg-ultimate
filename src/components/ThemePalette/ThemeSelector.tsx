@@ -16,74 +16,9 @@ interface ThemeItem {
 }
 
 const DEFAULT_THEMES: ThemeItem[] = [
-  { name: '默认主题', isDefault: true },
-  { name: '深色模式', isDefault: true },
-  { name: '护眼模式', isDefault: true }
+  { name: '默认主题', isDefault: true }
 ];
 
-const DEFAULT_THEME_CONFIGS: { [key: string]: ThemeConfig } = {
-  '默认主题': {
-    global: {},
-    yearView: {},
-    monthView: {},
-    monthCard: {},
-    weekView: {}
-  },
-  '深色模式': {
-    global: {
-      backgroundColor: '#1a1a1a',
-      opacity: 1
-    },
-    yearView: {
-      containerBackground: '#2a2a2a',
-      titleColor: '#e0e0e0'
-    },
-    monthView: {
-      containerBackground: '#3a3a3a',
-      headerColor: '#e0e0e0',
-      dayNumberColor: '#e0e0e0'
-    },
-    monthCard: {
-      background: '#2a2a2a',
-      fontColor: '#e0e0e0',
-      borderColor: '#404040'
-    },
-    weekView: {
-      containerBackground: '#2a2a2a',
-      headerColor: '#e0e0e0',
-      dayNameColor: '#e0e0e0',
-      hourCellBackground: '#1a1a1a',
-      hourCellBorderColor: '#404040'
-    }
-  },
-  '护眼模式': {
-    global: {
-      backgroundColor: '#f5f3e9',
-      opacity: 1
-    },
-    yearView: {
-      containerBackground: '#faf8f0',
-      titleColor: '#5d5347'
-    },
-    monthView: {
-      containerBackground: '#faf8f0',
-      headerColor: '#5d5347',
-      dayNumberColor: '#5d5347'
-    },
-    monthCard: {
-      background: '#faf8f0',
-      fontColor: '#5d5347',
-      borderColor: '#d4c4a0'
-    },
-    weekView: {
-      containerBackground: '#faf8f0',
-      headerColor: '#5d5347',
-      dayNameColor: '#5d5347',
-      hourCellBackground: '#f5f3e9',
-      hourCellBorderColor: '#d4c4a0'
-    }
-  }
-};
 
 const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose }) => {
   const [themes, setThemes] = useState<ThemeItem[]>([]);
@@ -121,18 +56,11 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose }) => {
     setSelectedTheme(themeName);
     
     // 应用主题
-    if (DEFAULT_THEMES.find(t => t.name === themeName)) {
-      // 默认主题
-      if (themeName === '默认主题') {
-        removeThemeFromDOM();
-      } else {
-        const config = DEFAULT_THEME_CONFIGS[themeName];
-        if (config) {
-          applyThemeToDOM(config);
-        }
-      }
+    if (themeName === '默认主题') {
+      // 恢复默认主题
+      removeThemeFromDOM();
     } else {
-      // 自定义主题
+      // 加载自定义主题
       const config = await loadTheme(themeName);
       if (config) {
         applyThemeToDOM(config);
@@ -152,18 +80,11 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({ isOpen, onClose }) => {
       // 开始预览
       setPreviewTheme(themeName);
       
-      if (DEFAULT_THEMES.find(t => t.name === themeName)) {
-        // 默认主题
-        if (themeName === '默认主题') {
-          removeThemeFromDOM();
-        } else {
-          const config = DEFAULT_THEME_CONFIGS[themeName];
-          if (config) {
-            applyThemeToDOM(config);
-          }
-        }
+      if (themeName === '默认主题') {
+        // 恢复默认主题
+        removeThemeFromDOM();
       } else {
-        // 自定义主题
+        // 加载自定义主题预览
         const config = await loadTheme(themeName);
         if (config) {
           applyThemeToDOM(config);

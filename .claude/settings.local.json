@@ -37,12 +37,14 @@
       "Bash(for file in src/components/Sidebar/components/*.module.css)",
       "Bash(do echo \"=== $file ===\")",
       "Bash(head:*)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": [],
     "additionalDirectories": [
       "C:\\Users\\yyh\\AppData\\Roaming\\littlewhitegoose\\logs"
     ]
-  }
+  },
+  "outputStyle": "Explanatory"
 }

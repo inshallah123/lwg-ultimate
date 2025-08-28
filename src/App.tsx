@@ -8,10 +8,11 @@ import { useSidebarStore } from './components/Sidebar/store';
 import { useCalendarStore } from './components/calendar/store';
 import { Event } from '@/types/event';
 import UpdateProgress from './components/UpdateProgress/UpdateProgress';
-import ProxyConfigDialog from './components/ProxyConfigDialog';
+import ProxyConfigDialog, { type ProxyConfig } from './components/ProxyConfigDialog';
 import ThemePalette from './components/ThemePalette/ThemePalette';
 import ThemeSelector from './components/ThemePalette/ThemeSelector';
 import { applyThemeToDOM } from './components/ThemePalette/utils/themeApplier';
+import { type ThemeConfig } from './components/ThemePalette/types';
 import { loadTheme } from './components/ThemePalette/utils/themeStorage';
 import styles from './App.module.css';
 
@@ -24,13 +25,13 @@ function App() {
   const viewContainerRef = useRef<HTMLDivElement>(null);
   const openSidebar = useSidebarStore(state => state.open);
   const [isProxyDialogOpen, setIsProxyDialogOpen] = useState(false);
-  const [proxyConfig, setProxyConfig] = useState<any>(null);
+  const [proxyConfig, setProxyConfig] = useState<ProxyConfig | undefined>(undefined);
   const [isThemePaletteOpen, setIsThemePaletteOpen] = useState(false);
   const [isThemeSelectorOpen, setIsThemeSelectorOpen] = useState(false);
   
   useEffect(() => {
     // 监听主进程发送的显示代理配置消息
-    const handleShowProxyConfig = (_event: any, config: any) => {
+    const handleShowProxyConfig = (_event: unknown, config: ProxyConfig) => {
       setProxyConfig(config);
       setIsProxyDialogOpen(true);
     };
@@ -58,53 +59,25 @@ function App() {
 
   // 启动时加载默认主题
   useEffect(() => {
-    const loadDefaultTheme = async (config: any) => {
+    interface ThemeConfigWithName {
+      themeName?: string;
+      config?: ThemeConfig;
+    }
+
+    const loadDefaultTheme = async (config: ThemeConfigWithName) => {
+      // 只加载用户自定义的主题，默认主题不需要特殊处理
       if (config && config.themeName && config.themeName !== '默认主题') {
         console.log('Loading theme:', config.themeName);
-        // 加载内置主题或自定义主题
-        if (['深色模式', '护眼模式'].includes(config.themeName)) {
-          // 内置主题配置
-          const builtinThemes: any = {
-            '深色模式': {
-              global: { backgroundColor: '#1a1a1a', opacity: 1 },
-              yearView: { containerBackground: '#2a2a2a', titleColor: '#e0e0e0' },
-              yearSection: { currentYearBackground: '#60a5fa', fontColor: '#e0e0e0' },
-              monthCard: { background: '#2a2a2a', fontColor: '#e0e0e0', borderColor: '#404040' },
-              monthWeekView: {
-                containerBackground: '#2a2a2a', titleColor: '#e0e0e0',
-                dayNumberColor: '#e0e0e0', dayCellBackground: '#1a1a1a',
-                dayCellBorderColor: '#404040'
-              }
-            },
-            '护眼模式': {
-              global: { backgroundColor: '#f5f3e9', opacity: 1 },
-              yearView: { containerBackground: '#faf8f0', titleColor: '#5d5347' },
-              yearSection: { currentYearBackground: '#8b7355', fontColor: '#5d5347' },
-              monthCard: { background: '#faf8f0', fontColor: '#5d5347', borderColor: '#d4c4a0' },
-              monthWeekView: {
-                containerBackground: '#faf8f0', titleColor: '#5d5347',
-                dayNumberColor: '#5d5347', dayCellBackground: '#f5f3e9',
-                dayCellBorderColor: '#d4c4a0'
-              }
-            }
-          };
-          
-          const themeConfig = builtinThemes[config.themeName];
-          if (themeConfig) {
-            applyThemeToDOM(themeConfig);
-          }
-        } else {
-          // 自定义主题
-          const customTheme = await loadTheme(config.themeName);
-          if (customTheme) {
-            applyThemeToDOM(customTheme);
-          }
+        // 加载自定义主题
+        const customTheme = await loadTheme(config.themeName);
+        if (customTheme) {
+          applyThemeToDOM(customTheme);
         }
       }
     };
 
     // 监听主进程发送的主题配置
-    const handleApplySavedTheme = (_event: any, config: any) => {
+    const handleApplySavedTheme = (_event: unknown, config: ThemeConfigWithName) => {
       loadDefaultTheme(config);
     };
 

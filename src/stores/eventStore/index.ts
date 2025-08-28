@@ -37,7 +37,7 @@ const sqliteStorage = {
     }
   },
   
-  setItem: async (name: string, value: any) => {
+  setItem: async (name: string, value: unknown) => {
     if (!isElectron) {
       // 如果不在Electron环境，使用localStorage作为后备
       localStorage.setItem(name, JSON.stringify(value));
@@ -61,12 +61,13 @@ const sqliteStorage = {
       
       // 处理不同的value格式
       if (parsedValue && typeof parsedValue === 'object') {
-        if (parsedValue.state && parsedValue.state.events !== undefined) {
+        const valueWithState = parsedValue as { state?: { events?: Event[] }, events?: Event[] };
+        if (valueWithState.state && valueWithState.state.events !== undefined) {
           // 标准格式: { state: { events: [] }, version: number }
-          events = parsedValue.state.events;
-        } else if (parsedValue.events !== undefined) {
+          events = valueWithState.state.events;
+        } else if (valueWithState.events !== undefined) {
           // 直接的events格式: { events: [] }
-          events = parsedValue.events;
+          events = valueWithState.events;
         } else if (Array.isArray(parsedValue)) {
           // 直接的数组格式
           events = parsedValue;

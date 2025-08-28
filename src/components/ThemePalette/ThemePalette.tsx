@@ -49,7 +49,7 @@ const ThemePalette: React.FC<ThemePaletteProps> = ({ isOpen, onClose }) => {
     setSavedThemes(themes);
   };
 
-  const updateThemeConfig = (section: keyof ThemeConfig, config: any) => {
+  const updateThemeConfig = <T extends keyof ThemeConfig>(section: T, config: Partial<ThemeConfig[T]>) => {
     const newConfig = {
       ...themeConfig,
       [section]: { ...themeConfig[section], ...config }

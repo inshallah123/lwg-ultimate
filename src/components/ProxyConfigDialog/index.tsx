@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import './style.css';
 
-interface ProxyConfig {
+export interface ProxyConfig {
   enabled: boolean;
   host: string;
   port: number;
@@ -34,7 +34,7 @@ const ProxyConfigDialog: React.FC<ProxyConfigDialogProps> = ({ isOpen, onClose, 
 
   useEffect(() => {
     // 监听主进程发送的显示代理配置消息
-    const handleShowConfig = (_event: any, config: ProxyConfig) => {
+    const handleShowConfig = (_event: unknown, config: ProxyConfig) => {
       setEnabled(config.enabled);
       setHost(config.host);
       setPort(config.port.toString());
