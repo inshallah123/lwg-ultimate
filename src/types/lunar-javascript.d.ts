@@ -14,8 +14,6 @@ declare module 'lunar-javascript' {
     getMonthInChinese(): string;
     getFestivals(): string[];
     getJieQi(): string;
-    getJie(): string;
-    getQi(): string;
   }
 
   export class Holiday {

@@ -1,13 +1,12 @@
-
-import { app, BrowserWindow, ipcMain, dialog, Menu } from 'electron';
-import { join } from 'path';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { checkLunarLibraryUpdate, updateLunarLibrary } from '../utils/checkUpdates';
+import {app, BrowserWindow, dialog, ipcMain, Menu} from 'electron';
+import {join} from 'path';
+import {existsSync, readFileSync, writeFileSync} from 'fs';
+import {checkLunarLibraryUpdate, updateLunarLibrary} from '../utils/checkUpdates';
 import EventDatabase from './eventDatabase';
 import ThemeDatabase from './themeDatabase';
-import { Event } from '../../src/types/event';
+import {Event} from '../../src/types/event';
 import updateConfig from '../utils/updateConfig';
-const AppUpdater = require('./updater');
+import AppUpdater from './updater';
 
 let mainWindow: BrowserWindow | null = null;
 let eventDb: EventDatabase | null = null;
@@ -17,16 +16,17 @@ let themeDbInitPromise: Promise<ThemeDatabase | null> | null = null;
 interface AppUpdaterInterface {
   isUpdateDownloaded: () => boolean;
   checkForUpdates: () => void;
-  installUpdate: () => void;
+// eslint-disable-next-line
   checkForUpdatesManually: () => Promise<any>;
   setProxy: (proxy: string | null) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setFeedURL: (config: any) => void;
   autoUpdater?: {
     autoInstallOnAppQuit: boolean;
   };
 }
 
-let appUpdater: AppUpdaterInterface | null = null; // 包含 autoUpdater, isUpdateDownloaded 等方法
+let appUpdater: AppUpdaterInterface | null = null; // 更新管理器实例
 
 // 确保只有一个实例运行
 const gotTheLock = app.requestSingleInstanceLock();
@@ -97,7 +97,7 @@ Life flows like water through our hands.`;
           label: 'Time\'s White Goose',
           click: () => {
             if (mainWindow) {
-              dialog.showMessageBox(mainWindow, {
+              void dialog.showMessageBox(mainWindow, {
                 type: 'info',
                 title: 'What about...?',
                 message: 'Time\'s White Goose',
@@ -117,23 +117,24 @@ Life flows like water through our hands.`;
           label: '检查更新',
           click: async () => {
             if (!appUpdater) {
-              dialog.showMessageBox(mainWindow!, {
-                type: 'info',
-                title: '检查更新',
-                message: '开发模式下无法检查更新',
-                buttons: ['确定']
+              await dialog.showMessageBox(mainWindow!, {
+                  type: 'info',
+                  title: '检查更新',
+                  message: '开发模式下无法检查更新',
+                  buttons: ['确定']
               });
               return;
             }
             
             // 手动检查更新
             const result = await appUpdater.checkForUpdatesManually();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if (!result || !(result as any).updateInfo) {
-              dialog.showMessageBox(mainWindow!, {
-                type: 'info',
-                title: '检查更新',
-                message: '当前已是最新版本',
-                buttons: ['确定']
+              await dialog.showMessageBox(mainWindow!, {
+                  type: 'info',
+                  title: '检查更新',
+                  message: '当前已是最新版本',
+                  buttons: ['确定']
               });
             }
           }
@@ -163,11 +164,11 @@ Life flows like water through our hands.`;
             } else if (result.response === 1) {
               // 禁用代理
               updateConfig.setProxy(false);
-              dialog.showMessageBox(mainWindow, {
-                type: 'info',
-                title: '配置成功',
-                message: '代理已禁用',
-                buttons: ['确定']
+              await dialog.showMessageBox(mainWindow, {
+                  type: 'info',
+                  title: '配置成功',
+                  message: '代理已禁用',
+                  buttons: ['确定']
               });
               
               // 更新 updater 配置
@@ -177,11 +178,11 @@ Life flows like water through our hands.`;
             } else if (result.response === 2) {
               // 启用代理（使用当前设置）
               updateConfig.setProxy(true);
-              dialog.showMessageBox(mainWindow, {
-                type: 'info',
-                title: '配置成功',
-                message: `代理已启用: ${proxyHost}:${proxyPort}`,
-                buttons: ['确定']
+              await dialog.showMessageBox(mainWindow, {
+                  type: 'info',
+                  title: '配置成功',
+                  message: `代理已启用: ${proxyHost}:${proxyPort}`,
+                  buttons: ['确定']
               });
               
               // 更新 updater 配置
@@ -204,7 +205,7 @@ Life flows like water through our hands.`;
           click: () => {
             if (mainWindow) {
               const version = app.getVersion();
-              dialog.showMessageBox(mainWindow, {
+              void dialog.showMessageBox(mainWindow, {
                 type: 'info',
                 title: '关于更新',
                 message: `当前版本: v${version}`,
@@ -545,8 +546,7 @@ ipcMain.handle('update:checkNow', async () => {
   }
   
   try {
-    const result = await appUpdater.checkForUpdatesManually();
-    return result;
+      return await appUpdater.checkForUpdatesManually();
   } catch (error) {
     return { error: (error as Error).message };
   }
@@ -594,8 +594,7 @@ ipcMain.handle('theme:getCurrentTheme', async () => {
   try {
     const configPath = join(app.getPath('userData'), 'themeConfig.json');
     if (existsSync(configPath)) {
-      const config = JSON.parse(readFileSync(configPath, 'utf8'));
-      return config;
+        return JSON.parse(readFileSync(configPath, 'utf8'));
     }
     return { themeName: '默认主题' };
   } catch (error) {
