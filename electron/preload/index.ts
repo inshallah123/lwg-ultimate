@@ -5,14 +5,7 @@
 
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { Event } from '../../src/types/event';
-
-// 定义更新进度数据类型
-interface UpdateProgressData {
-  percent: number;
-  bytesPerSecond?: number;
-  total?: number;
-  transferred?: number;
-}
+import { UpdateProgressData } from '../../src/types/update';
 
 contextBridge.exposeInMainWorld('electronAPI', {
   database: {

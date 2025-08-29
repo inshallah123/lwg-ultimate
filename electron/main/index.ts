@@ -319,7 +319,6 @@ async function initDatabase(): Promise<EventDatabase | null> {
         }
         eventDb = new EventDatabase();
         await eventDb.initialize();
-        console.log('Database initialized successfully');
         resolve(eventDb);
       } catch (error) {
         console.error('Failed to initialize database:', error);
@@ -346,7 +345,6 @@ async function initThemeDatabase(): Promise<ThemeDatabase | null> {
         }
         themeDb = new ThemeDatabase();
         await themeDb.initialize();
-        console.log('Theme database initialized successfully');
         resolve(themeDb);
       } catch (error) {
         console.error('Failed to initialize theme database:', error);

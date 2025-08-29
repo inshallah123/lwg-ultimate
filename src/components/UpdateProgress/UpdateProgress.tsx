@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { UpdateProgressData } from '../../types/update';
 import styles from './UpdateProgress.module.css';
-
-interface UpdateProgressData {
-  bytesPerSecond: number;
-  percent: number;
-  transferred: number;
-  total: number;
-}
 
 const UpdateProgress: React.FC = () => {
   const [visible, setVisible] = useState(false);
@@ -20,7 +14,7 @@ const UpdateProgress: React.FC = () => {
     };
 
     // 监听下载完成
-    const handleComplete = () => {
+    const handleComplete = (_event: unknown) => {
       setTimeout(() => {
         setVisible(false);
         setProgress(null);
@@ -71,9 +65,9 @@ const UpdateProgress: React.FC = () => {
         <div className={styles.progressInfo}>
           <span className={styles.percent}>{progress.percent.toFixed(1)}%</span>
           <span className={styles.size}>
-            {formatBytes(progress.transferred)} / {formatBytes(progress.total)}
+            {formatBytes(progress.transferred || 0)} / {formatBytes(progress.total || 0)}
           </span>
-          <span className={styles.speed}>{formatSpeed(progress.bytesPerSecond)}</span>
+          <span className={styles.speed}>{formatSpeed(progress.bytesPerSecond || 0)}</span>
         </div>
       </div>
     </div>
