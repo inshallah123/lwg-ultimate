@@ -1,22 +1,4 @@
-/**
- * Electron主进程入口文件
- * 作用: 管理桌面应用的生命周期、创建和控制窗口、处理系统级操作
- * 运行环境: Node.js环境(主进程)
- * 
- * 信息流:
- *   1. 应用启动 -> 读取窗口状态配置
- *   2. 创建BrowserWindow -> 加载React应用内容
- *   3. 开发环境: loadURL(http://localhost:5173) -> Vite开发服务器 -> src/main.tsx
- *   4. 生产环境: loadFile(dist/index.html) -> 打包后的React应用
- *   5. 窗口事件 -> 保存窗口状态、内存清理
- *   6. 应用退出 -> 清理资源
- * 
- * 与其他文件关系:
- *   - 加载 src/main.tsx (通过HTML)
- *   - 读写 windowState.json (窗口状态持久化)
- *   - 配合 vite.config.ts (开发服务器配置)
- *   - 使用 .env (环境变量配置)
- */
+
 import { app, BrowserWindow, ipcMain, dialog, Menu } from 'electron';
 import { join } from 'path';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
@@ -576,7 +558,8 @@ ipcMain.handle('theme:save', async (_, theme) => {
   if (!db) {
     return { success: false, error: 'Theme database not available' };
   }
-  return db.saveTheme(theme);
+  const success = db.saveTheme(theme);
+  return { success };
 });
 
 ipcMain.handle('theme:load', async (_, name: string) => {
@@ -584,7 +567,8 @@ ipcMain.handle('theme:load', async (_, name: string) => {
   if (!db) {
     return { success: false, error: 'Theme database not available' };
   }
-  return db.loadTheme(name);
+  const theme = db.loadTheme(name);
+  return theme ? { success: true, theme } : { success: false, error: '主题不存在' };
 });
 
 ipcMain.handle('theme:list', async () => {
@@ -592,7 +576,8 @@ ipcMain.handle('theme:list', async () => {
   if (!db) {
     return { success: false, error: 'Theme database not available' };
   }
-  return db.getThemeList();
+  const themes = db.getThemeList();
+  return { success: true, themes };
 });
 
 ipcMain.handle('theme:delete', async (_, name: string) => {
@@ -600,7 +585,8 @@ ipcMain.handle('theme:delete', async (_, name: string) => {
   if (!db) {
     return { success: false, error: 'Theme database not available' };
   }
-  return db.deleteTheme(name);
+  const success = db.deleteTheme(name);
+  return { success };
 });
 
 // 获取当前选中的默认主题

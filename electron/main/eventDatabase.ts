@@ -2,19 +2,30 @@ import { app } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Event } from '../../src/types/event';
-const initSqlJs = require('sql.js');
-
-interface SQLiteDatabase {
-  run: (sql: string, params?: any[]) => void;
-  prepare: (sql: string) => any;
-  exec: (sql: string) => void;
-  export: () => Uint8Array;
-  close: () => void;
-}
+import { 
+  SQLiteDatabase, 
+  EventRow, 
+  EventParams, 
+  loadOrCreateDatabase 
+} from './sqliteUtils';
 
 class EventDatabase {
   private db: SQLiteDatabase | null = null;
   private dbPath: string = '';
+  
+  // SQL 语句常量
+  //noinspection SqlDialectInspection,SqlNoDataSourceInspection
+  private readonly INSERT_EVENT_SQL = `
+    INSERT INTO events (
+      id, title, description, date, timeSlot, tag, customTag,
+      recurrence, customRecurrence, createdAt, updatedAt,
+      excludedDates, recurrenceEndDate
+    ) VALUES (
+      $id, $title, $description, $date, $timeSlot, $tag, $customTag,
+      $recurrence, $customRecurrence, $createdAt, $updatedAt,
+      $excludedDates, $recurrenceEndDate
+    )
+  `;
 
   async initialize() {
     try {
@@ -22,7 +33,7 @@ class EventDatabase {
       let userDataPath: string;
       try {
         userDataPath = app.getPath('userData');
-      } catch (_error) {
+      } catch {
         console.log('App not ready, using fallback path');
         // 如果app还没准备好，使用默认路径
         userDataPath = app.isPackaged 
@@ -41,18 +52,8 @@ class EventDatabase {
       console.log('Database location:', this.dbPath);
       console.log('Database directory exists:', fs.existsSync(path.dirname(this.dbPath)));
       
-      // 初始化sql.js
-      const SQL = await initSqlJs({
-        locateFile: (file: string) => path.join(__dirname, '../../../node_modules/sql.js/dist', file)
-      });
-      
-      // 尝试加载现有数据库
-      if (fs.existsSync(this.dbPath)) {
-        const data = fs.readFileSync(this.dbPath);
-        this.db = new SQL.Database(data);
-      } else {
-        this.db = new SQL.Database();
-      }
+      // 加载或创建数据库
+      this.db = await loadOrCreateDatabase(this.dbPath);
       
       this.initDatabase();
       this.saveDatabase();
@@ -77,6 +78,7 @@ class EventDatabase {
   private initDatabase() {
     if (!this.db) return;
     // 创建事件表（只存储SE和RP）
+    //noinspection SqlDialectInspection,SqlNoDataSourceInspection
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS events (
         id TEXT PRIMARY KEY,
@@ -102,10 +104,11 @@ class EventDatabase {
   // 获取所有事件（只返回SE和RP）
   getAllEvents(): Event[] {
     if (!this.db) return [];
+    //noinspection SqlDialectInspection,SqlNoDataSourceInspection
     const stmt = this.db.prepare('SELECT * FROM events');
-    const rows = [];
+    const rows: EventRow[] = [];
     while (stmt.step()) {
-      rows.push(stmt.getAsObject());
+      rows.push(stmt.getAsObject() as EventRow);
     }
     stmt.free();
     return rows.map(row => this.rowToEvent(row));
@@ -115,17 +118,8 @@ class EventDatabase {
   addEvent(event: Event): void {
     if (!this.db) return;
     const row = this.eventToRow(event);
-    const stmt = this.db.prepare(`
-      INSERT INTO events (
-        id, title, description, date, timeSlot, tag, customTag,
-        recurrence, customRecurrence, createdAt, updatedAt,
-        excludedDates, recurrenceEndDate
-      ) VALUES (
-        $id, $title, $description, $date, $timeSlot, $tag, $customTag,
-        $recurrence, $customRecurrence, $createdAt, $updatedAt,
-        $excludedDates, $recurrenceEndDate
-      )
-    `);
+    //noinspection SqlDialectInspection,SqlNoDataSourceInspection
+    const stmt = this.db.prepare(this.INSERT_EVENT_SQL);
     
     stmt.bind(row);
     stmt.step();
@@ -137,6 +131,7 @@ class EventDatabase {
   updateEvent(event: Event): void {
     if (!this.db) return;
     const row = this.eventToRow(event);
+    //noinspection SqlDialectInspection,SqlNoDataSourceInspection
     const stmt = this.db.prepare(`
       UPDATE events SET
         title = $title,
@@ -162,6 +157,7 @@ class EventDatabase {
   // 删除事件
   deleteEvent(id: string): void {
     if (!this.db) return;
+    //noinspection SqlDialectInspection,SqlNoDataSourceInspection
     const stmt = this.db.prepare('DELETE FROM events WHERE id = $id');
     stmt.bind({ $id: id });
     stmt.step();
@@ -173,20 +169,12 @@ class EventDatabase {
   syncEvents(events: Event[]): void {
     if (!this.db) return;
     // 删除所有事件
+    //noinspection SqlDialectInspection,SqlNoDataSourceInspection
     this.db.run('DELETE FROM events');
     
     // 插入新事件
-    const stmt = this.db.prepare(`
-      INSERT INTO events (
-        id, title, description, date, timeSlot, tag, customTag,
-        recurrence, customRecurrence, createdAt, updatedAt,
-        excludedDates, recurrenceEndDate
-      ) VALUES (
-        $id, $title, $description, $date, $timeSlot, $tag, $customTag,
-        $recurrence, $customRecurrence, $createdAt, $updatedAt,
-        $excludedDates, $recurrenceEndDate
-      )
-    `);
+    //noinspection SqlDialectInspection,SqlNoDataSourceInspection
+    const stmt = this.db.prepare(this.INSERT_EVENT_SQL);
     
     for (const event of events) {
       // 只存储SE和RP，跳过VI
@@ -203,16 +191,16 @@ class EventDatabase {
   }
 
   // 转换行数据为Event对象
-  private rowToEvent(row: any): Event {
+  private rowToEvent(row: EventRow): Event {
     return {
       id: row.id,
       title: row.title,
       description: row.description || undefined,
       date: new Date(row.date),
       timeSlot: row.timeSlot,
-      tag: row.tag,
+      tag: row.tag as 'private' | 'work' | 'balance' | 'custom',
       customTag: row.customTag || undefined,
-      recurrence: row.recurrence,
+      recurrence: row.recurrence as 'none' | 'weekly' | 'monthly' | 'quarterly' | 'yearly' | 'custom',
       customRecurrence: row.customRecurrence || undefined,
       createdAt: new Date(row.createdAt),
       updatedAt: new Date(row.updatedAt),
@@ -222,9 +210,9 @@ class EventDatabase {
   }
 
   // 转换Event对象为行数据
-  private eventToRow(event: Event): any {
+  private eventToRow(event: Event): EventParams {
     // 确保日期是Date对象
-    const ensureDate = (date: any) => {
+    const ensureDate = (date: Date | string | number | undefined) => {
       if (date instanceof Date) return date;
       if (typeof date === 'string' || typeof date === 'number') return new Date(date);
       return new Date();

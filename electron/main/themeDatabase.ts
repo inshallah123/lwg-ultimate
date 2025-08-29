@@ -1,8 +1,8 @@
 import { app } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-const initSqlJs = require('sql.js');
-
+import { SQLiteDatabase, loadOrCreateDatabase } from './sqliteUtils';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface SavedTheme {
   id?: number;
   name: string;
@@ -11,24 +11,17 @@ interface SavedTheme {
   updatedAt: string;
 }
 
-interface SQLiteDatabase {
-  run: (sql: string, params?: any[]) => void;
-  prepare: (sql: string) => any;
-  exec: (sql: string) => void;
-  export: () => Uint8Array;
-  close: () => void;
-}
-
 class ThemeDatabase {
   private db: SQLiteDatabase | null = null;
   private dbPath: string = '';
 
   async initialize() {
+    // 保留初始化的错误处理，因为涉及文件I/O
     try {
       let userDataPath: string;
       try {
         userDataPath = app.getPath('userData');
-      } catch (_error) {
+      } catch {
         console.log('App not ready, using fallback path for themes');
         userDataPath = app.isPackaged 
           ? path.join(process.resourcesPath, '..')
@@ -43,16 +36,8 @@ class ThemeDatabase {
       
       console.log('Theme database location:', this.dbPath);
       
-      const SQL = await initSqlJs({
-        locateFile: (file: string) => path.join(__dirname, '../../../node_modules/sql.js/dist', file)
-      });
-      
-      if (fs.existsSync(this.dbPath)) {
-        const data = fs.readFileSync(this.dbPath);
-        this.db = new SQL.Database(data);
-      } else {
-        this.db = new SQL.Database();
-      }
+      // 加载或创建数据库
+      this.db = await loadOrCreateDatabase(this.dbPath);
       
       this.initDatabase();
       this.saveDatabase();
@@ -64,18 +49,15 @@ class ThemeDatabase {
   }
   
   private saveDatabase() {
-    try {
-      if (!this.db) return;
-      const data = this.db.export();
-      const buffer = Buffer.from(data);
-      fs.writeFileSync(this.dbPath, buffer);
-    } catch (error) {
-      console.error('Error saving theme database:', error);
-    }
+    if (!this.db) return;
+    const data = this.db.export();
+    const buffer = Buffer.from(data);
+    fs.writeFileSync(this.dbPath, buffer);
   }
 
   private initDatabase() {
     if (!this.db) return;
+    //noinspection SqlDialectInspection,SqlNoDataSourceInspection
     this.db.exec(`
       CREATE TABLE IF NOT EXISTS themes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -89,128 +71,116 @@ class ThemeDatabase {
     `);
   }
 
-  saveTheme(theme: SavedTheme): { success: boolean; error?: string } {
-    try {
-      if (!this.db) return { success: false, error: 'Database not initialized' };
-      // 检查是否已存在同名主题
-      const checkStmt = this.db.prepare('SELECT id FROM themes WHERE name = $name');
-      checkStmt.bind({ $name: theme.name });
-      
-      let existingId = null;
-      if (checkStmt.step()) {
-        existingId = checkStmt.getAsObject().id;
-      }
-      checkStmt.free();
-      
-      if (existingId) {
-        // 更新现有主题
-        const updateStmt = this.db!.prepare(`
-          UPDATE themes SET
-            config = $config,
-            updatedAt = $updatedAt
-          WHERE id = $id
-        `);
-        
-        updateStmt.bind({
-          $id: existingId,
-          $config: JSON.stringify(theme.config),
-          $updatedAt: new Date().toISOString()
-        });
-        updateStmt.step();
-        updateStmt.free();
-      } else {
-        // 插入新主题
-        const insertStmt = this.db!.prepare(`
-          INSERT INTO themes (name, config, createdAt, updatedAt)
-          VALUES ($name, $config, $createdAt, $updatedAt)
-        `);
-        
-        insertStmt.bind({
-          $name: theme.name,
-          $config: JSON.stringify(theme.config),
-          $createdAt: theme.createdAt || new Date().toISOString(),
-          $updatedAt: theme.updatedAt || new Date().toISOString()
-        });
-        insertStmt.step();
-        insertStmt.free();
-      }
-      
-      this.saveDatabase();
-      return { success: true };
-    } catch (error: any) {
-      console.error('Error saving theme:', error);
-      return { success: false, error: error.message };
+  saveTheme(theme: SavedTheme): boolean {
+    if (!this.db) return false;
+    
+    // 检查是否已存在同名主题
+    //noinspection SqlDialectInspection,SqlNoDataSourceInspection
+    const checkStmt = this.db.prepare('SELECT id FROM themes WHERE name = $name');
+    checkStmt.bind({ $name: theme.name });
+    
+    let existingId = null;
+    if (checkStmt.step()) {
+      existingId = checkStmt.getAsObject().id;
     }
+    checkStmt.free();
+    
+    if (existingId) {
+      // 更新现有主题
+      //noinspection SqlDialectInspection,SqlNoDataSourceInspection
+      const updateStmt = this.db.prepare(`
+        UPDATE themes SET
+          config = $config,
+          updatedAt = $updatedAt
+        WHERE id = $id
+      `);
+      
+      updateStmt.bind({
+        $id: existingId,
+        $config: JSON.stringify(theme.config),
+        $updatedAt: new Date().toISOString()
+      });
+      updateStmt.step();
+      updateStmt.free();
+    } else {
+      // 插入新主题
+        // noinspection SqlDialectInspection,SqlNoDataSourceInspection
+        const insertStmt = this.db.prepare(`
+        INSERT INTO themes (name, config, createdAt, updatedAt)
+        VALUES ($name, $config, $createdAt, $updatedAt)
+      `);
+      
+      insertStmt.bind({
+        $name: theme.name,
+        $config: JSON.stringify(theme.config),
+        $createdAt: theme.createdAt || new Date().toISOString(),
+        $updatedAt: theme.updatedAt || new Date().toISOString()
+      });
+      insertStmt.step();
+      insertStmt.free();
+    }
+    
+    this.saveDatabase();
+    return true;
   }
 
-  loadTheme(name: string): { success: boolean; theme?: SavedTheme; error?: string } {
-    try {
-      if (!this.db) return { success: false, error: 'Database not initialized' };
-      const stmt = this.db.prepare('SELECT * FROM themes WHERE name = $name');
-      stmt.bind({ $name: name });
-      
-      if (stmt.step()) {
-        const row = stmt.getAsObject();
-        stmt.free();
-        
-        const theme: SavedTheme = {
-          id: row.id,
-          name: row.name,
-          config: JSON.parse(row.config),
-          createdAt: row.createdAt,
-          updatedAt: row.updatedAt
-        };
-        
-        return { success: true, theme };
-      }
-      
+  loadTheme(name: string): SavedTheme | null {
+    if (!this.db) return null;
+    
+    //noinspection SqlDialectInspection,SqlNoDataSourceInspection
+    const stmt = this.db.prepare('SELECT * FROM themes WHERE name = $name');
+    stmt.bind({ $name: name });
+    
+    if (stmt.step()) {
+      const row = stmt.getAsObject() as Record<string, any>;
       stmt.free();
-      return { success: false, error: '主题不存在' };
-    } catch (error: any) {
-      console.error('Error loading theme:', error);
-      return { success: false, error: error.message };
+      
+      return {
+        id: row.id,
+        name: row.name,
+        config: JSON.parse(row.config),
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt
+      };
     }
+    
+    stmt.free();
+    return null;
   }
 
-  getThemeList(): { success: boolean; themes?: SavedTheme[]; error?: string } {
-    try {
-      if (!this.db) return { success: false, error: 'Database not initialized' };
-      const stmt = this.db.prepare('SELECT * FROM themes ORDER BY updatedAt DESC');
-      const themes: SavedTheme[] = [];
-      
-      while (stmt.step()) {
-        const row = stmt.getAsObject();
-        themes.push({
-          id: row.id,
-          name: row.name,
-          config: JSON.parse(row.config),
-          createdAt: row.createdAt,
-          updatedAt: row.updatedAt
-        });
-      }
-      
-      stmt.free();
-      return { success: true, themes };
-    } catch (error: any) {
-      console.error('Error getting theme list:', error);
-      return { success: false, error: error.message };
+  getThemeList(): SavedTheme[] {
+    if (!this.db) return [];
+    
+    //noinspection SqlDialectInspection,SqlNoDataSourceInspection
+    const stmt = this.db.prepare('SELECT * FROM themes ORDER BY updatedAt DESC');
+    const themes: SavedTheme[] = [];
+    
+    while (stmt.step()) {
+      const row = stmt.getAsObject() as Record<string, any>;
+      themes.push({
+        id: row.id,
+        name: row.name,
+        config: JSON.parse(row.config),
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt
+      });
     }
+    
+    stmt.free();
+    return themes;
   }
 
-  deleteTheme(name: string): { success: boolean; error?: string } {
-    try {
-      if (!this.db) return { success: false, error: 'Database not initialized' };
-      const stmt = this.db.prepare('DELETE FROM themes WHERE name = $name');
-      stmt.bind({ $name: name });
-      stmt.step();
-      stmt.free();
-      
-      this.saveDatabase();
-      return { success: true };
-    } catch (error: any) {
-      console.error('Error deleting theme:', error);
-      return { success: false, error: error.message };
-    }
+  deleteTheme(name: string): boolean {
+    if (!this.db) return false;
+    
+    //noinspection SqlDialectInspection,SqlNoDataSourceInspection
+    const stmt = this.db.prepare('DELETE FROM themes WHERE name = $name');
+    stmt.bind({ $name: name });
+    stmt.step();
+    stmt.free();
+    
+    this.saveDatabase();
+    return true;
   }
 
   close(): void {

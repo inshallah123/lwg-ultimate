@@ -10,6 +10,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 export interface UpdateConfig {
   proxy?: {
     enabled: boolean;
+    protocol?: 'http' | 'https'; // 代理协议，默认 http
     host: string;
     port: number;
   };
@@ -28,7 +29,7 @@ const DEFAULT_CONFIG: UpdateConfig = {
 };
 
 class UpdateConfigManager {
-  private configPath: string;
+  private readonly configPath: string;
   private config: UpdateConfig;
 
   constructor() {
@@ -64,14 +65,18 @@ class UpdateConfigManager {
 
   public getProxyUrl(): string | undefined {
     if (this.config.proxy?.enabled) {
-      return `http://${this.config.proxy.host}:${this.config.proxy.port}`;
+      const protocol = this.config.proxy.protocol || 'http';
+      // 代理服务器通常使用 HTTP 协议，即使代理 HTTPS 流量
+      // noinspection HttpUrlsUsage
+      return `${protocol}://${this.config.proxy.host}:${this.config.proxy.port}`;
     }
     return undefined;
   }
 
-  public setProxy(enabled: boolean, host?: string, port?: number): void {
+  public setProxy(enabled: boolean, host?: string, port?: number, protocol?: 'http' | 'https'): void {
     this.config.proxy = {
       enabled,
+      protocol: protocol || this.config.proxy?.protocol || 'http',
       host: host || this.config.proxy?.host || DEFAULT_CONFIG.proxy!.host,
       port: port || this.config.proxy?.port || DEFAULT_CONFIG.proxy!.port
     };

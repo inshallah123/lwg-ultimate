@@ -130,7 +130,7 @@ function getRegistry(): string {
       const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
       return config.npmRegistry || DEFAULT_REGISTRY;
     }
-  } catch (_error) {
+  } catch {
     console.log('使用默认镜像源');
   }
   
@@ -138,7 +138,3 @@ function getRegistry(): string {
 }
 
 // 检查是否需要重启应用
-export function needsRestart(): boolean {
-  // 如果更新了库，建议重启应用以加载新版本
-  return true;
-}
