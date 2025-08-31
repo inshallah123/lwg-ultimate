@@ -29,7 +29,6 @@ export interface EventStore {
   // ========== 查询操作 ==========
   getEventsInRange: (startDate: Date, endDate: Date) => Event[];
   getEventById: (id: string) => Event | undefined;
-  getParentEvent: (id: string) => Event | undefined;
 }
 
 export type StoreSet = (partial: EventStore | Partial<EventStore> | ((state: EventStore) => EventStore | Partial<EventStore>)) => void;

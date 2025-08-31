@@ -30,13 +30,13 @@ const TAG_COLORS: Record<string, string> = {
 };
 
 // 格式化重复周期显示
-const formatRecurrence = (event: Event, getParentEvent?: (id: string) => Event | undefined): string => {
+const formatRecurrence = (event: Event, getEventById?: (id: string) => Event | undefined): string => {
   const eventType = getEventType(event);
   
   if (eventType === 'VI') {
     // 对于虚拟实例，显示母事件的重复周期
-    if (getParentEvent && event.parentId) {
-      const parent = getParentEvent(event.parentId);
+    if (getEventById && event.parentId) {
+      const parent = getEventById(event.parentId);
       if (parent) {
         switch (parent.recurrence) {
           case 'none':
@@ -89,7 +89,7 @@ const truncateText = (text: string, maxLength: number = 60): string => {
 
 export function EventCard({ event }: EventCardProps) {
   const eventType = getEventType(event);
-  const { getParentEvent } = useEventStore();
+  const { getEventById } = useEventStore();
   
   // 判断是否显示更多菜单按钮
   const showMoreMenuButton = canConvertToSimple(event) || canConvertToRecurring(event);
@@ -181,7 +181,7 @@ export function EventCard({ event }: EventCardProps) {
   }, [event, convertOperation]);
   
   // 显示逻辑
-  const recurrenceText = formatRecurrence(event, getParentEvent);
+  const recurrenceText = formatRecurrence(event, getEventById);
   const tagColor = TAG_COLORS[event.tag] || TAG_COLORS.custom;
   const displayTag = event.tag === 'custom' && event.customTag ? event.customTag : event.tag;
   

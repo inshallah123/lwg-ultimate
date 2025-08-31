@@ -41,7 +41,7 @@ export function EventForm({
   onClose,
   onSubmit
 }: EventFormProps) {
-  const eventStore = useEventStore();
+  const { addEvent } = useEventStore();
   const eventFormDate = useSidebarStore(state => state.eventFormDate);
   const eventFormHour = useSidebarStore(state => state.eventFormHour);
   
@@ -175,7 +175,7 @@ export function EventForm({
         recurrence,
         customRecurrence: recurrence === 'custom' ? parseInt(customRecurrence) : undefined
       };
-      eventStore.addEvent(input);
+      addEvent(input);
       onClose();
       resetForm();
     } else if (mode === 'convertToRecurring' && onSubmit) {
@@ -217,7 +217,7 @@ export function EventForm({
   }, [
     mode, event, editScope, title, description, date, timeSlot, tag, customTag,
     recurrence, customRecurrence, validateForm, onSubmit, onClose, resetForm,
-    eventStore, disableRecurrence
+    addEvent, disableRecurrence
   ]);
   
   if (!isOpen) return null;

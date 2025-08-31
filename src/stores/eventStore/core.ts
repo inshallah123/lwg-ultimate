@@ -150,13 +150,7 @@ export const createCoreOperations = (set: StoreSet, get: StoreGet) => {
     },
     
     // ========== 查询操作 ==========
-    getEventById: (id: string) => {
-      return get().events.find(e => e.id === id);
-    },
-    
-    getParentEvent: (id: string) => {
-      // 注意：这个函数的id参数应该是parentId，而不是VI的id
-      // VI是动态生成的，不在state.events中
+      getEventById: (id: string) => {
       return get().events.find(e => e.id === id);
     },
     
