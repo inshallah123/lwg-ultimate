@@ -194,14 +194,35 @@
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.95), 
-    rgba(248, 250, 252, 0.9)
-  );
-  border: 1px solid var(--tag-color);
-  color: var(--tag-color);
   text-transform: capitalize;
   backdrop-filter: blur(2px);
+  color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+/* Tag颜色变体 - 使用CSS变量，提供默认值 */
+.tag.private {
+  background: var(--event-private-background, #ff6b9d);
+  color: var(--event-private-text, #ffffff);
+  border: 1px solid var(--event-private-color, #ff6b9d);
+}
+
+.tag.work {
+  background: var(--event-work-background, #667eea);
+  color: var(--event-work-text, #ffffff);
+  border: 1px solid var(--event-work-color, #667eea);
+}
+
+.tag.balance {
+  background: var(--event-balance-background, #48bb78);
+  color: var(--event-balance-text, #ffffff);
+  border: 1px solid var(--event-balance-color, #48bb78);
+}
+
+.tag.custom {
+  background: var(--event-custom-background, #a0aec0);
+  color: var(--event-custom-text, #ffffff);
+  border: 1px solid var(--event-custom-color, #a0aec0);
 }
 
 .tagDot {

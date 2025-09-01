@@ -4,26 +4,7 @@
 /* 修改这些样式不会影响布局，仅改变视觉效果                                 */
 /* ====================================================================== */
 
-/* === 颜色主题定义 === */
-:root {
-  /* 标签主色 */
-  --tag-color-private: #e11d48;
-  --tag-color-work: #4f46e5;
-  --tag-color-balance: #059669;
-  --tag-color-custom: #7c3aed;
-  
-  /* 标签背景渐变 */
-  --tag-bg-private: linear-gradient(135deg, rgba(225, 29, 72, 0.06), rgba(225, 29, 72, 0.02));
-  --tag-bg-work: linear-gradient(135deg, rgba(79, 70, 229, 0.06), rgba(79, 70, 229, 0.02));
-  --tag-bg-balance: linear-gradient(135deg, rgba(5, 150, 105, 0.06), rgba(5, 150, 105, 0.02));
-  --tag-bg-custom: linear-gradient(135deg, rgba(124, 58, 237, 0.06), rgba(124, 58, 237, 0.02));
-  
-  /* 标签边框色 */
-  --tag-border-private: rgba(225, 29, 72, 0.2);
-  --tag-border-work: rgba(79, 70, 229, 0.2);
-  --tag-border-balance: rgba(5, 150, 105, 0.2);
-  --tag-border-custom: rgba(124, 58, 237, 0.2);
-}
+/* === 颜色主题定义 - 使用统一的CSS变量 === */
 
 /* === 事件卡片视觉样式 === */
 .eventCard {
@@ -37,25 +18,29 @@
   animation: slideIn 0.15s ease-out;
 }
 
-/* 根据标签类型的样式 */
+/* 根据标签类型的样式 - 使用统一的事件颜色CSS变量 */
 .eventCard.private {
-  background: var(--tag-bg-private);
-  border-color: var(--tag-border-private);
+  background: var(--event-private-gradient, var(--event-private-background, rgba(255, 107, 157, 0.06)));
+  border-color: var(--event-private-color, #ff6b9d);
+  color: var(--event-private-text, #1e293b);
 }
 
 .eventCard.work {
-  background: var(--tag-bg-work);
-  border-color: var(--tag-border-work);
+  background: var(--event-work-gradient, var(--event-work-background, rgba(102, 126, 234, 0.06)));
+  border-color: var(--event-work-color, #667eea);
+  color: var(--event-work-text, #1e293b);
 }
 
 .eventCard.balance {
-  background: var(--tag-bg-balance);
-  border-color: var(--tag-border-balance);
+  background: var(--event-balance-gradient, var(--event-balance-background, rgba(72, 187, 120, 0.06)));
+  border-color: var(--event-balance-color, #48bb78);
+  color: var(--event-balance-text, #1e293b);
 }
 
 .eventCard.custom {
-  background: var(--tag-bg-custom);
-  border-color: var(--tag-border-custom);
+  background: var(--event-custom-gradient, var(--event-custom-background, rgba(160, 174, 192, 0.06)));
+  border-color: var(--event-custom-color, #a0aec0);
+  color: var(--event-custom-text, #1e293b);
 }
 
 .eventCard:hover {
@@ -68,7 +53,7 @@
 /* === 事件标题视觉样式 === */
 .eventTitle {
   font-weight: 500;
-  color: #1e293b;
+  color: inherit; /* 继承父元素的颜色 */
   letter-spacing: -0.01em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -95,25 +80,29 @@
   animation: slideIn 0.15s ease-out;
 }
 
-/* 根据标签类型的样式 */
+/* 根据标签类型的样式 - 使用统一的事件颜色CSS变量 */
 .eventSummaryCard.private {
-  background: var(--tag-bg-private);
-  border-color: var(--tag-border-private);
+  background: var(--event-private-gradient, var(--event-private-background, rgba(255, 107, 157, 0.06)));
+  border-color: var(--event-private-color, #ff6b9d);
+  color: var(--event-private-text, #1e293b);
 }
 
 .eventSummaryCard.work {
-  background: var(--tag-bg-work);
-  border-color: var(--tag-border-work);
+  background: var(--event-work-gradient, var(--event-work-background, rgba(102, 126, 234, 0.06)));
+  border-color: var(--event-work-color, #667eea);
+  color: var(--event-work-text, #1e293b);
 }
 
 .eventSummaryCard.balance {
-  background: var(--tag-bg-balance);
-  border-color: var(--tag-border-balance);
+  background: var(--event-balance-gradient, var(--event-balance-background, rgba(72, 187, 120, 0.06)));
+  border-color: var(--event-balance-color, #48bb78);
+  color: var(--event-balance-text, #1e293b);
 }
 
 .eventSummaryCard.custom {
-  background: var(--tag-bg-custom);
-  border-color: var(--tag-border-custom);
+  background: var(--event-custom-gradient, var(--event-custom-background, rgba(160, 174, 192, 0.06)));
+  border-color: var(--event-custom-color, #a0aec0);
+  color: var(--event-custom-text, #1e293b);
 }
 
 .eventSummaryCard:hover {
@@ -147,25 +136,25 @@
 }
 
 .tagDot.private {
-  background-color: var(--tag-color-private);
+  background-color: var(--event-private-dot, #ff6b9d);
 }
 
 .tagDot.work {
-  background-color: var(--tag-color-work);
+  background-color: var(--event-work-dot, #667eea);
 }
 
 .tagDot.balance {
-  background-color: var(--tag-color-balance);
+  background-color: var(--event-balance-dot, #48bb78);
 }
 
 .tagDot.custom {
-  background-color: var(--tag-color-custom);
+  background-color: var(--event-custom-dot, #a0aec0);
 }
 
 /* === 事件概述文字视觉样式 === */
 .eventSummary {
   font-weight: 500;
-  color: #1e293b;
+  color: inherit; /* 继承父元素的颜色 */
   letter-spacing: -0.02em;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -7,6 +7,7 @@ import YearViewPanel from './panels/YearViewPanel';
 import MonthCardPanel from './panels/MonthCardPanel';
 import MonthViewPanel from './panels/MonthViewPanel';
 import WeekViewPanel from './panels/WeekViewPanel';
+import EventColorsPanel from './panels/EventColorsPanel';
 import { ThemeConfig, ThemeHistoryEntry } from './types';
 import { applyThemeToDOM, removeThemeFromDOM } from './utils/themeApplier';
 import { saveTheme, loadTheme, getThemeList } from './utils/themeStorage';
@@ -23,7 +24,8 @@ const ThemePalette: React.FC<ThemePaletteProps> = ({ isOpen, onClose }) => {
     yearView: {},
     monthCard: {},
     monthView: {},
-    weekView: {}
+    weekView: {},
+    eventColors: {}
   });
   
   const [history, setHistory] = useState<ThemeHistoryEntry[]>([]);
@@ -129,7 +131,8 @@ const ThemePalette: React.FC<ThemePaletteProps> = ({ isOpen, onClose }) => {
       yearView: {},
       monthCard: {},
       monthView: {},
-      weekView: {}
+      weekView: {},
+      eventColors: {}
     };
     setThemeConfig(emptyConfig);
     setHistory([]);
@@ -235,6 +238,12 @@ const ThemePalette: React.FC<ThemePaletteProps> = ({ isOpen, onClose }) => {
           >
             周视图
           </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'eventColors' ? styles.active : ''}`}
+            onClick={() => setActiveTab('eventColors')}
+          >
+            事件颜色
+          </button>
         </div>
 
         <div className={styles.content}>
@@ -271,6 +280,13 @@ const ThemePalette: React.FC<ThemePaletteProps> = ({ isOpen, onClose }) => {
               config={themeConfig.weekView}
               onChange={(config) => updateThemeConfig('weekView', config)}
               onPreview={() => handlePreview('[class*="weekContainer"]')}
+            />
+          )}
+          {activeTab === 'eventColors' && (
+            <EventColorsPanel
+              config={themeConfig.eventColors || {}}
+              onChange={(config) => updateThemeConfig('eventColors', config)}
+              onPreview={() => handlePreview('[class*="eventCard"], [class*="EventCard"]')}
             />
           )}
         </div>

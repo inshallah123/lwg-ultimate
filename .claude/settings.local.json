@@ -39,7 +39,9 @@
       "Bash(head:*)",
       "Bash(done)",
       "Bash(find:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(dir src)",
+      "Bash(dir electron)"
     ],
     "deny": [],
     "ask": [],

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { UpdateProgressData } from '../../types/update';
+import { UpdateProgressData } from '@/types/update';
 import styles from './UpdateProgress.module.css';
 
 const UpdateProgress: React.FC = () => {

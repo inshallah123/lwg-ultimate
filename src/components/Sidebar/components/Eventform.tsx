@@ -18,10 +18,10 @@ interface EventFormProps {
 }
 
 const TAG_OPTIONS = [
-  { value: 'private', label: 'Private', color: '#ff6b9d' },
-  { value: 'work', label: 'Work', color: '#667eea' },
-  { value: 'balance', label: 'Balance', color: '#48bb78' },
-  { value: 'custom', label: 'Custom', color: '#a0aec0' }
+  { value: 'private', label: 'Private' },
+  { value: 'work', label: 'Work' },
+  { value: 'balance', label: 'Balance' },
+  { value: 'custom', label: 'Custom' }
 ];
 
 const RECURRENCE_OPTIONS = [
@@ -301,9 +301,8 @@ export function EventForm({
                     <button
                       key={option.value}
                       type="button"
-                      className={`${styles.tagOption} ${tag === option.value ? styles.tagOptionActive : ''}`}
-                      style={{ '--tag-color': option.color } as React.CSSProperties}
-                      onClick={() => setTag(option.value as any)}
+                      className={`${styles.tagOption} ${styles[`tag-${option.value}`]} ${tag === option.value ? styles.tagOptionActive : ''}`}
+                      onClick={() => setTag(option.value as 'private' | 'work' | 'balance' | 'custom')}
                     >
                       {option.label}
                     </button>

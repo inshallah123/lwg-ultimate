@@ -1,0 +1,34 @@
+/* ====================================================================== */
+/* 主题系统CSS变量声明                                                    */
+/* 这些变量会被ThemePalette动态覆盖，这里只是声明以消除IDE警告              */
+/* ====================================================================== */
+
+:root {
+  /* 事件颜色变量 - Private */
+  --event-private-gradient: none;
+  --event-private-background: #ff6b9d;
+  --event-private-color: #ff6b9d;
+  --event-private-text: #ffffff;
+  --event-private-dot: #ff6b9d;
+  
+  /* 事件颜色变量 - Work */
+  --event-work-gradient: none;
+  --event-work-background: #667eea;
+  --event-work-color: #667eea;
+  --event-work-text: #ffffff;
+  --event-work-dot: #667eea;
+  
+  /* 事件颜色变量 - Balance */
+  --event-balance-gradient: none;
+  --event-balance-background: #48bb78;
+  --event-balance-color: #48bb78;
+  --event-balance-text: #ffffff;
+  --event-balance-dot: #48bb78;
+  
+  /* 事件颜色变量 - Custom */
+  --event-custom-gradient: none;
+  --event-custom-background: #a0aec0;
+  --event-custom-color: #a0aec0;
+  --event-custom-text: #ffffff;
+  --event-custom-dot: #a0aec0;
+}

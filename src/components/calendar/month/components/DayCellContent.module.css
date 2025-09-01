@@ -4,6 +4,34 @@
 /* 修改这些样式不会影响布局，仅改变视觉效果                                 */
 /* ====================================================================== */
 
+/* 动态注入的CSS变量声明（由ThemePalette运行时注入） */
+/* 这些变量在编辑时可能显示为未定义，但运行时会正常工作 */
+/*
+  --event-private-gradient
+  --event-private-background  
+  --event-private-color
+  --event-private-text
+  --event-private-dot
+  
+  --event-work-gradient
+  --event-work-background
+  --event-work-color
+  --event-work-text
+  --event-work-dot
+  
+  --event-balance-gradient
+  --event-balance-background
+  --event-balance-color
+  --event-balance-text
+  --event-balance-dot
+  
+  --event-custom-gradient
+  --event-custom-background
+  --event-custom-color
+  --event-custom-text
+  --event-custom-dot
+*/
+
 /* DayCellContent 组件局部变量定义 */
 :root {
   /* 颜色系统 */
@@ -82,7 +110,7 @@
 
 .eventTitle {
   font-size: 11px;
-  color: var(--color-text-primary);
+  color: inherit; /* 继承父元素的颜色 */
 }
 
 /* === 事件点视觉样式 === */
@@ -91,61 +119,69 @@
   background-color: var(--color-accent-gray);
 }
 
-/* === 事件标签颜色主题 === */
+/* === 事件标签颜色主题 - 使用CSS变量 === */
 /* Work 主题 */
 .eventCard.work {
-  background-color: rgba(59, 130, 246, 0.08);
-  border-color: rgba(59, 130, 246, 0.2);
+  background: var(--event-work-gradient, var(--event-work-background, rgba(102, 126, 234, 0.08)));
+  border-color: var(--event-work-color, #667eea);
+  color: var(--event-work-text, var(--color-text-primary));
 }
 
 .eventCard.work:hover {
-  background-color: rgba(59, 130, 246, 0.12);
-  border-color: rgba(59, 130, 246, 0.3);
+  opacity: 0.9;
+  border-color: var(--event-work-color, #667eea);
 }
 
 .eventDot.work {
-  background-color: #3b82f6;
+  background-color: var(--event-work-dot, #667eea);
 }
 
 /* Private 主题 */
 .eventCard.private {
-  background-color: rgba(137, 16, 185, 0.08);
-  border-color: rgba(148, 16, 185, 0.2);
+  background: var(--event-private-gradient, var(--event-private-background, rgba(255, 107, 157, 0.08)));
+  border-color: var(--event-private-color, #ff6b9d);
+  color: var(--event-private-text, var(--color-text-primary));
 }
 
 .eventCard.private:hover {
-  background-color: rgba(16, 185, 129, 0.12);
-  border-color: rgba(16, 185, 129, 0.3);
+  opacity: 0.9;
+  border-color: var(--event-private-color, #ff6b9d);
 }
 
 .eventDot.private {
-  background-color: #10b981;
+  background-color: var(--event-private-dot, #ff6b9d);
 }
 
 /* Balance 主题 */
 .eventCard.balance {
-  background-color: rgba(187, 251, 60, 0.08);
-  border-color: rgba(152, 251, 60, 0.2);
+  background: var(--event-balance-gradient, var(--event-balance-background, rgba(72, 187, 120, 0.08)));
+  border-color: var(--event-balance-color, #48bb78);
+  color: var(--event-balance-text, var(--color-text-primary));
 }
 
 .eventCard.balance:hover {
-  background-color: rgba(251, 146, 60, 0.12);
-  border-color: rgba(251, 146, 60, 0.3);
+  opacity: 0.9;
+  border-color: var(--event-balance-color, #48bb78);
+}
+
+.eventDot.balance {
+  background-color: var(--event-balance-dot, #48bb78);
 }
 
 /* Custom 主题 */
 .eventCard.custom {
-  background-color: rgba(156, 163, 175, 0.08);
-  border-color: rgba(156, 163, 175, 0.2);
+  background: var(--event-custom-gradient, var(--event-custom-background, rgba(160, 174, 192, 0.08)));
+  border-color: var(--event-custom-color, #a0aec0);
+  color: var(--event-custom-text, var(--color-text-primary));
 }
 
 .eventCard.custom:hover {
-  background-color: rgba(156, 163, 175, 0.12);
-  border-color: rgba(156, 163, 175, 0.3);
+  opacity: 0.9;
+  border-color: var(--event-custom-color, #a0aec0);
 }
 
 .eventDot.custom {
-  background-color: #9ca3af;
+  background-color: var(--event-custom-dot, #a0aec0);
 }
 
 /* === 更多指示器视觉样式 === */

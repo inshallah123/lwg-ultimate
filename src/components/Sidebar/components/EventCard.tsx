@@ -21,14 +21,6 @@ interface EventCardProps {
   event: Event;
 }
 
-// Tag 颜色映射
-const TAG_COLORS: Record<string, string> = {
-  private: '#ff6b9d',
-  work: '#667eea',
-  balance: '#48bb78',
-  custom: '#a0aec0'
-};
-
 // 格式化重复周期显示
 const formatRecurrence = (event: Event, getEventById?: (id: string) => Event | undefined): string => {
   const eventType = getEventType(event);
@@ -182,8 +174,8 @@ export function EventCard({ event }: EventCardProps) {
   
   // 显示逻辑
   const recurrenceText = formatRecurrence(event, getEventById);
-  const tagColor = TAG_COLORS[event.tag] || TAG_COLORS.custom;
   const displayTag = event.tag === 'custom' && event.customTag ? event.customTag : event.tag;
+  const tagClass = event.tag || 'custom';
   
   return (
     <>
@@ -285,8 +277,7 @@ export function EventCard({ event }: EventCardProps) {
           </div>
           
           <span 
-            className={styles.tag}
-            style={{ backgroundColor: tagColor }}
+            className={`${styles.tag} ${styles[tagClass]}`}
           >
             {displayTag}
           </span>

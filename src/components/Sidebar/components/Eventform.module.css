@@ -3,8 +3,6 @@
 
 /* CSS变量声明 - Eventform特有变量 */
 :root {
-  --tag-color: #a0aec0; /* 默认颜色，会被内联样式覆盖 */
-  
   /* Eventform特有变量（如果上级没有定义） */
   --color-bg-tertiary: #F1F5F9;
   --color-border: #539dd6;
@@ -233,6 +231,23 @@
   transition: all var(--transition-fast);
   position: relative;
   overflow: hidden;
+}
+
+/* 每个标签类型的颜色样式 - 使用统一的CSS变量 */
+.tag-private {
+  --tag-color: var(--event-private-color, #ff6b9d);
+}
+
+.tag-work {
+  --tag-color: var(--event-work-color, #667eea);
+}
+
+.tag-balance {
+  --tag-color: var(--event-balance-color, #48bb78);
+}
+
+.tag-custom {
+  --tag-color: var(--event-custom-color, #a0aec0);
 }
 
 .tagOption::before {

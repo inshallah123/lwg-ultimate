@@ -1,4 +1,4 @@
-import { ThemeConfig, GlobalStyleConfig, YearViewConfig, MonthCardConfig, MonthViewConfig, WeekViewConfig } from '../types';
+import { ThemeConfig, GlobalStyleConfig, YearViewConfig, MonthCardConfig, MonthViewConfig, WeekViewConfig, EventColorsConfig } from '../types';
 
 const THEME_STYLE_ID = 'custom-theme-styles';
 
@@ -30,9 +30,11 @@ interface StyleRule {
 }
 
 // 特殊规则处理器类型
+type ConfigTypes = GlobalStyleConfig | YearViewConfig | MonthCardConfig | MonthViewConfig | WeekViewConfig | EventColorsConfig;
+
 interface SpecialRule {
   section: keyof ThemeConfig;
-  handler: (config: any, cssRules: string[]) => void;
+  handler: (config: ConfigTypes, cssRules: string[]) => void;
 }
 
 // 特殊处理策略
@@ -316,13 +318,49 @@ const styleRulesConfig: Record<string, StyleRule[]> = {
   ]
 };
 
+// 事件颜色CSS变量生成
+function generateEventColorVariables(eventColors: EventColorsConfig): string[] {
+  const cssRules: string[] = [];
+  const tags = ['private', 'work', 'balance', 'custom'] as const;
+  
+  tags.forEach(tag => {
+    const config = eventColors[tag];
+    if (!config) return;
+    
+    // 背景颜色或渐变
+    if (config.gradient?.enabled) {
+      const gradient = `linear-gradient(${config.gradient.angle}deg, ${config.gradient.startColor}, ${config.gradient.endColor})`;
+      cssRules.push(`--event-${tag}-background: ${gradient};`);
+      cssRules.push(`--event-${tag}-gradient: ${gradient};`);
+    } else if (config.color) {
+      cssRules.push(`--event-${tag}-background: ${config.color};`);
+      cssRules.push(`--event-${tag}-color: ${config.color};`);
+    }
+    
+    // 文字颜色
+    if (config.textColor) {
+      cssRules.push(`--event-${tag}-text: ${config.textColor};`);
+    }
+    
+    // 指示点颜色
+    if (config.dotColor) {
+      cssRules.push(`--event-${tag}-dot: ${config.dotColor};`);
+    } else if (config.color) {
+      cssRules.push(`--event-${tag}-dot: ${config.color};`);
+    }
+  });
+  
+  return cssRules.length > 0 ? [`:root { ${cssRules.join(' ')} }`] : [];
+}
+
 // 特殊处理规则配置
 const specialRulesConfig: SpecialRule[] = [
   // 全局背景和标题处理
   {
     section: 'global' as const,
-    handler: (config: GlobalStyleConfig, cssRules: string[]) => {
-      const { backgroundColor, backgroundGradient, backgroundImage, titleColor, subtitleColor } = config;
+    handler: (config: ConfigTypes, cssRules: string[]) => {
+      const globalConfig = config as GlobalStyleConfig;
+      const { backgroundColor, backgroundGradient, backgroundImage, titleColor, subtitleColor } = globalConfig;
       
       if (backgroundImage?.enabled && backgroundImage.url) {
         const bgRules = backgroundStrategies.backgroundImage(backgroundImage);
@@ -358,8 +396,9 @@ const specialRulesConfig: SpecialRule[] = [
   // Year View 背景处理
   {
     section: 'yearView' as const,
-    handler: (config: YearViewConfig, cssRules: string[]) => {
-      const { containerBackground, containerGradient, backgroundImage } = config;
+    handler: (config: ConfigTypes, cssRules: string[]) => {
+      const yearConfig = config as YearViewConfig;
+      const { containerBackground, containerGradient, backgroundImage } = yearConfig;
       
       if (backgroundImage?.enabled && backgroundImage.url) {
         const bgRules = backgroundStrategies.yearViewBackgroundImage(backgroundImage);
@@ -375,8 +414,9 @@ const specialRulesConfig: SpecialRule[] = [
   // Month Card 背景处理
   {
     section: 'monthCard' as const,
-    handler: (config: MonthCardConfig, cssRules: string[]) => {
-      const { background, backgroundGradient } = config;
+    handler: (config: ConfigTypes, cssRules: string[]) => {
+      const monthCardConfig = config as MonthCardConfig;
+      const { background, backgroundGradient } = monthCardConfig;
       
       if (backgroundGradient?.enabled) {
         const bgValue = backgroundStrategies.gradient(backgroundGradient);
@@ -389,8 +429,9 @@ const specialRulesConfig: SpecialRule[] = [
   // Month View 背景和特殊悬浮处理
   {
     section: 'monthView' as const,
-    handler: (config: MonthViewConfig, cssRules: string[]) => {
-      const { containerBackground, containerGradient, dayCellHoverBackground } = config;
+    handler: (config: ConfigTypes, cssRules: string[]) => {
+      const monthViewConfig = config as MonthViewConfig;
+      const { containerBackground, containerGradient, dayCellHoverBackground } = monthViewConfig;
       
       // 容器背景
       if (containerGradient?.enabled) {
@@ -414,8 +455,9 @@ const specialRulesConfig: SpecialRule[] = [
   // Week View 背景和时间列特殊处理
   {
     section: 'weekView' as const,
-    handler: (config: WeekViewConfig, cssRules: string[]) => {
-      const { containerBackground, containerGradient, timeColumnBackground, todayHeaderColor } = config;
+    handler: (config: ConfigTypes, cssRules: string[]) => {
+      const weekViewConfig = config as WeekViewConfig;
+      const { containerBackground, containerGradient, timeColumnBackground, todayHeaderColor } = weekViewConfig;
       
       // 容器背景
       if (containerGradient?.enabled) {
@@ -481,6 +523,12 @@ function generateCssRules(config: ThemeConfig): string[] {
       specialRule.handler(sectionConfig, cssRules);
     }
   });
+  
+  // 处理事件颜色
+  if (config.eventColors) {
+    const eventColorRules = generateEventColorVariables(config.eventColors);
+    cssRules.push(...eventColorRules);
+  }
   
   return cssRules;
 }

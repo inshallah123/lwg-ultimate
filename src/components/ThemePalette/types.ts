@@ -119,12 +119,32 @@ export interface WeekViewConfig {
   solarTermColor?: string;
 }
 
+export interface EventColorConfig {
+  color?: string;
+  gradient?: {
+    enabled: boolean;
+    startColor: string;
+    endColor: string;
+    angle: number;
+  };
+  textColor?: string;
+  dotColor?: string;
+}
+
+export interface EventColorsConfig {
+  private?: EventColorConfig;
+  work?: EventColorConfig;
+  balance?: EventColorConfig;
+  custom?: EventColorConfig;
+}
+
 export interface ThemeConfig {
   global: GlobalStyleConfig;
   yearView: YearViewConfig;
   monthCard: MonthCardConfig;
   monthView: MonthViewConfig;
   weekView: WeekViewConfig;
+  eventColors?: EventColorsConfig;
 }
 
 export interface ThemeHistoryEntry {
