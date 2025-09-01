@@ -16,7 +16,11 @@ const DEFAULT_COLORS = {
 };
 
 const EventColorsPanel: React.FC<EventColorsPanelProps> = ({ config, onChange, onPreview }) => {
-  const updateTagConfig = (tag: keyof EventColorsConfig, field: keyof EventColorConfig, value: string | number | EventColorConfig['gradient']) => {
+  const updateTagConfig = (
+    tag: keyof EventColorsConfig, 
+    field: string, 
+    value: string | number | boolean | EventColorConfig['gradient']
+  ) => {
     const tagConfig = config[tag] || {};
     
     if (field === 'gradient' && typeof value === 'object') {
@@ -98,8 +102,10 @@ const EventColorsPanel: React.FC<EventColorsPanelProps> = ({ config, onChange, o
                   className={styles.colorPicker}
                   value={tagConfig.gradient?.startColor || defaultColor}
                   onChange={(e) => updateTagConfig(tag, 'gradient', {
-                    ...tagConfig.gradient,
-                    startColor: e.target.value
+                    enabled: tagConfig.gradient?.enabled || true,
+                    startColor: e.target.value,
+                    endColor: tagConfig.gradient?.endColor || '#ffffff',
+                    angle: tagConfig.gradient?.angle || 135
                   })}
                 />
                 <input
@@ -107,8 +113,10 @@ const EventColorsPanel: React.FC<EventColorsPanelProps> = ({ config, onChange, o
                   className={styles.colorText}
                   value={tagConfig.gradient?.startColor || defaultColor}
                   onChange={(e) => updateTagConfig(tag, 'gradient', {
-                    ...tagConfig.gradient,
-                    startColor: e.target.value
+                    enabled: tagConfig.gradient?.enabled || true,
+                    startColor: e.target.value,
+                    endColor: tagConfig.gradient?.endColor || '#ffffff',
+                    angle: tagConfig.gradient?.angle || 135
                   })}
                 />
               </div>
@@ -122,8 +130,10 @@ const EventColorsPanel: React.FC<EventColorsPanelProps> = ({ config, onChange, o
                   className={styles.colorPicker}
                   value={tagConfig.gradient?.endColor || '#ffffff'}
                   onChange={(e) => updateTagConfig(tag, 'gradient', {
-                    ...tagConfig.gradient,
-                    endColor: e.target.value
+                    enabled: tagConfig.gradient?.enabled || true,
+                    startColor: tagConfig.gradient?.startColor || defaultColor,
+                    endColor: e.target.value,
+                    angle: tagConfig.gradient?.angle || 135
                   })}
                 />
                 <input
@@ -131,8 +141,10 @@ const EventColorsPanel: React.FC<EventColorsPanelProps> = ({ config, onChange, o
                   className={styles.colorText}
                   value={tagConfig.gradient?.endColor || '#ffffff'}
                   onChange={(e) => updateTagConfig(tag, 'gradient', {
-                    ...tagConfig.gradient,
-                    endColor: e.target.value
+                    enabled: tagConfig.gradient?.enabled || true,
+                    startColor: tagConfig.gradient?.startColor || defaultColor,
+                    endColor: e.target.value,
+                    angle: tagConfig.gradient?.angle || 135
                   })}
                 />
               </div>
@@ -147,7 +159,9 @@ const EventColorsPanel: React.FC<EventColorsPanelProps> = ({ config, onChange, o
                 max="360"
                 value={tagConfig.gradient?.angle || 135}
                 onChange={(e) => updateTagConfig(tag, 'gradient', {
-                  ...tagConfig.gradient,
+                  enabled: tagConfig.gradient?.enabled || true,
+                  startColor: tagConfig.gradient?.startColor || defaultColor,
+                  endColor: tagConfig.gradient?.endColor || '#ffffff',
                   angle: parseInt(e.target.value)
                 })}
               />
