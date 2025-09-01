@@ -1,6 +1,6 @@
 {
   "name": "littlewhitegoose",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A beautiful desktop calendar application",
   "main": "dist-electron/electron/main/index.js",
   "scripts": {
