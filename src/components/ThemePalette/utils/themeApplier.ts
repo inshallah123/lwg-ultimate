@@ -332,7 +332,10 @@ function generateEventColorVariables(eventColors: EventColorsConfig): string[] {
       const gradient = `linear-gradient(${config.gradient.angle}deg, ${config.gradient.startColor}, ${config.gradient.endColor})`;
       cssRules.push(`--event-${tag}-background: ${gradient};`);
       cssRules.push(`--event-${tag}-gradient: ${gradient};`);
+      cssRules.push(`--event-${tag}-color: ${config.gradient.startColor};`); // 边框使用起始颜色
     } else if (config.color) {
+      // 纯色模式：清除gradient变量，设置background
+      cssRules.push(`--event-${tag}-gradient: initial;`); // 清除渐变
       cssRules.push(`--event-${tag}-background: ${config.color};`);
       cssRules.push(`--event-${tag}-color: ${config.color};`);
     }
