@@ -44,6 +44,9 @@
   "build": {
     "appId": "com.littlewhitegoose.calendar",
     "productName": "小白鹅日历",
+    "electronDownload": {
+      "mirror": "https://npmmirror.com/mirrors/electron/"
+    },
     "directories": {
       "output": "release",
       "buildResources": "build"

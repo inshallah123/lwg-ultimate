@@ -41,7 +41,13 @@
       "Bash(find:*)",
       "Bash(npm run lint:*)",
       "Bash(dir src)",
-      "Bash(dir electron)"
+      "Bash(dir electron)",
+      "Bash(tree:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm outdated)",
+      "Bash(npm:*)",
+      "Bash(node:*)",
+      "Bash(npm config:*)"
     ],
     "deny": [],
     "ask": [],
