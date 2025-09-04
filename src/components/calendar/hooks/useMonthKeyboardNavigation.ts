@@ -63,6 +63,18 @@ export function useMonthKeyboardNavigation({
   // 监听键盘事件
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
+      // 检查事件源是否是输入框、文本域或可编辑元素
+      const target = e.target as HTMLElement;
+      const isInputField = target.tagName === 'INPUT' || 
+                          target.tagName === 'TEXTAREA' || 
+                          target.tagName === 'SELECT' ||
+                          target.contentEditable === 'true';
+      
+      // 如果焦点在输入框内，不处理快捷键
+      if (isInputField) {
+        return;
+      }
+      
       // 空格键 - 回到今天
       if (e.code === 'Space' && !e.ctrlKey && !e.shiftKey && !e.altKey) {
         e.preventDefault();
