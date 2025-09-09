@@ -59,6 +59,7 @@
 .monthHeader {
   background: linear-gradient(135deg, var(--primary-gradient-start) 0%, var(--primary-gradient-end) 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   font-family: 'Georgia', 'Times New Roman', serif;
@@ -492,6 +493,7 @@
   .monthHeader {
     background: linear-gradient(135deg, #a8c4d4 0%, #e0c5d2 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
   }
   
