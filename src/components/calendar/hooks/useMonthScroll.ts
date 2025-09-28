@@ -88,24 +88,28 @@ export function useMonthScroll({
 
   // 初始化日期列表
   useEffect(() => {
-    if (!scrollContainerRef.current || isInitialized) return;
-    
-    const { days} = generateMonthDays(
-      currentDate, 
-      monthsRange.start, 
-      monthsRange.end
-    );
-    
-    const currentContainerHeight = scrollContainerRef.current.clientHeight;
-    setContainerHeight(currentContainerHeight);
-    const rowHeight = Math.floor(currentContainerHeight / VIEW_CONFIG.ROWS_PER_SCREEN);
-    rowHeightRef.current = rowHeight;
-    
-    const initialScroll = calculateScrollPositionForDate(currentDate, days, rowHeight);
-    
-    setAllDays(days);
-    setScrollPosition(initialScroll);
-    setIsInitialized(true);
+    if (!scrollContainerRef.current) return;
+
+    // 只在首次初始化时生成日期列表
+    if (!isInitialized) {
+      const { days} = generateMonthDays(
+        currentDate,
+        monthsRange.start,
+        monthsRange.end
+      );
+
+      const currentContainerHeight = scrollContainerRef.current.clientHeight;
+      setContainerHeight(currentContainerHeight);
+      const rowHeight = Math.floor(currentContainerHeight / VIEW_CONFIG.ROWS_PER_SCREEN);
+      rowHeightRef.current = rowHeight;
+
+      const initialScroll = calculateScrollPositionForDate(currentDate, days, rowHeight);
+
+      setAllDays(days);
+      // 直接设置初始滚动位置，虚拟滚动会自动应用
+      setScrollPosition(initialScroll);
+      setIsInitialized(true);
+    }
   }, [currentDate, monthsRange.start, monthsRange.end, isInitialized]);
 
   // 滚动到指定日期

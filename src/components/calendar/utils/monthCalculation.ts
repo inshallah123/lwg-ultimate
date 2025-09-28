@@ -58,30 +58,32 @@ export function calculateScrollPositionForDate(
   days: Date[],
   rowHeight: number
 ): number {
-  const targetIndex = days.findIndex(d => 
-    d.getFullYear() === targetDate.getFullYear() && 
+  // 优先查找月份的第一天，这样能确保月份完整显示
+  const firstDayOfMonth = days.findIndex(d =>
+    d.getFullYear() === targetDate.getFullYear() &&
+    d.getMonth() === targetDate.getMonth() &&
+    d.getDate() === 1
+  );
+
+  if (firstDayOfMonth !== -1) {
+    const firstDayRow = Math.floor(firstDayOfMonth / 7);
+    // 将月份的第一行定位在视图顶部附近（留1行缓冲）
+    return Math.max(0, (firstDayRow - 1) * rowHeight);
+  }
+
+  // 如果找不到月份第一天，尝试找指定日期
+  const targetIndex = days.findIndex(d =>
+    d.getFullYear() === targetDate.getFullYear() &&
     d.getMonth() === targetDate.getMonth() &&
     d.getDate() === targetDate.getDate()
   );
-  
-  if (targetIndex === -1) {
-    // 如果找不到具体日期，找月份的第一天
-    const firstDayOfMonth = days.findIndex(d => 
-      d.getFullYear() === targetDate.getFullYear() && 
-      d.getMonth() === targetDate.getMonth() &&
-      d.getDate() === 1
-    );
-    
-    if (firstDayOfMonth !== -1) {
-      const firstDayRow = Math.floor(firstDayOfMonth / 7);
-      return Math.max(0, (firstDayRow - 2) * rowHeight);
-    }
-    
-    return 0;
+
+  if (targetIndex !== -1) {
+    const targetRow = Math.floor(targetIndex / 7);
+    return Math.max(0, (targetRow - 1) * rowHeight);
   }
-  
-  const targetRow = Math.floor(targetIndex / 7);
-  return Math.round(Math.max(0, (targetRow - 2) * rowHeight));
+
+  return 0;
 }
 
 /**
